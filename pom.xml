@@ -6,12 +6,12 @@
 	<parent>
 		<groupId>org.kmymoney</groupId>
 		<artifactId>kmymoney</artifactId>
-		<version>0.8.0</version>
+		<version>0.9</version>
 	</parent>
 
 	<artifactId>kmymoney-tools</artifactId>
-
 	<name>${project.title} : Tools</name>
+	<version>0.8.0</version>
 
 	<properties>
 

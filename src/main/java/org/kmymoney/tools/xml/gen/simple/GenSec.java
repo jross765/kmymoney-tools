@@ -26,6 +26,13 @@ public class GenSec extends CommandLineTool
   @SuppressWarnings("unused")
   private static final Logger LOGGER = LoggerFactory.getLogger(GenSec.class);
   
+  // -----------------------------------------------------------------
+
+  // ::MAGIC
+  private static final String TRADING_MARKET_DEFAULT = "XETRA";
+
+  // -----------------------------------------------------------------
+
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
@@ -35,6 +42,8 @@ public class GenSec extends CommandLineTool
   private static String  name     = null;
   private static String  symbol   = null;
   private static String  isin     = null;
+
+  // -----------------------------------------------------------------
 
   public static void main( String[] args )
   {
@@ -100,7 +109,7 @@ public class GenSec extends CommandLineTool
       .desc("Symbol (ticker)")
       .longOpt("symbol")
       .build();
-    	          
+
           
     options = new Options();
     options.addOption(optFileIn);
@@ -122,8 +131,8 @@ public class GenSec extends CommandLineTool
     KMyMoneyWritableFileImpl kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName));
     
     KMyMoneyWritableSecurity sec = kmmFile.createWritableSecurity(KMMSecCurr.Type.STOCK, isin, name);
-    // sec.setCode(isin);
-    // sec.setName(name);
+    
+    sec.setTradingMarket( TRADING_MARKET_DEFAULT );
     
     if ( symbol != null )
     	sec.setSymbol(symbol);

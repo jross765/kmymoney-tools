@@ -47,25 +47,28 @@ public class GetTrxList extends CommandLineTool
   
   // ------------------------------
   
-  private static String     kmmFileName   = null;
+  private static String     kmmFileName    = null;
   
-  private static KMMAcctID  acctID        = null; // sic, not KMMComplAcctID
-  private static KMMPyeID   pyeID         = null;
+  private static KMMAcctID  acctID         = null; // sic, not KMMComplAcctID
+  private static KMMPyeID   pyeID          = null;
   
-  private static LocalDate  dateFrom      = null; 
-  private static LocalDate  dateTo        = null; 
+  private static LocalDate  datePostedFrom = null; 
+  private static LocalDate  datePostedTo   = null; 
   
-  private static double     valueFrom     = Const.UNSET_VALUE; 
-  private static double     valueTo       = Const.UNSET_VALUE; 
+  private static LocalDate  dateEnteredFrom = null; 
+  private static LocalDate  dateEnteredTo   = null; 
   
-  private static double     nofSharesFrom = Const.UNSET_VALUE; 
-  private static double     nofSharesTo   = Const.UNSET_VALUE; 
+  private static double     valueFrom      = Const.UNSET_VALUE; 
+  private static double     valueTo        = Const.UNSET_VALUE; 
   
-  private static int        nofSplitsFrom = TransactionFilter.NOF_SPLT_UNSET; 
-  private static int        nofSplitsTo   = TransactionFilter.NOF_SPLT_UNSET; 
+  private static double     nofSharesFrom  = Const.UNSET_VALUE; 
+  private static double     nofSharesTo    = Const.UNSET_VALUE; 
   
-  private static boolean    showFlt       = false; 
-  private static boolean    showSplt      = false; 
+  private static int        nofSplitsFrom  = TransactionFilter.NOF_SPLT_UNSET; 
+  private static int        nofSplitsTo    = TransactionFilter.NOF_SPLT_UNSET; 
+  
+  private static boolean    showFlt        = false; 
+  private static boolean    showSplt       = false; 
   
   // ------------------------------
   
@@ -121,18 +124,34 @@ public class GetTrxList extends CommandLineTool
     	    	          
     // ---
     
-    Option optDateFrom = Option.builder("fd")
+    Option optDatePostedFrom = Option.builder("fdp")
       .hasArg()
       .argName("date")
-      .desc("From date")
-      .longOpt("from-date")
+      .desc("From date posted")
+      .longOpt("from-date-posted")
       .build();
     
-    Option optDateTo = Option.builder("td")
+    Option optDatePostedTo = Option.builder("tdp")
       .hasArg()
       .argName("date")
-      .desc("To date")
-      .longOpt("to-date")
+      .desc("To date posted")
+      .longOpt("to-date-posted")
+      .build();
+    	          
+    // ---
+    
+    Option optDateEnteredFrom = Option.builder("fde")
+      .hasArg()
+      .argName("date")
+      .desc("From date entered")
+      .longOpt("from-date-entered")
+      .build();
+    
+    Option optDateEnteredTo = Option.builder("tde")
+      .hasArg()
+      .argName("date")
+      .desc("To date entered")
+      .longOpt("to-date-entered")
       .build();
     	          
     // ---
@@ -206,8 +225,10 @@ public class GetTrxList extends CommandLineTool
     options.addOption(optFile);
     options.addOption(optAcct);
     options.addOption(optPye);
-    options.addOption(optDateFrom);
-    options.addOption(optDateTo);
+    options.addOption(optDatePostedFrom);
+    options.addOption(optDatePostedTo);
+    options.addOption(optDateEnteredFrom);
+    options.addOption(optDateEnteredTo);
     options.addOption(optValueFrom);
     options.addOption(optValueTo);
     options.addOption(optNofSharesFrom);
@@ -273,12 +294,18 @@ public class GetTrxList extends CommandLineTool
     // ---
 
     TransactionFilter trxFlt = new TransactionFilter();
-    trxFlt.datePostedFrom = dateFrom;
-    trxFlt.datePostedTo   = dateTo;
+    
+    trxFlt.datePostedFrom  = datePostedFrom;
+    trxFlt.datePostedTo    = datePostedTo;
+    
+    trxFlt.dateEnteredFrom = dateEnteredFrom;
+    trxFlt.dateEnteredTo   = dateEnteredTo;
+    
     if ( nofSplitsFrom != TransactionFilter.NOF_SPLT_UNSET )
     	trxFlt.nofSpltFrom = nofSplitsFrom;
     if ( nofSplitsTo   != TransactionFilter.NOF_SPLT_UNSET )
     	trxFlt.nofSpltTo   = nofSplitsTo;
+    
     trxFlt.spltFilt = spltFlt;
     
     // ---
@@ -379,47 +406,91 @@ public class GetTrxList extends CommandLineTool
     
     // ---
     
-    // <from-date>
-    if ( cmdLine.hasOption( "from-date" ) )
+    // <from-date-posted>
+    if ( cmdLine.hasOption( "from-date-posted" ) )
     {
         try
         {
-        	dateFrom = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("from-date"), DateHelpers.DATE_FORMAT_2);
+        	datePostedFrom = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("from-date-posted"), DateHelpers.DATE_FORMAT_2);
         }
         catch ( Exception exc )
         {
-        	System.err.println("Could not parse <from-date>");
+        	System.err.println("Could not parse <from-date-posted>");
         	throw new InvalidCommandLineArgsException();
         }
     }
     else
     {
-    	dateFrom = Const.TRX_SUPER_EARLY_DATE;
+    	datePostedFrom = Const.TRX_SUPER_EARLY_DATE;
     }
     
     if ( ! scriptMode )
-      System.err.println("From date:          " + dateFrom);
+      System.err.println("From date posted:   " + datePostedFrom);
     
-    // <to-date>
-    if ( cmdLine.hasOption( "to-date" ) )
+    // <to-date-posted>
+    if ( cmdLine.hasOption( "to-date-posted" ) )
     {
         try
         {
-        	dateTo = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("to-date"), DateHelpers.DATE_FORMAT_2);
+        	datePostedTo = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("to-date-posted"), DateHelpers.DATE_FORMAT_2);
         }
         catch ( Exception exc )
         {
-        	System.err.println("Could not parse <to-date>");
+        	System.err.println("Could not parse <to-date-posted>");
         	throw new InvalidCommandLineArgsException();
         }
     }
     else
     {
-    	dateTo = Const.TRX_SUPER_LATE_DATE;
+    	datePostedTo = Const.TRX_SUPER_LATE_DATE;
     }
     
     if ( ! scriptMode )
-      System.err.println("To date:            " + dateTo);
+      System.err.println("To date posted:     " + datePostedTo);
+    
+    // ---
+    
+    // <from-date-entered>
+    if ( cmdLine.hasOption( "from-date-entered" ) )
+    {
+        try
+        {
+        	dateEnteredFrom = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("from-date-entered"), DateHelpers.DATE_FORMAT_2);
+        }
+        catch ( Exception exc )
+        {
+        	System.err.println("Could not parse <from-date-entered>");
+        	throw new InvalidCommandLineArgsException();
+        }
+    }
+    else
+    {
+    	dateEnteredFrom = Const.TRX_SUPER_EARLY_DATE;
+    }
+    
+    if ( ! scriptMode )
+      System.err.println("From date entered:  " + dateEnteredFrom);
+    
+    // <to-date-entered>
+    if ( cmdLine.hasOption( "to-date-entered" ) )
+    {
+        try
+        {
+        	dateEnteredTo = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("to-date-entered"), DateHelpers.DATE_FORMAT_2);
+        }
+        catch ( Exception exc )
+        {
+        	System.err.println("Could not parse <to-date-entered>");
+        	throw new InvalidCommandLineArgsException();
+        }
+    }
+    else
+    {
+    	dateEnteredTo = Const.TRX_SUPER_LATE_DATE;
+    }
+    
+    if ( ! scriptMode )
+      System.err.println("To date entered:    " + dateEnteredTo);
     
     // ---
     

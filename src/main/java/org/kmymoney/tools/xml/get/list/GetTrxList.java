@@ -49,6 +49,9 @@ public class GetTrxList extends CommandLineTool
   
   private static String     kmmFileName    = null;
   
+  private static KMyMoneyTransactionSplit.Action action = null;
+  private static KMyMoneyTransactionSplit.State  state  = null;
+  
   private static KMMAcctID  acctID         = null; // sic, not KMMComplAcctID
   private static KMMPyeID   pyeID          = null;
   
@@ -108,17 +111,33 @@ public class GetTrxList extends CommandLineTool
       .build();
       
     // The convenient ones
+    Option optAction = Option.builder("act")
+      .hasArg()
+      .argName("act")
+      .desc("Action (split level)")
+      .longOpt("action")
+      .build();
+    	          
+    Option optState = Option.builder("stat")
+      .hasArg()
+      .argName("stat")
+      .desc("State (split level)")
+      .longOpt("state")
+      .build();
+    	    	          
+    // ---
+    
     Option optAcct = Option.builder("acct")
       .hasArg()
       .argName("acct")
-      .desc("Account ID")
+      .desc("Account ID (split level)")
       .longOpt("account-id")
       .build();
-    	          
+    	    	          
     Option optPye = Option.builder("pye")
       .hasArg()
       .argName("pye")
-      .desc("Payee ID")
+      .desc("Payee ID (split level)")
       .longOpt("payee-id")
       .build();
     	    	          
@@ -159,14 +178,14 @@ public class GetTrxList extends CommandLineTool
     Option optValueFrom = Option.builder("fv")
       .hasArg()
       .argName("value")
-      .desc("From value")
+      .desc("From value (split level)")
       .longOpt("from-value")
       .build();
     	          
     Option optValueTo = Option.builder("tv")
       .hasArg()
       .argName("value")
-      .desc("To value")
+      .desc("To value (split level)")
       .longOpt("to-value")
       .build();
     	    	          
@@ -175,14 +194,14 @@ public class GetTrxList extends CommandLineTool
     Option optNofSharesFrom = Option.builder("fnsh")
       .hasArg()
       .argName("no")
-      .desc("From no. of shares")
+      .desc("From no. of shares (split level)")
       .longOpt("from-nof-shares")
       .build();
     	          
     Option optNofSharesTo = Option.builder("tnsh")
       .hasArg()
       .argName("no")
-      .desc("To no. of shares")
+      .desc("To no. of shares (split level)")
       .longOpt("to-nof-shares")
       .build();
     	    	          
@@ -215,14 +234,13 @@ public class GetTrxList extends CommandLineTool
       .build();
     	    
     // ::TODO
-    // - action (split)
-    // - state (split)
-    // - entry date (trx)
     // - memo (split, part of)
     // - description (trx, part of)
     	    	          
     options = new Options();
     options.addOption(optFile);
+    options.addOption(optAction);
+    options.addOption(optState);
     options.addOption(optAcct);
     options.addOption(optPye);
     options.addOption(optDatePostedFrom);
@@ -273,6 +291,11 @@ public class GetTrxList extends CommandLineTool
   private TransactionFilter setFilter() throws KMMIDNotSetException
   {
 	TransactionSplitFilter spltFlt = new TransactionSplitFilter();
+    
+    if ( action != null )
+    	spltFlt.action = action;
+    if ( state != null )
+    	spltFlt.state = state;
     
     if ( acctID != null )
     	spltFlt.acctID.set( acctID );
@@ -367,6 +390,42 @@ public class GetTrxList extends CommandLineTool
     
     if ( ! scriptMode )
       System.err.println("KMyMoney file:      '" + kmmFileName + "'");
+    
+    // ---
+    
+    // <action>
+    if ( cmdLine.hasOption( "action" ) )
+    {
+        try
+        {
+        	action = KMyMoneyTransactionSplit.Action.valueOf( cmdLine.getOptionValue("action") );
+        }
+        catch ( Exception exc )
+        {
+        	System.err.println("Could not parse <action>");
+        	throw new InvalidCommandLineArgsException();
+        }
+    }
+    
+    if ( ! scriptMode )
+      System.err.println("Action:             " + action);
+    
+    // <state>
+    if ( cmdLine.hasOption( "state" ) )
+    {
+        try
+        {
+        	state = KMyMoneyTransactionSplit.State.valueOf( cmdLine.getOptionValue("state") );
+        }
+        catch ( Exception exc )
+        {
+        	System.err.println("Could not parse <state>");
+        	throw new InvalidCommandLineArgsException();
+        }
+    }
+    
+    if ( ! scriptMode )
+      System.err.println("State:              " + state);
     
     // ---
     

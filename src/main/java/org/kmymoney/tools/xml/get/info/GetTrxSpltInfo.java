@@ -134,20 +134,20 @@ public class GetTrxSpltInfo extends CommandLineTool
     
     try
     {
-      System.out.println("Account ID:     " + splt.getAccountID());
-    }
-    catch ( Exception exc )
-    {
-      System.out.println("Account ID:     " + "ERROR");
-    }
-    
-    try
-    {
       System.out.println("Action:         " + splt.getAction());
     }
     catch ( Exception exc )
     {
       System.out.println("Action:         " + "ERROR");
+    }
+        
+    try
+    {
+      System.out.println("Recon state:    " + splt.getReconState());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Recon state:    " + "ERROR");
     }
         
     try
@@ -159,6 +159,15 @@ public class GetTrxSpltInfo extends CommandLineTool
       System.out.println("Number:         " + "ERROR");
     }
         
+    try
+    {
+      System.out.println("Account ID:     " + splt.getAccountID());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Account ID:     " + "ERROR");
+    }
+    
     try
     {
       System.out.println("Payee ID:       " + splt.getPayeeID());
@@ -188,11 +197,11 @@ public class GetTrxSpltInfo extends CommandLineTool
         
     try
     {
-      System.out.println("Description:    '" + splt.getMemo() + "'");
+      System.out.println("Memo:           '" + splt.getMemo() + "'");
     }
     catch ( Exception exc )
     {
-      System.out.println("Description:    " + "ERROR");
+      System.out.println("Memo:           " + "ERROR");
     }
   }
 

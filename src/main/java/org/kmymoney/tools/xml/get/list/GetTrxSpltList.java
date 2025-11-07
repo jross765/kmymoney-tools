@@ -1,7 +1,6 @@
 package org.kmymoney.tools.xml.get.list;
 
 import java.io.File;
-import java.time.LocalDate;
 import java.util.ArrayList;
 
 import org.apache.commons.cli.CommandLine;
@@ -12,14 +11,11 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.kmymoney.api.read.KMyMoneyTransaction;
 import org.kmymoney.api.read.KMyMoneyTransactionSplit;
 import org.kmymoney.api.read.impl.KMyMoneyFileImpl;
 import org.kmymoney.apiext.Const;
-import org.kmymoney.apiext.trxmgr.TransactionFilter;
-import org.kmymoney.apiext.trxmgr.TransactionFilter.SplitLogic;
-import org.kmymoney.apiext.trxmgr.TransactionFinder;
 import org.kmymoney.apiext.trxmgr.TransactionSplitFilter;
+import org.kmymoney.apiext.trxmgr.TransactionSplitFinder;
 import org.kmymoney.base.basetypes.simple.KMMAcctID;
 import org.kmymoney.base.basetypes.simple.KMMIDNotSetException;
 import org.kmymoney.base.basetypes.simple.KMMPyeID;
@@ -30,15 +26,13 @@ import org.slf4j.LoggerFactory;
 import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
-import xyz.schnorxoborx.base.dateutils.DateHelpers;
-import xyz.schnorxoborx.base.dateutils.LocalDateHelpers;
 import xyz.schnorxoborx.base.numbers.FixedPointNumber;
 
-public class GetTrxList extends CommandLineTool
+public class GetTrxSpltList extends CommandLineTool
 {
   // Logger
   @SuppressWarnings("unused")
-  private static final Logger LOGGER = LoggerFactory.getLogger(GetTrxList.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GetTrxSpltList.class);
   
   // -----------------------------------------------------------------
   
@@ -55,23 +49,13 @@ public class GetTrxList extends CommandLineTool
   private static KMMAcctID  acctID          = null; // sic, not KMMComplAcctID
   private static KMMPyeID   pyeID           = null;
   
-  private static LocalDate  datePostedFrom  = TransactionFilter.DATE_UNSET; 
-  private static LocalDate  datePostedTo    = TransactionFilter.DATE_UNSET; 
-  
-  private static LocalDate  dateEnteredFrom = TransactionFilter.DATE_UNSET; 
-  private static LocalDate  dateEnteredTo   = TransactionFilter.DATE_UNSET; 
-  
   private static double     valueFrom       = Const.UNSET_VALUE; 
   private static double     valueTo         = Const.UNSET_VALUE; 
   
   private static double     nofSharesFrom   = Const.UNSET_VALUE; 
   private static double     nofSharesTo     = Const.UNSET_VALUE; 
   
-  private static int        nofSplitsFrom   = TransactionFilter.NOF_SPLT_UNSET; 
-  private static int        nofSplitsTo     = TransactionFilter.NOF_SPLT_UNSET; 
-  
   private static boolean    showFlt         = false; 
-  private static boolean    showSplt        = false; 
   
   // ------------------------------
   
@@ -83,7 +67,7 @@ public class GetTrxList extends CommandLineTool
   {
     try
     {
-      GetTrxList tool = new GetTrxList ();
+      GetTrxSpltList tool = new GetTrxSpltList ();
       tool.execute(args);
     }
     catch (CouldNotExecuteException exc) 
@@ -143,38 +127,6 @@ public class GetTrxList extends CommandLineTool
     
     // ---
     
-    Option optDatePostedFrom = Option.builder("fdp")
-      .hasArg()
-      .argName("date")
-      .desc("From date posted")
-      .longOpt("from-date-posted")
-      .build();
-    
-    Option optDatePostedTo = Option.builder("tdp")
-      .hasArg()
-      .argName("date")
-      .desc("To date posted")
-      .longOpt("to-date-posted")
-      .build();
-    
-    // ---
-    
-    Option optDateEnteredFrom = Option.builder("fde")
-      .hasArg()
-      .argName("date")
-      .desc("From date entered")
-      .longOpt("from-date-entered")
-      .build();
-    
-    Option optDateEnteredTo = Option.builder("tde")
-      .hasArg()
-      .argName("date")
-      .desc("To date entered")
-      .longOpt("to-date-entered")
-      .build();
-    
-    // ---
-    
     Option optValueFrom = Option.builder("fv")
       .hasArg()
       .argName("value")
@@ -207,22 +159,6 @@ public class GetTrxList extends CommandLineTool
     	    	          
     // ---
     
-    Option optNofSplitsFrom = Option.builder("fnsp")
-      .hasArg()
-      .argName("no")
-      .desc("From no. of splits")
-      .longOpt("from-nof-splits")
-      .build();
-    	          
-    Option optNofSplitsTo = Option.builder("tnsp")
-      .hasArg()
-      .argName("no")
-      .desc("To no. of splits")
-      .longOpt("to-nof-splits")
-      .build();
-    
-    // ---
-    
     Option optShowFilter = Option.builder("sflt")
       .desc("Show filter (for debugging purposes)")
       .longOpt("show-filter")
@@ -243,16 +179,10 @@ public class GetTrxList extends CommandLineTool
     options.addOption(optReconState);
     options.addOption(optAcct);
     options.addOption(optPye);
-    options.addOption(optDatePostedFrom);
-    options.addOption(optDatePostedTo);
-    options.addOption(optDateEnteredFrom);
-    options.addOption(optDateEnteredTo);
     options.addOption(optValueFrom);
     options.addOption(optValueTo);
     options.addOption(optNofSharesFrom);
     options.addOption(optNofSharesTo);
-    options.addOption(optNofSplitsFrom);
-    options.addOption(optNofSplitsTo);
     options.addOption(optShowFilter);
     options.addOption(optShowSplits);
   }
@@ -269,26 +199,26 @@ public class GetTrxList extends CommandLineTool
     KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName));
     
     // 1) Set filter
-    TransactionFilter trxFlt = setFilter();
+    TransactionSplitFilter spltFlt = setFilter();
     
     if ( showFlt )
     {
         System.err.println("");
-        System.err.println("Filter: " + trxFlt.toString());
+        System.err.println("Filter: " + spltFlt.toString());
         System.err.println("");
     }
     
     // 2) Find transactions, applying filter
-    TransactionFinder trxFnd = new TransactionFinder(kmmFile);
-    ArrayList<KMyMoneyTransaction> trxList = trxFnd.find(trxFlt, true, SplitLogic.OR);
+    TransactionSplitFinder spltFnd = new TransactionSplitFinder(kmmFile);
+    ArrayList<KMyMoneyTransactionSplit> spltList = spltFnd.find(spltFlt);
     
     // 3) Show results
-    showResults( trxList );
+    showResults( spltList );
   }
 
   // -----------------------------------------------------------------
 
-  private TransactionFilter setFilter() throws KMMIDNotSetException
+  private TransactionSplitFilter setFilter() throws KMMIDNotSetException
   {
 	TransactionSplitFilter spltFlt = new TransactionSplitFilter();
     
@@ -316,50 +246,18 @@ public class GetTrxList extends CommandLineTool
     
     // ---
 
-    TransactionFilter trxFlt = new TransactionFilter();
-    
-    if ( ! datePostedFrom.equals(TransactionFilter.DATE_UNSET) )
-    	trxFlt.datePostedFrom  = datePostedFrom;
-    if ( ! datePostedTo.equals(TransactionFilter.DATE_UNSET) )
-    	trxFlt.datePostedTo    = datePostedTo;
-    
-    if ( ! dateEnteredFrom.equals(TransactionFilter.DATE_UNSET) )
-    	trxFlt.dateEnteredFrom = dateEnteredFrom;
-    if ( ! dateEnteredTo.equals(TransactionFilter.DATE_UNSET) )
-    	trxFlt.dateEnteredTo   = dateEnteredTo;
-    
-    if ( nofSplitsFrom != TransactionFilter.NOF_SPLT_UNSET )
-    	trxFlt.nofSpltFrom = nofSplitsFrom;
-    if ( nofSplitsTo   != TransactionFilter.NOF_SPLT_UNSET )
-    	trxFlt.nofSpltTo   = nofSplitsTo;
-    
-    trxFlt.spltFilt = spltFlt;
-    
-    // ---
-
-	return trxFlt;
+	return spltFlt;
   }
 
-  private void showResults(ArrayList<KMyMoneyTransaction> trxList) throws NoEntryFoundException
+  private void showResults(ArrayList<KMyMoneyTransactionSplit> spltList) throws NoEntryFoundException
   {
-	if ( trxList.size() == 0 ) 
+	if ( spltList.size() == 0 ) 
     {
-    	System.err.println("Found no transaction matching the criteria.");
+    	System.err.println("Found no transaction splits matching the criteria.");
     	throw new NoEntryFoundException();
     }
 
-	System.err.println("Found " + trxList.size() + " transaction(s).");
-    for ( KMyMoneyTransaction trx : trxList )
-    {
-    	System.out.println(" - " + trx.toString());
-        if ( showSplt )
-        {
-        	for ( KMyMoneyTransactionSplit splt : trx.getSplits() )
-        	{
-        		System.out.println("   o " + splt.toString());
-        	}
-        }
-    }
+	System.err.println("Found " + spltList.size() + " transaction split(s).");
   }
 
   // -----------------------------------------------------------------
@@ -469,98 +367,6 @@ public class GetTrxList extends CommandLineTool
     
     // ---
     
-    // <from-date-posted>
-    if ( cmdLine.hasOption( "from-date-posted" ) )
-    {
-        try
-        {
-        	datePostedFrom = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("from-date-posted"), DateHelpers.DATE_FORMAT_2);
-        }
-        catch ( Exception exc )
-        {
-        	System.err.println("Could not parse <from-date-posted>");
-        	throw new InvalidCommandLineArgsException();
-        }
-    }
-    
-    if ( ! scriptMode )
-    {
-        if ( datePostedFrom.equals(TransactionFilter.DATE_UNSET) )
-        	System.err.println("From date posted:   " + "(unset)");
-        else
-        	System.err.println("From date posted:   " + datePostedFrom);
-    }
-    
-    // <to-date-posted>
-    if ( cmdLine.hasOption( "to-date-posted" ) )
-    {
-        try
-        {
-        	datePostedTo = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("to-date-posted"), DateHelpers.DATE_FORMAT_2);
-        }
-        catch ( Exception exc )
-        {
-        	System.err.println("Could not parse <to-date-posted>");
-        	throw new InvalidCommandLineArgsException();
-        }
-    }
-    
-    if ( ! scriptMode )
-    {
-        if ( datePostedTo.equals(TransactionFilter.DATE_UNSET) )
-        	System.err.println("To date posted:     " + "(unset)");
-        else
-        	System.err.println("To date posted:     " + datePostedTo);
-    }
-    
-    // ---
-    
-    // <from-date-entered>
-    if ( cmdLine.hasOption( "from-date-entered" ) )
-    {
-        try
-        {
-        	dateEnteredFrom = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("from-date-entered"), DateHelpers.DATE_FORMAT_2);
-        }
-        catch ( Exception exc )
-        {
-        	System.err.println("Could not parse <from-date-entered>");
-        	throw new InvalidCommandLineArgsException();
-        }
-    }
-    
-    if ( ! scriptMode )
-    {
-        if ( dateEnteredFrom.equals(TransactionFilter.DATE_UNSET) )
-        	System.err.println("From date entered:  " + "(unset)");
-        else
-        	System.err.println("From date entered:  " + dateEnteredFrom);
-    }
-    
-    // <to-date-entered>
-    if ( cmdLine.hasOption( "to-date-entered" ) )
-    {
-        try
-        {
-        	dateEnteredTo = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("to-date-entered"), DateHelpers.DATE_FORMAT_2);
-        }
-        catch ( Exception exc )
-        {
-        	System.err.println("Could not parse <to-date-entered>");
-        	throw new InvalidCommandLineArgsException();
-        }
-    }
-    
-    if ( ! scriptMode )
-    {
-        if ( dateEnteredTo.equals(TransactionFilter.DATE_UNSET) )
-        	System.err.println("To date entered:    " + "(unset)");
-        else
-        	System.err.println("To date entered:    " + dateEnteredTo);
-    }
-    
-    // ---
-    
     // <from-value>
     if ( cmdLine.hasOption( "from-value" ) )
     {
@@ -651,52 +457,6 @@ public class GetTrxList extends CommandLineTool
     		System.err.println("To no. of shares:   " + nofSharesTo);
     }
     
-    // ---
-    
-    // <from-nof-splits>
-    if ( cmdLine.hasOption( "from-nof-splits" ) )
-    {
-        try
-        {
-        	nofSplitsFrom = Integer.parseInt( cmdLine.getOptionValue("from-nof-splits"));
-        }
-        catch ( Exception exc )
-        {
-        	System.err.println("Could not parse <from-nof-splits>");
-        	throw new InvalidCommandLineArgsException();
-        }
-    }
-    
-    if ( ! scriptMode )
-    {
-    	if ( nofSplitsFrom == TransactionFilter.NOF_SPLT_UNSET )
-    		System.err.println("From no. of splits: " + "(unset)");
-    	else
-    		System.err.println("From no. of splits: " + nofSplitsFrom);
-    }
-    
-    // <to-nof-splits>
-    if ( cmdLine.hasOption( "to-nof-splits" ) )
-    {
-        try
-        {
-        	nofSplitsTo = Integer.parseInt( cmdLine.getOptionValue("to-nof-splits"));
-        }
-        catch ( Exception exc )
-        {
-        	System.err.println("Could not parse <to-nof-splits>");
-        	throw new InvalidCommandLineArgsException();
-        }
-    }
-    
-    if ( ! scriptMode )
-    {
-    	if ( nofSplitsTo == TransactionFilter.NOF_SPLT_UNSET )
-    		System.err.println("To no. of splits:   " + "(unset)");
-    	else
-    	 	System.err.println("To no. of splits:   " + nofSplitsTo);
-    }
-    
     // <show-filter>
     if ( cmdLine.hasOption( "show-filter" ) )
     {
@@ -704,16 +464,7 @@ public class GetTrxList extends CommandLineTool
     }
     
     if ( ! scriptMode )
-      System.err.println("Show filter:        " + showSplt);
-    
-    // <show-splits>
-    if ( cmdLine.hasOption( "show-splits" ) )
-    {
-        showSplt = true;
-    }
-    
-    if ( ! scriptMode )
-      System.err.println("Show splits:        " + showSplt);
+      System.err.println("Show filter:        " + showFlt);
   }
   
   @Override

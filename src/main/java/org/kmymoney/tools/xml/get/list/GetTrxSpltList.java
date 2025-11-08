@@ -55,6 +55,8 @@ public class GetTrxSpltList extends CommandLineTool
   private static double     nofSharesFrom   = Const.UNSET_VALUE; 
   private static double     nofSharesTo     = Const.UNSET_VALUE; 
   
+  private static String     memoSplt        = null; 
+  
   private static boolean    showFlt         = false; 
   
   // ------------------------------
@@ -159,6 +161,15 @@ public class GetTrxSpltList extends CommandLineTool
     	    	          
     // ---
     
+    Option optMemoSplt = Option.builder("msplt")
+      .hasArg()
+      .argName("str")
+      .desc("Memo (split level)")
+      .longOpt("memo-split")
+      .build();
+    
+    // ---
+    
     Option optShowFilter = Option.builder("sflt")
       .desc("Show filter (for debugging purposes)")
       .longOpt("show-filter")
@@ -183,6 +194,7 @@ public class GetTrxSpltList extends CommandLineTool
     options.addOption(optValueTo);
     options.addOption(optNofSharesFrom);
     options.addOption(optNofSharesTo);
+    options.addOption(optMemoSplt);
     options.addOption(optShowFilter);
     options.addOption(optShowSplits);
   }
@@ -244,6 +256,9 @@ public class GetTrxSpltList extends CommandLineTool
     	spltFlt.sharesTo   = new FixedPointNumber(nofSharesTo);
     spltFlt.sharesAbs = true;
     
+    if ( memoSplt != null )
+    	spltFlt.memoPart = memoSplt;
+
     // ---
 
 	return spltFlt;
@@ -456,6 +471,32 @@ public class GetTrxSpltList extends CommandLineTool
     	else
     		System.err.println("To no. of shares:   " + nofSharesTo);
     }
+    
+    // ---
+    
+    // <memo-split>
+    if ( cmdLine.hasOption( "memo-split" ) )
+    {
+        try
+        {
+        	memoSplt = cmdLine.getOptionValue("memo-split");
+        }
+        catch ( Exception exc )
+        {
+        	System.err.println("Could not parse <memo-split>");
+        	throw new InvalidCommandLineArgsException();
+        }
+    }
+    
+    if ( ! scriptMode )
+    {
+    	if ( memoSplt == null )
+    		System.err.println("Memo (split level): " + "(unset)");
+    	else
+    	 	System.err.println("Memo (split level): " + memoSplt);
+    }
+    
+    // ---
     
     // <show-filter>
     if ( cmdLine.hasOption( "show-filter" ) )

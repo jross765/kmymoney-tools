@@ -70,6 +70,9 @@ public class GetTrxList extends CommandLineTool
   private static int        nofSplitsFrom   = TransactionFilter.NOF_SPLT_UNSET; 
   private static int        nofSplitsTo     = TransactionFilter.NOF_SPLT_UNSET; 
   
+  private static String     memoTrx         = null; 
+  private static String     memoSplt        = null; 
+  
   private static boolean    showFlt         = false; 
   private static boolean    showSplt        = false; 
   
@@ -223,6 +226,22 @@ public class GetTrxList extends CommandLineTool
     
     // ---
     
+    Option optMemoTrx = Option.builder("mtrx")
+      .hasArg()
+      .argName("str")
+      .desc("Memo (transaction level)s")
+      .longOpt("memo-transaction")
+      .build();
+    	          
+    Option optMemoSplt = Option.builder("msplt")
+      .hasArg()
+      .argName("str")
+      .desc("Memo (split level)")
+      .longOpt("memo-split")
+      .build();
+    
+    // ---
+    
     Option optShowFilter = Option.builder("sflt")
       .desc("Show filter (for debugging purposes)")
       .longOpt("show-filter")
@@ -233,9 +252,6 @@ public class GetTrxList extends CommandLineTool
       .longOpt("show-splits")
       .build();
     	    
-    // ::TODO
-    // - memo (split, part of)
-    // - description (trx, part of)
     	    	          
     options = new Options();
     options.addOption(optFile);
@@ -253,6 +269,8 @@ public class GetTrxList extends CommandLineTool
     options.addOption(optNofSharesTo);
     options.addOption(optNofSplitsFrom);
     options.addOption(optNofSplitsTo);
+    options.addOption(optMemoTrx);
+    options.addOption(optMemoSplt);
     options.addOption(optShowFilter);
     options.addOption(optShowSplits);
   }
@@ -314,6 +332,9 @@ public class GetTrxList extends CommandLineTool
     	spltFlt.sharesTo   = new FixedPointNumber(nofSharesTo);
     spltFlt.sharesAbs = true;
     
+    if ( memoSplt != null )
+    	spltFlt.memoPart = memoSplt;
+
     // ---
 
     TransactionFilter trxFlt = new TransactionFilter();
@@ -333,6 +354,9 @@ public class GetTrxList extends CommandLineTool
     if ( nofSplitsTo   != TransactionFilter.NOF_SPLT_UNSET )
     	trxFlt.nofSpltTo   = nofSplitsTo;
     
+    if ( memoTrx != null )
+    	trxFlt.memoPart = memoTrx;
+
     trxFlt.spltFilt = spltFlt;
     
     // ---
@@ -696,6 +720,54 @@ public class GetTrxList extends CommandLineTool
     	else
     	 	System.err.println("To no. of splits:   " + nofSplitsTo);
     }
+    
+    // ---
+    
+    // <memo-transaction>
+    if ( cmdLine.hasOption( "memo-transaction" ) )
+    {
+        try
+        {
+        	memoTrx = cmdLine.getOptionValue("memo-transaction");
+        }
+        catch ( Exception exc )
+        {
+        	System.err.println("Could not parse <memo-transaction>");
+        	throw new InvalidCommandLineArgsException();
+        }
+    }
+    
+    if ( ! scriptMode )
+    {
+    	if ( memoTrx == null )
+    		System.err.println("Memo (trx level):   " + "(unset)");
+    	else
+    	 	System.err.println("Memo (trx level):   " + memoTrx);
+    }
+    
+    // <memo-split>
+    if ( cmdLine.hasOption( "memo-split" ) )
+    {
+        try
+        {
+        	memoSplt = cmdLine.getOptionValue("memo-split");
+        }
+        catch ( Exception exc )
+        {
+        	System.err.println("Could not parse <memo-split>");
+        	throw new InvalidCommandLineArgsException();
+        }
+    }
+    
+    if ( ! scriptMode )
+    {
+    	if ( memoSplt == null )
+    		System.err.println("Memo (split level): " + "(unset)");
+    	else
+    	 	System.err.println("Memo (split level): " + memoSplt);
+    }
+    
+    // ---
     
     // <show-filter>
     if ( cmdLine.hasOption( "show-filter" ) )

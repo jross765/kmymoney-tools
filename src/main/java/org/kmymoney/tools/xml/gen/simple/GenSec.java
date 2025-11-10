@@ -1,6 +1,7 @@
 package org.kmymoney.tools.xml.gen.simple;
 
 import java.io.File;
+import java.math.BigInteger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -10,7 +11,9 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.kmymoney.api.Const;
 import org.kmymoney.api.read.KMMSecCurr;
+import org.kmymoney.api.read.KMyMoneySecurity;
 import org.kmymoney.api.write.KMyMoneyWritableSecurity;
 import org.kmymoney.api.write.impl.KMyMoneyWritableFileImpl;
 import org.kmymoney.tools.CommandLineTool;
@@ -23,7 +26,6 @@ import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 public class GenSec extends CommandLineTool
 {
   // Logger
-  @SuppressWarnings("unused")
   private static final Logger LOGGER = LoggerFactory.getLogger(GenSec.class);
   
   // -----------------------------------------------------------------
@@ -39,9 +41,14 @@ public class GenSec extends CommandLineTool
   private static String kmmInFileName = null;
   private static String kmmOutFileName = null;
 
-  private static String  name     = null;
-  private static String  symbol   = null;
-  private static String  isin     = null;
+  private static String     isin      = null;
+  private static String     name      = null;
+  
+  private static KMMSecCurr.Type type = null;
+  private static String     symbol    = null;
+  private static KMMSecCurr.RoundingMethod roundingMethod = null;
+  private static BigInteger saf       = null;
+  private static BigInteger pp        = null;
 
   // -----------------------------------------------------------------
 
@@ -103,11 +110,39 @@ public class GenSec extends CommandLineTool
       .build();
     
     // The convenient ones
+    Option optType = Option.builder("t")
+      .hasArg()
+      .argName("type")
+      .desc("Type (default " + Const.SEC_TYPE_DEFAULT + ")")
+      .longOpt("type")
+      .build();
+    
     Option optSymbol = Option.builder("sy")
       .hasArg()
       .argName("symb")
       .desc("Symbol (ticker)")
       .longOpt("symbol")
+      .build();
+
+    Option optRoundMeth= Option.builder("rm")
+      .hasArg()
+      .argName("meth")
+      .desc("Rounding method (default " + Const.SEC_ROUNDMETH_DEFAULT + ")")
+      .longOpt("rounding-method")
+      .build();
+
+    Option optSAF = Option.builder("saf")
+      .hasArg()
+      .argName("num")
+      .desc("SAF (default " + Const.SEC_SAF_DEFAULT + ")")
+      .longOpt("saf")
+      .build();
+
+    Option optPP = Option.builder("pp")
+      .hasArg()
+      .argName("num")
+      .desc("PP (default " + Const.SEC_PP_DEFAULT + ")")
+      .longOpt("pp")
       .build();
 
           
@@ -116,7 +151,11 @@ public class GenSec extends CommandLineTool
     options.addOption(optFileOut);
     options.addOption(optISIN);
     options.addOption(optName);
+    options.addOption(optType);
     options.addOption(optSymbol);
+    options.addOption(optRoundMeth);
+    options.addOption(optSAF);
+    options.addOption(optPP);
   }
 
   @Override
@@ -129,14 +168,36 @@ public class GenSec extends CommandLineTool
   protected void kernel() throws Exception
   {
     KMyMoneyWritableFileImpl kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName));
+
+    // 1) Check whether there already is a security with that ISIN
+    KMyMoneySecurity checkSec = kmmFile.getSecurityByCode( isin );
+    if ( checkSec != null )
+    {
+    	LOGGER.error("kernel: Encountered a security with code '" + isin + "' in KMyMoney file");
+    	LOGGER.error("kernel: Aborting");
+    	System.err.println("Error: There already is a security with code '" + isin + "' in KMyMoney file");
+    	System.err.println("Aborting");
+    	System.exit( 1 );
+    }
     
-    KMyMoneyWritableSecurity sec = kmmFile.createWritableSecurity(KMMSecCurr.Type.STOCK, isin, name);
+    // 2) Generate security
+    KMyMoneyWritableSecurity sec = kmmFile.createWritableSecurity(type, isin, name);
     
     sec.setTradingMarket( TRADING_MARKET_DEFAULT );
     
     if ( symbol != null )
     	sec.setSymbol(symbol);
+
+    if ( roundingMethod != null )
+    	sec.setRoundingMethod( roundingMethod );
     
+    if ( saf != null )
+    	sec.setSAF(saf);
+    
+    if ( pp != null )
+    	sec.setPP(pp);
+    
+    // 3) Write to file
     System.out.println("Security to write: " + sec.toString());
     kmmFile.writeFile(new File(kmmOutFileName));
     System.out.println("OK");
@@ -171,7 +232,8 @@ public class GenSec extends CommandLineTool
       System.err.println("Could not parse <kmymoney-in-file>");
       throw new InvalidCommandLineArgsException();
     }
-    System.err.println("KMyMoney file (in): '" + kmmInFileName + "'");
+    
+    System.err.println("KMyMoney file (in):  '" + kmmInFileName + "'");
     
     // <kmymoney-out-file>
     try
@@ -183,7 +245,10 @@ public class GenSec extends CommandLineTool
       System.err.println("Could not parse <kmymoney-out-file>");
       throw new InvalidCommandLineArgsException();
     }
+    
     System.err.println("KMyMoney file (out): '" + kmmOutFileName + "'");
+    
+    // --
     
     // <isin>
     try
@@ -195,7 +260,8 @@ public class GenSec extends CommandLineTool
       System.err.println("Could not parse <isin>");
       throw new InvalidCommandLineArgsException();
     }
-    System.err.println("ISIN: '" + isin + "'");
+    
+    System.err.println("ISIN:                '" + isin + "'");
     
     // <name>
     try
@@ -207,8 +273,32 @@ public class GenSec extends CommandLineTool
       System.err.println("Could not parse <name>");
       throw new InvalidCommandLineArgsException();
     }
-    System.err.println("Name: '" + name + "'");
     
+    System.err.println("Name:                '" + name + "'");
+    
+    // --
+    
+    // <type>
+    if ( cmdLine.hasOption("type") )
+    {
+        try
+        {
+        	type = KMMSecCurr.Type.valueOf( cmdLine.getOptionValue("type") );
+        }
+        catch ( Exception exc )
+        {
+          System.err.println("Could not parse <type>");
+          throw new InvalidCommandLineArgsException();
+        }
+    }
+    // Explicit!
+    else
+    {
+    	type = Const.SEC_TYPE_DEFAULT;
+    }
+
+    System.err.println("Type:                " + type);
+
     // <symbol>
     if ( cmdLine.hasOption("symbol") )
     {
@@ -222,12 +312,71 @@ public class GenSec extends CommandLineTool
           throw new InvalidCommandLineArgsException();
         }
     }
-    else
-    {
-    	symbol = null;
-    }
-    System.err.println("Symbol: '" + symbol + "'");
 
+    System.err.println("Symbol:              '" + symbol + "'");
+
+    // <rounding-method>
+    if ( cmdLine.hasOption("rounding-method") )
+    {
+        try
+        {
+        	roundingMethod = KMMSecCurr.RoundingMethod.valueOf( cmdLine.getOptionValue("rounding-method") );
+        }
+        catch ( Exception exc )
+        {
+          System.err.println("Could not parse <rounding-method>");
+          throw new InvalidCommandLineArgsException();
+        }
+    }
+    // Implicit!
+//    else
+//    {
+//    	roundingMethod = Const.SEC_ROUNDMETH_DEFAULT;
+//    }
+
+    System.err.println("Rounding method:     " + roundingMethod);
+
+    // <saf>
+    if ( cmdLine.hasOption("saf") )
+    {
+        try
+        {
+        	saf = BigInteger.valueOf( Long.parseLong( cmdLine.getOptionValue("saf") ) );
+        }
+        catch ( Exception exc )
+        {
+          System.err.println("Could not parse <saf>");
+          throw new InvalidCommandLineArgsException();
+        }
+    }
+    // Implicit!
+//    else
+//    {
+//    	saf = Const.SEC_SAF_DEFAULT;
+//    }
+
+    System.err.println("SAF:                 " + saf);
+
+    // <pp>
+    if ( cmdLine.hasOption("pp") )
+    {
+        try
+        {
+        	pp = BigInteger.valueOf( Long.parseLong( cmdLine.getOptionValue("pp") ) );
+        }
+        catch ( Exception exc )
+        {
+          System.err.println("Could not parse <pp>");
+          throw new InvalidCommandLineArgsException();
+        }
+    }
+    // Implicit!
+//    else
+//    {
+//    	pp = Const.SEC_PP_DEFAULT;
+//    }
+
+    System.err.println("PP:                  " + pp);
   }
   
   @Override
@@ -235,5 +384,15 @@ public class GenSec extends CommandLineTool
   {
     HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp( "GenSec", options );
+    
+    System.out.println("");
+    System.out.println("Valid values for <type>:");
+    for ( KMMSecCurr.Type elt : KMMSecCurr.Type.values() )
+      System.out.println(" - " + elt);
+    
+    System.out.println("");
+    System.out.println("Valid values for <rounding-method>:");
+    for ( KMMSecCurr.RoundingMethod elt : KMMSecCurr.RoundingMethod.values() )
+      System.out.println(" - " + elt);
   }
 }

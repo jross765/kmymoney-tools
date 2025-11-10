@@ -37,6 +37,8 @@ public class GetTrxInfo extends CommandLineTool
   
   private static boolean scriptMode = false; // ::TODO
 
+  // -----------------------------------------------------------------
+
   public static void main( String[] args )
   {
     try
@@ -130,22 +132,40 @@ public class GetTrxInfo extends CommandLineTool
       System.out.println("Balance:         " + "ERROR");
     }
     
-//    try
-//    {
-//      System.out.println("Sec/Curr:        '" + trx.getSecCurrID() + "'");
-//    }
-//    catch ( Exception exc )
-//    {
-//      System.out.println("Sec/Curr:        " + "ERROR");
-//    }
-        
     try
     {
-      System.out.println("Description:     '" + trx.getMemo() + "'");
+      System.out.println("Sec/Curr:        " + trx.getQualifSecCurrID());
     }
     catch ( Exception exc )
     {
-      System.out.println("Description:     " + "ERROR");
+      System.out.println("Sec/Curr:        " + "ERROR");
+    }
+        
+    try
+    {
+      System.out.println("Date posted:     " + trx.getDatePosted());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Date posted:     " + "ERROR");
+    }
+    
+    try
+    {
+      System.out.println("Date entered:    " + trx.getDateEntered());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Date entered:    " + "ERROR");
+    }
+        
+    try
+    {
+      System.out.println("Memo:            '" + trx.getMemo() + "'");
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Memo:            " + "ERROR");
     }
 
     // ---

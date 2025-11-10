@@ -23,6 +23,15 @@ from one another in the course of the future releases to come.
 * This repository contains no history before V. 1.7 (cf. notes in parent repo).
 
 ## Major Changes 
+### V. 0.8 &rarr; 0.9
+* New tools: 
+  * GetTrxList
+  * GetTrxSpltList
+
+* Existing tools: 
+  * GenSec: More optional fields; check whether security with given ISIN already exists.
+  * Others: Small improvementsMinor improvements
+
 ### V. 0.7 &rarr; 0.8
 * New tools: 
   * Dump

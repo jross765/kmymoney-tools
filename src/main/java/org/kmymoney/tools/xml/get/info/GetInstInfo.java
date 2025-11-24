@@ -74,7 +74,7 @@ public class GetInstInfo extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file")
       .longOpt("kmymoney-file")
-      .build();
+      .get();
       
     Option optMode = Option.builder("m")
       .required()
@@ -82,27 +82,27 @@ public class GetInstInfo extends CommandLineTool
       .argName("mode")
       .desc("Selection mode")
       .longOpt("mode")
-      .build();
+      .get();
         
     Option optInstID = Option.builder("inst")
       .hasArg()
       .argName("ID")
       .desc("Institution ID")
       .longOpt("institution-id")
-      .build();
+      .get();
           
     Option optName = Option.builder("n")
       .hasArg()
       .argName("name")
       .desc("Name (or part of)")
       .longOpt("name")
-      .build();
+      .get();
           
     // The convenient ones
     Option optShowAcct = Option.builder("sacct")
       .desc("Show accounts")
       .longOpt("show-accounts")
-      .build();
+      .get();
             
     options = new Options();
     options.addOption(optFile);

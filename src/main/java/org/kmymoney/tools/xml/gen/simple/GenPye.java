@@ -63,7 +63,7 @@ public class GenPye extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file (in)")
       .longOpt("kmymoney-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -71,7 +71,7 @@ public class GenPye extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file (out)")
       .longOpt("kmymoney-out-file")
-      .build();
+      .get();
       
     Option optName = Option.builder("n")
       .required()
@@ -79,7 +79,7 @@ public class GenPye extends CommandLineTool
       .argName("name")
       .desc("Payee name")
       .longOpt("name")
-      .build();
+      .get();
     
     // The convenient ones
           

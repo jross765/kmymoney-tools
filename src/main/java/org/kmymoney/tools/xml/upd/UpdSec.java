@@ -77,7 +77,7 @@ private static String          descr = null;
       .argName("file")
       .desc("KMyMoney file (in)")
       .longOpt("kmymoney-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -85,7 +85,7 @@ private static String          descr = null;
       .argName("file")
       .desc("KMyMoney file (out)")
       .longOpt("kmymoney-out-file")
-      .build();
+      .get();
       
     Option optMode = Option.builder("m")
       .required()
@@ -93,35 +93,35 @@ private static String          descr = null;
       .argName("mode")
       .desc("Selection mode")
       .longOpt("mode")
-      .build();
+      .get();
     	        
     Option optSecID = Option.builder("sec")
       .hasArg()
       .argName("ID")
       .desc("Security ID")
       .longOpt("security-id")
-      .build();
+      .get();
     	          
     Option optISIN = Option.builder("is")
       .hasArg()
       .argName("isin")
       .desc("ISIN")
       .longOpt("isin")
-      .build();
+      .get();
             
     Option optName = Option.builder("n")
       .hasArg()
       .argName("name")
       .desc("Security name")
       .longOpt("name")
-      .build();
+      .get();
     
     Option optType = Option.builder("t")
       .hasArg()
       .argName("type")
       .desc("Security type")
       .longOpt("type")
-      .build();
+      .get();
         
     // The convenient ones
     // ::EMPTY

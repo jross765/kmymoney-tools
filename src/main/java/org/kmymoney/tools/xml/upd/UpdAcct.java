@@ -79,7 +79,7 @@ public class UpdAcct extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file (in)")
       .longOpt("kmymoney-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -87,7 +87,7 @@ public class UpdAcct extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file (out)")
       .longOpt("kmymoney-out-file")
-      .build();
+      .get();
       
     Option optID = Option.builder("id")
       .required()
@@ -95,35 +95,35 @@ public class UpdAcct extends CommandLineTool
       .argName("acctid")
       .desc("Account ID")
       .longOpt("account-id")
-      .build();
+      .get();
             
     Option optName = Option.builder("n")
       .hasArg()
       .argName("name")
       .desc("Account name")
       .longOpt("name")
-      .build();
+      .get();
     
     Option optDescr = Option.builder("desc")
       .hasArg()
       .argName("descr")
       .desc("Account description")
       .longOpt("description")
-      .build();
+      .get();
       
     Option optType = Option.builder("t")
       .hasArg()
       .argName("type")
       .desc("Account type")
       .longOpt("type")
-      .build();
+      .get();
         
     Option optSecCurr = Option.builder("sec")
       .hasArg()
       .argName("sec/curr-id")
       .desc("Security/currency ID")
       .longOpt("security-currency-id")
-      .build();
+      .get();
       
     // The convenient ones
     // ::EMPTY

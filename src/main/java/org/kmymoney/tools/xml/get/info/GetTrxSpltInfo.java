@@ -26,6 +26,8 @@ public class GetTrxSpltInfo extends CommandLineTool
   @SuppressWarnings("unused")
   private static final Logger LOGGER = LoggerFactory.getLogger(GetTrxSpltInfo.class);
   
+  // -----------------------------------------------------------------
+
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
@@ -34,6 +36,8 @@ public class GetTrxSpltInfo extends CommandLineTool
   private static String  spltID = null;
   
   private static boolean scriptMode = false; // ::TODO
+
+  // -----------------------------------------------------------------
 
   public static void main( String[] args )
   {
@@ -66,23 +70,23 @@ public class GetTrxSpltInfo extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file")
       .longOpt("kmymoney-file")
-      .build();
+      .get();
       
     Option optTrxID = Option.builder("trx")
       .required()
       .hasArg()
-      .argName("UUID")
+      .argName("trxid")
       .desc("Transaction-ID")
       .longOpt("transaction-id")
-      .build();
+      .get();
       
     Option optSpltID = Option.builder("splt")
       .required()
       .hasArg()
-      .argName("UUID")
+      .argName("spltid")
       .desc("Transaction-split-ID")
       .longOpt("split-id")
-      .build();
+      .get();
     
     // The convenient ones
           
@@ -177,9 +181,10 @@ public class GetTrxSpltInfo extends CommandLineTool
       System.out.println("Payee:          " + "ERROR");
     }
         
+    System.out.println("");
     try
     {
-      System.out.println("Value:          " + splt.getValueFormatted());
+      System.out.println("Value:          " + splt.getValue());
     }
     catch ( Exception exc )
     {
@@ -188,13 +193,79 @@ public class GetTrxSpltInfo extends CommandLineTool
         
     try
     {
-      System.out.println("Quantity:       " + splt.getSharesFormatted());
+      System.out.println("Value (exact):  " + splt.getValueRat());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Value (exact):  " + "ERROR");
+    }
+        
+    try
+    {
+      System.out.println("Value (fmt):    " + splt.getValueFormatted());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Value (fmt):    " + "ERROR");
+    }
+        
+    System.out.println("");
+    try
+    {
+      System.out.println("Shares:         " + splt.getShares());
     }
     catch ( Exception exc )
     {
       System.out.println("Quantity:       " + "ERROR");
     }
         
+    try
+    {
+      System.out.println("Shares (exact): " + splt.getSharesRat());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Shares (exact): " + "ERROR");
+    }
+        
+    try
+    {
+      System.out.println("Shares (fmt):   " + splt.getSharesFormatted());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Shares (fmt):   " + "ERROR");
+    }
+        
+    System.out.println("");
+    try
+    {
+      System.out.println("Price:          " + splt.getPrice());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Price:          " + "ERROR");
+    }
+        
+    try
+    {
+      System.out.println("Price (exact):  " + splt.getPriceRat());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Price (exact):  " + "ERROR");
+    }
+        
+    try
+    {
+      System.out.println("Price (fmt):    " + splt.getPriceFormatted());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Price (fmt):    " + "ERROR");
+    }
+        
+    System.out.println("");
     try
     {
       System.out.println("Memo:           '" + splt.getMemo() + "'");

@@ -72,7 +72,7 @@ public class UpdTag extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file (in)")
       .longOpt("kmymoney-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -80,7 +80,7 @@ public class UpdTag extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file (out)")
       .longOpt("kmymoney-out-file")
-      .build();
+      .get();
       
     Option optID = Option.builder("id")
       .required()
@@ -88,28 +88,28 @@ public class UpdTag extends CommandLineTool
       .argName("tagid")
       .desc("Tag ID")
       .longOpt("Tag-id")
-      .build();
+      .get();
             
     Option optName = Option.builder("nam")
       .hasArg()
       .argName("name")
       .desc("Tag name")
       .longOpt("name")
-      .build();
+      .get();
     
     Option optDescr = Option.builder("desc")
       .hasArg()
       .argName("descr")
       .desc("Tag description")
       .longOpt("description")
-      .build();
+      .get();
       
     Option optColor = Option.builder("c")
       .hasArg()
       .argName("descr")
       .desc("Tag color")
       .longOpt("color")
-      .build();
+      .get();
     	      
     // The convenient ones
     // ::EMPTY

@@ -70,20 +70,20 @@ public class GetCurrInfo extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file")
       .longOpt("kmymoney-file")
-      .build();
+      .get();
       
     Option optSymbol = Option.builder("s")
       .hasArg()
       .argName("symbol")
       .desc("Symbol (ISO 4127)")
       .longOpt("symbol")
-      .build();
+      .get();
           
     // The convenient ones
     Option optShowQuote = Option.builder("squt")
       .desc("Show quotes")
       .longOpt("show-quotes")
-      .build();
+      .get();
             
     options = new Options();
     options.addOption(optFile);

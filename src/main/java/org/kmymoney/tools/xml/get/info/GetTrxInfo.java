@@ -27,6 +27,8 @@ public class GetTrxInfo extends CommandLineTool
   @SuppressWarnings("unused")
   private static final Logger LOGGER = LoggerFactory.getLogger(GetTrxInfo.class);
   
+  // -----------------------------------------------------------------
+
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
@@ -70,21 +72,21 @@ public class GetTrxInfo extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file")
       .longOpt("kmymoney-file")
-      .build();
+      .get();
       
     Option optTrxID = Option.builder("trx")
       .required()
       .hasArg()
-      .argName("UUID")
+      .argName("trxid")
       .desc("Transaction-ID")
       .longOpt("transaction-id")
-      .build();
+      .get();
     
     // The convenient ones
     Option optShowSplt = Option.builder("ssplt")
       .desc("Show splits")
       .longOpt("show-splits")
-      .build();
+      .get();
           
     options = new Options();
     options.addOption(optFile);
@@ -123,15 +125,35 @@ public class GetTrxInfo extends CommandLineTool
       System.out.println("toString:        " + "ERROR");
     }
     
+    System.out.println("");
     try
     {
-      System.out.println("Balance:         " + trx.getBalanceFormatted());
+      System.out.println("Balance:         " + trx.getBalance());
     }
     catch ( Exception exc )
     {
       System.out.println("Balance:         " + "ERROR");
     }
     
+    try
+    {
+      System.out.println("Balance (exact): " + trx.getBalanceRat());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Balance (exact): " + "ERROR");
+    }
+    
+    try
+    {
+      System.out.println("Balance (fmt):   " + trx.getBalanceFormatted());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Balance (fmt):   " + "ERROR");
+    }
+    
+    System.out.println("");
     try
     {
       System.out.println("Sec/Curr:        " + trx.getQualifSecCurrID());

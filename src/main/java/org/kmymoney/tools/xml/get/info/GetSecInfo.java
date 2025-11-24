@@ -80,7 +80,7 @@ public class GetSecInfo extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file")
       .longOpt("kmymoney-file")
-      .build();
+      .get();
       
     Option optMode = Option.builder("m")
       .required()
@@ -88,7 +88,7 @@ public class GetSecInfo extends CommandLineTool
       .argName("mode")
       .desc("Selection mode")
       .longOpt("mode")
-      .build();
+      .get();
         
     Option optSecID = Option.builder("sec")
       .hasArg()
@@ -96,7 +96,7 @@ public class GetSecInfo extends CommandLineTool
       .desc("Security ID " + 
       		"(for <mode> = " + SecSelectMode.ID + " only)")
       .longOpt("security-id")
-      .build();
+      .get();
           
     Option optISIN = Option.builder("is")
       .hasArg()
@@ -104,7 +104,7 @@ public class GetSecInfo extends CommandLineTool
       .desc("ISIN " + 
     		"(for <mode> = " + SecSelectMode.ISIN + " only)")
       .longOpt("isin")
-      .build();
+      .get();
         
     Option optName = Option.builder("n")
       .hasArg()
@@ -112,13 +112,13 @@ public class GetSecInfo extends CommandLineTool
       .desc("Name (full) " + 
       		"(for <mode> = " + SecSelectMode.NAME + " only)")
       .longOpt("name")
-      .build();
+      .get();
           
     // The convenient ones
     Option optShowQuote = Option.builder("squt")
       .desc("Show quotes")
       .longOpt("show-quotes")
-      .build();
+      .get();
             
     options = new Options();
     options.addOption(optFile);

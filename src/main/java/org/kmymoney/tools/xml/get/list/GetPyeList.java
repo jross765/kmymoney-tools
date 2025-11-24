@@ -67,7 +67,7 @@ public class GetPyeList extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file")
       .longOpt("kmymoney-file")
-      .build();
+      .get();
       
     Option optMode = Option.builder("m")
       .required()
@@ -75,14 +75,14 @@ public class GetPyeList extends CommandLineTool
       .argName("Mode")
       .desc("Mode")
       .longOpt("mode")
-      .build();
+      .get();
     	    	      
     Option optName = Option.builder("n")
       .hasArg()
       .argName("name")
       .desc("Payee name (part of)")
       .longOpt("name")
-      .build();
+      .get();
     	      
     // The convenient ones
     // ::EMPTY

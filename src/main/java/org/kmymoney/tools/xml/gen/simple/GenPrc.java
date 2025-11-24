@@ -79,7 +79,7 @@ public class GenPrc extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file (in)")
       .longOpt("kmymoney-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -87,7 +87,7 @@ public class GenPrc extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file (out)")
       .longOpt("kmymoney-out-file")
-      .build();
+      .get();
       
     Option optFromSecCurr= Option.builder("f")
       .required()
@@ -95,7 +95,7 @@ public class GenPrc extends CommandLineTool
       .argName("sec/curr")
       .desc("From-commodity/currency")
       .longOpt("from-sec-curr")
-      .build();
+      .get();
           
     Option optToCurr = Option.builder("t")
       .required()
@@ -103,14 +103,14 @@ public class GenPrc extends CommandLineTool
       .argName("curr")
       .desc("To-currency")
       .longOpt("to-curr")
-      .build();
+      .get();
     
     Option optDateFormat = Option.builder("df")
       .hasArg()
       .argName("date-format")
       .desc("Date format")
       .longOpt("date-format")
-      .build();
+      .get();
             
     Option optDate = Option.builder("dat")
       .required()
@@ -118,7 +118,7 @@ public class GenPrc extends CommandLineTool
       .argName("date")
       .desc("Date")
       .longOpt("date")
-      .build();
+      .get();
           
     Option optValue = Option.builder("v")
       .required()
@@ -126,7 +126,7 @@ public class GenPrc extends CommandLineTool
       .argName("value")
       .desc("Value")
       .longOpt("value")
-      .build();
+      .get();
             
     // The convenient ones
     Option optSource = Option.builder("src")
@@ -134,7 +134,7 @@ public class GenPrc extends CommandLineTool
       .argName("source")
       .desc("Source")
       .longOpt("source")
-      .build();
+      .get();
           
     options = new Options();
     options.addOption(optFileIn);

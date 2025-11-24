@@ -74,7 +74,7 @@ public class GetPyeInfo extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file")
       .longOpt("kmymoney-file")
-      .build();
+      .get();
       
     Option optMode = Option.builder("m")
       .required()
@@ -82,27 +82,27 @@ public class GetPyeInfo extends CommandLineTool
       .argName("mode")
       .desc("Selection mode")
       .longOpt("mode")
-      .build();
+      .get();
         
     Option optPyeID = Option.builder("pye")
       .hasArg()
       .argName("ID")
       .desc("Payee ID")
       .longOpt("payee-id")
-      .build();
+      .get();
           
     Option optName = Option.builder("n")
       .hasArg()
       .argName("name")
       .desc("Name (or part of)")
       .longOpt("name")
-      .build();
+      .get();
           
     // The convenient ones
     Option optShowTrx = Option.builder("strx")
       .desc("Show transactions")
       .longOpt("show-transactions")
-      .build();
+      .get();
             
     options = new Options();
     options.addOption(optFile);

@@ -79,7 +79,7 @@ public class GenTrx extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file (in)")
       .longOpt("kmymoney-in-file")
-      .build();
+      .get();
         
     Option optFileOut = Option.builder("of")
       .required()
@@ -87,7 +87,7 @@ public class GenTrx extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file (out)")
       .longOpt("kmymoney-out-file")
-      .build();
+      .get();
         
     Option optFromAcctID = Option.builder("facct")
       .required()
@@ -95,7 +95,7 @@ public class GenTrx extends CommandLineTool
       .argName("acctid")
       .desc("Account-ID to be booked from")
       .longOpt("from-account-id")
-      .build();
+      .get();
       
     Option optToAcctID = Option.builder("tacct")
       .required()
@@ -103,7 +103,7 @@ public class GenTrx extends CommandLineTool
       .argName("acctid")
       .desc("Account-ID to be booked to")
       .longOpt("to-account-id")
-      .build();
+      .get();
       
     Option optAmount = Option.builder("amt")
       .required()
@@ -111,7 +111,7 @@ public class GenTrx extends CommandLineTool
       .argName("amount")
       .desc("Amount")
       .longOpt("amount")
-      .build();
+      .get();
               
     Option optQuantity = Option.builder("qty")
       .required()
@@ -119,7 +119,7 @@ public class GenTrx extends CommandLineTool
       .argName("quantity")
       .desc("Quantity")
       .longOpt("quantity")
-      .build();
+      .get();
                 
     Option optDatePosted = Option.builder("dtp")
       .required()
@@ -127,7 +127,7 @@ public class GenTrx extends CommandLineTool
       .argName("datetime")
       .desc("Date posted")
       .longOpt("date-posted")
-      .build();
+      .get();
             
     // The convenient ones
     Option optDescr = Option.builder("dscr")
@@ -135,14 +135,14 @@ public class GenTrx extends CommandLineTool
       .argName("descr")
       .desc("Description")
       .longOpt("description")
-      .build();
+      .get();
               
     Option optPye = Option.builder("pye")
       .hasArg()
       .argName("pyeid")
       .desc("Payeee-ID to be booked against")
       .longOpt("payee-id")
-      .build();
+      .get();
     	      
         
     options = new Options();

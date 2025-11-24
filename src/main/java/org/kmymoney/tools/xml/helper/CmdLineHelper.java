@@ -90,7 +90,7 @@ public class CmdLineHelper
     try
     {
       if ( dateFormat == Helper.DateFormat.ISO_8601 )
-        datum = LocalDateHelpers.parseLocalDate(cmdLine.getOptionValue(argName), DateHelpers.DATE_FORMAT_2);
+        datum = LocalDateHelpers.parseLocalDate(cmdLine.getOptionValue(argName), DateHelpers.DATE_FORMAT_ISO);
       else if ( dateFormat == Helper.DateFormat.DE )
         datum = LocalDateHelpers.parseLocalDate(cmdLine.getOptionValue(argName));
     }
@@ -111,7 +111,7 @@ public class CmdLineHelper
 		try
 		{
 			if ( dateFormat == Helper.DateFormat.ISO_8601 )
-				datum = LocalDateHelpers.parseLocalDate( arg, DateHelpers.DATE_FORMAT_2 );
+				datum = LocalDateHelpers.parseLocalDate( arg, DateHelpers.DATE_FORMAT_ISO );
 			else if ( dateFormat == Helper.DateFormat.DE )
 				datum = LocalDateHelpers.parseLocalDate( arg );
 		} catch ( Exception exc )

@@ -70,7 +70,7 @@ public class GetPrcList extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file")
       .longOpt("kmymoney-file")
-      .build();
+      .get();
       
     Option optMode = Option.builder("m")
       .required()
@@ -78,28 +78,28 @@ public class GetPrcList extends CommandLineTool
       .argName("mode")
       .desc("Security/currency selection mode")
       .longOpt("mode")
-      .build();
+      .get();
     	        
     Option optFromSecCurr= Option.builder("fr")
       .hasArg()
       .argName("qualif-ID")
       .desc("From-security/currency qualified ID")
       .longOpt("from-sec-curr")
-      .build();
+      .get();
     	    	          
     Option optFromISIN = Option.builder("is")
       .hasArg()
       .argName("isin")
       .desc("From-security/currency ISIN")
       .longOpt("isin")
-      .build();
+      .get();
     	        
     Option optFromName = Option.builder("fn")
       .hasArg()
       .argName("name")
       .desc("From-security/currency Name (or part of)")
       .longOpt("name")
-      .build();
+      .get();
     	          
     // The convenient ones
     // ::EMPTY

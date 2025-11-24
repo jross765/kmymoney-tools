@@ -10,9 +10,10 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.log4j.Logger;
 import org.kmymoney.api.write.impl.KMyMoneyWritableFileImpl;
 import org.kmymoney.tools.CommandLineTool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
@@ -20,7 +21,7 @@ import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 public class TestLoadSave extends CommandLineTool
 {
   // Logger
-  private static Logger logger = Logger.getLogger(TestLoadSave.class);
+  private static Logger logger = LoggerFactory.getLogger(TestLoadSave.class);
   
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
@@ -61,7 +62,7 @@ public class TestLoadSave extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file (in)")
       .longOpt("kmymoney-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -69,7 +70,7 @@ public class TestLoadSave extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file (out)")
       .longOpt("kmymoney-out-file")
-      .build();
+      .get();
                 
     // The convenient ones
     // ::EMPTY

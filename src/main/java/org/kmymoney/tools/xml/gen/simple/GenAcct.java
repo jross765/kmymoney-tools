@@ -75,7 +75,7 @@ public class GenAcct extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file (in)")
       .longOpt("kmymoney-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -83,7 +83,7 @@ public class GenAcct extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file (out)")
       .longOpt("kmymoney-out-file")
-      .build();
+      .get();
       
     Option optName = Option.builder("n")
       .required()
@@ -91,7 +91,7 @@ public class GenAcct extends CommandLineTool
       .argName("name")
       .desc("Account name")
       .longOpt("name")
-      .build();
+      .get();
     
     Option optType = Option.builder("t")
       .required()
@@ -99,7 +99,7 @@ public class GenAcct extends CommandLineTool
       .argName("type")
       .desc("Account type")
       .longOpt("type")
-      .build();
+      .get();
     	    
     Option optSecCurr = Option.builder("sc")
       .required()
@@ -107,7 +107,7 @@ public class GenAcct extends CommandLineTool
       .argName("sec/curr")
       .desc("Account currency: a (qualified) security or a currency ID")
       .longOpt("security-currency")
-      .build();
+      .get();
     	    
     Option optParent = Option.builder("p")
       .required()
@@ -115,7 +115,7 @@ public class GenAcct extends CommandLineTool
       .argName("acctid")
       .desc("Parent account ID")
       .longOpt("parent")
-      .build();
+      .get();
     	    
     // The convenient ones
           

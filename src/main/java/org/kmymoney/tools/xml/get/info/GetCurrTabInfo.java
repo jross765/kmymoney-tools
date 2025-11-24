@@ -63,7 +63,7 @@ public class GetCurrTabInfo extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file")
       .longOpt("kmymoney-file")
-      .build();
+      .get();
           
     // The convenient ones
     // ::EMPTY

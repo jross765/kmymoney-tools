@@ -111,7 +111,7 @@ public class GetTrxList extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file")
       .longOpt("kmymoney-file")
-      .build();
+      .get();
       
     // The convenient ones
     Option optAction = Option.builder("act")
@@ -119,14 +119,14 @@ public class GetTrxList extends CommandLineTool
       .argName("act")
       .desc("Action (split level)")
       .longOpt("action")
-      .build();
+      .get();
     	          
     Option optReconState = Option.builder("stat")
       .hasArg()
       .argName("stat")
       .desc("Reconciliation state (split level)")
       .longOpt("recon-state")
-      .build();
+      .get();
     
     // ---
     
@@ -135,14 +135,14 @@ public class GetTrxList extends CommandLineTool
       .argName("acct")
       .desc("Account ID (split level)")
       .longOpt("account-id")
-      .build();
+      .get();
     	    	          
     Option optPye = Option.builder("pye")
       .hasArg()
       .argName("pye")
       .desc("Payee ID (split level)")
       .longOpt("payee-id")
-      .build();
+      .get();
     
     // ---
     
@@ -151,14 +151,14 @@ public class GetTrxList extends CommandLineTool
       .argName("date")
       .desc("From date posted")
       .longOpt("from-date-posted")
-      .build();
+      .get();
     
     Option optDatePostedTo = Option.builder("tdp")
       .hasArg()
       .argName("date")
       .desc("To date posted")
       .longOpt("to-date-posted")
-      .build();
+      .get();
     
     // ---
     
@@ -167,14 +167,14 @@ public class GetTrxList extends CommandLineTool
       .argName("date")
       .desc("From date entered")
       .longOpt("from-date-entered")
-      .build();
+      .get();
     
     Option optDateEnteredTo = Option.builder("tde")
       .hasArg()
       .argName("date")
       .desc("To date entered")
       .longOpt("to-date-entered")
-      .build();
+      .get();
     
     // ---
     
@@ -183,14 +183,14 @@ public class GetTrxList extends CommandLineTool
       .argName("value")
       .desc("From value (split level)")
       .longOpt("from-value")
-      .build();
+      .get();
     	          
     Option optValueTo = Option.builder("tv")
       .hasArg()
       .argName("value")
       .desc("To value (split level)")
       .longOpt("to-value")
-      .build();
+      .get();
     	    	          
     // ---
     
@@ -199,14 +199,14 @@ public class GetTrxList extends CommandLineTool
       .argName("no")
       .desc("From no. of shares (split level)")
       .longOpt("from-nof-shares")
-      .build();
+      .get();
     	          
     Option optNofSharesTo = Option.builder("tnsh")
       .hasArg()
       .argName("no")
       .desc("To no. of shares (split level)")
       .longOpt("to-nof-shares")
-      .build();
+      .get();
     	    	          
     // ---
     
@@ -215,14 +215,14 @@ public class GetTrxList extends CommandLineTool
       .argName("no")
       .desc("From no. of splits")
       .longOpt("from-nof-splits")
-      .build();
+      .get();
     	          
     Option optNofSplitsTo = Option.builder("tnsp")
       .hasArg()
       .argName("no")
       .desc("To no. of splits")
       .longOpt("to-nof-splits")
-      .build();
+      .get();
     
     // ---
     
@@ -231,26 +231,26 @@ public class GetTrxList extends CommandLineTool
       .argName("str")
       .desc("Memo (transaction level)s")
       .longOpt("memo-transaction")
-      .build();
+      .get();
     	          
     Option optMemoSplt = Option.builder("msplt")
       .hasArg()
       .argName("str")
       .desc("Memo (split level)")
       .longOpt("memo-split")
-      .build();
+      .get();
     
     // ---
     
     Option optShowFilter = Option.builder("sflt")
       .desc("Show filter (for debugging purposes)")
       .longOpt("show-filter")
-      .build();
+      .get();
     	    	    
     Option optShowSplits = Option.builder("ssplt")
       .desc("Show splits")
       .longOpt("show-splits")
-      .build();
+      .get();
     	    
     	    	          
     options = new Options();
@@ -498,7 +498,7 @@ public class GetTrxList extends CommandLineTool
     {
         try
         {
-        	datePostedFrom = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("from-date-posted"), DateHelpers.DATE_FORMAT_2);
+        	datePostedFrom = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("from-date-posted"), DateHelpers.DATE_FORMAT_ISO);
         }
         catch ( Exception exc )
         {
@@ -520,7 +520,7 @@ public class GetTrxList extends CommandLineTool
     {
         try
         {
-        	datePostedTo = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("to-date-posted"), DateHelpers.DATE_FORMAT_2);
+        	datePostedTo = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("to-date-posted"), DateHelpers.DATE_FORMAT_ISO);
         }
         catch ( Exception exc )
         {
@@ -544,7 +544,7 @@ public class GetTrxList extends CommandLineTool
     {
         try
         {
-        	dateEnteredFrom = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("from-date-entered"), DateHelpers.DATE_FORMAT_2);
+        	dateEnteredFrom = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("from-date-entered"), DateHelpers.DATE_FORMAT_ISO);
         }
         catch ( Exception exc )
         {
@@ -566,7 +566,7 @@ public class GetTrxList extends CommandLineTool
     {
         try
         {
-        	dateEnteredTo = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("to-date-entered"), DateHelpers.DATE_FORMAT_2);
+        	dateEnteredTo = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("to-date-entered"), DateHelpers.DATE_FORMAT_ISO);
         }
         catch ( Exception exc )
         {

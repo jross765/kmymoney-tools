@@ -83,7 +83,7 @@ public class GenSec extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file (in)")
       .longOpt("kmymoney-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -91,7 +91,7 @@ public class GenSec extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file (out)")
       .longOpt("kmymoney-out-file")
-      .build();
+      .get();
       
     Option optISIN = Option.builder("is")
       .required()
@@ -99,7 +99,7 @@ public class GenSec extends CommandLineTool
       .argName("isin")
       .desc("ISIN")
       .longOpt("isin")
-      .build();
+      .get();
           
     Option optName = Option.builder("n")
       .required()
@@ -107,7 +107,7 @@ public class GenSec extends CommandLineTool
       .argName("name")
       .desc("Name")
       .longOpt("name")
-      .build();
+      .get();
     
     // The convenient ones
     Option optType = Option.builder("t")
@@ -115,35 +115,35 @@ public class GenSec extends CommandLineTool
       .argName("type")
       .desc("Type (default " + Const.SEC_TYPE_DEFAULT + ")")
       .longOpt("type")
-      .build();
+      .get();
     
     Option optSymbol = Option.builder("sy")
       .hasArg()
       .argName("symb")
       .desc("Symbol (ticker)")
       .longOpt("symbol")
-      .build();
+      .get();
 
     Option optRoundMeth= Option.builder("rm")
       .hasArg()
       .argName("meth")
       .desc("Rounding method (default " + Const.SEC_ROUNDMETH_DEFAULT + ")")
       .longOpt("rounding-method")
-      .build();
+      .get();
 
     Option optSAF = Option.builder("saf")
       .hasArg()
       .argName("num")
       .desc("SAF (default " + Const.SEC_SAF_DEFAULT + ")")
       .longOpt("saf")
-      .build();
+      .get();
 
     Option optPP = Option.builder("pp")
       .hasArg()
       .argName("num")
       .desc("PP (default " + Const.SEC_PP_DEFAULT + ")")
       .longOpt("pp")
-      .build();
+      .get();
 
           
     options = new Options();

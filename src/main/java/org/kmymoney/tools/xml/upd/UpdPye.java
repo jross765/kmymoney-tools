@@ -75,7 +75,7 @@ public class UpdPye extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file (in)")
       .longOpt("kmymoney-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -83,7 +83,7 @@ public class UpdPye extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file (out)")
       .longOpt("kmymoney-out-file")
-      .build();
+      .get();
       
     Option optID = Option.builder("id")
       .required()
@@ -91,28 +91,28 @@ public class UpdPye extends CommandLineTool
       .argName("pyeid")
       .desc("Payee ID")
       .longOpt("payee-id")
-      .build();
+      .get();
             
     Option optNumber = Option.builder("num")
       .hasArg()
       .argName("number")
       .desc("Payee number")
       .longOpt("number")
-      .build();
+      .get();
     	    
     Option optName = Option.builder("nam")
       .hasArg()
       .argName("name")
       .desc("Payee name")
       .longOpt("name")
-      .build();
+      .get();
     
     Option optDescr = Option.builder("desc")
       .hasArg()
       .argName("descr")
       .desc("Payee description")
       .longOpt("description")
-      .build();
+      .get();
       
     // The convenient ones
     // ::EMPTY

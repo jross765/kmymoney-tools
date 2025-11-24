@@ -94,7 +94,7 @@ public class GetTrxSpltList extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file")
       .longOpt("kmymoney-file")
-      .build();
+      .get();
       
     // The convenient ones
     Option optAction = Option.builder("act")
@@ -102,14 +102,14 @@ public class GetTrxSpltList extends CommandLineTool
       .argName("act")
       .desc("Action (split level)")
       .longOpt("action")
-      .build();
+      .get();
     	          
     Option optReconState = Option.builder("stat")
       .hasArg()
       .argName("stat")
       .desc("Reconciliation state (split level)")
       .longOpt("recon-state")
-      .build();
+      .get();
     
     // ---
     
@@ -118,14 +118,14 @@ public class GetTrxSpltList extends CommandLineTool
       .argName("acct")
       .desc("Account ID (split level)")
       .longOpt("account-id")
-      .build();
+      .get();
     	    	          
     Option optPye = Option.builder("pye")
       .hasArg()
       .argName("pye")
       .desc("Payee ID (split level)")
       .longOpt("payee-id")
-      .build();
+      .get();
     
     // ---
     
@@ -134,14 +134,14 @@ public class GetTrxSpltList extends CommandLineTool
       .argName("value")
       .desc("From value (split level)")
       .longOpt("from-value")
-      .build();
+      .get();
     	          
     Option optValueTo = Option.builder("tv")
       .hasArg()
       .argName("value")
       .desc("To value (split level)")
       .longOpt("to-value")
-      .build();
+      .get();
     	    	          
     // ---
     
@@ -150,14 +150,14 @@ public class GetTrxSpltList extends CommandLineTool
       .argName("no")
       .desc("From no. of shares (split level)")
       .longOpt("from-nof-shares")
-      .build();
+      .get();
     	          
     Option optNofSharesTo = Option.builder("tnsh")
       .hasArg()
       .argName("no")
       .desc("To no. of shares (split level)")
       .longOpt("to-nof-shares")
-      .build();
+      .get();
     	    	          
     // ---
     
@@ -166,19 +166,19 @@ public class GetTrxSpltList extends CommandLineTool
       .argName("str")
       .desc("Memo (split level)")
       .longOpt("memo-split")
-      .build();
+      .get();
     
     // ---
     
     Option optShowFilter = Option.builder("sflt")
       .desc("Show filter (for debugging purposes)")
       .longOpt("show-filter")
-      .build();
+      .get();
     	    	    
     Option optShowSplits = Option.builder("ssplt")
       .desc("Show splits")
       .longOpt("show-splits")
-      .build();
+      .get();
     	    
     // ::TODO
     // - memo (split, part of)

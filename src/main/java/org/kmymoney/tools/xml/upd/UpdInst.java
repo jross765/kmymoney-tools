@@ -70,7 +70,7 @@ public class UpdInst extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file (in)")
       .longOpt("kmymoney-in-file")
-      .build();
+      .get();
           
     Option optFileOut = Option.builder("of")
       .required()
@@ -78,7 +78,7 @@ public class UpdInst extends CommandLineTool
       .argName("file")
       .desc("KMyMoney file (out)")
       .longOpt("kmymoney-out-file")
-      .build();
+      .get();
       
     Option optID = Option.builder("id")
       .required()
@@ -86,21 +86,21 @@ public class UpdInst extends CommandLineTool
       .argName("instid")
       .desc("Institution ID")
       .longOpt("institution-id")
-      .build();
+      .get();
             
     Option optNumber = Option.builder("num")
       .hasArg()
       .argName("number")
       .desc("Institution number")
       .longOpt("number")
-      .build();
+      .get();
     	    
     Option optName = Option.builder("nam")
       .hasArg()
       .argName("name")
       .desc("Institution name")
       .longOpt("name")
-      .build();
+      .get();
     
     // The convenient ones
     // ::EMPTY

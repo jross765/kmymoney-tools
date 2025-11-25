@@ -35,7 +35,7 @@ public class UpdSec extends CommandLineTool
   private static String         kmmInFileName  = null;
   private static String         kmmOutFileName = null;
 
-  private static Helper.CmdtySecMode mode        = null;
+  private static Helper.CmdtySecSingleSelMode mode        = null;
   private static KMMSecID            secID       = null;
   private static String              isin        = null;
   
@@ -149,7 +149,7 @@ private static String          descr = null;
 
     KMyMoneyWritableSecurity sec = null;
     
-    if ( mode == Helper.CmdtySecMode.ID )
+    if ( mode == Helper.CmdtySecSingleSelMode.ID )
     {
       sec = kmmFile.getWritableSecurityByID(secID);
       if ( sec == null )
@@ -158,7 +158,7 @@ private static String          descr = null;
         throw new NoEntryFoundException();
       }
     }
-    else if ( mode == Helper.CmdtySecMode.ISIN )
+    else if ( mode == Helper.CmdtySecSingleSelMode.ISIN )
     {
       sec = kmmFile.getWritableSecurityByCode(isin);
       if ( sec == null )
@@ -239,11 +239,11 @@ private static String          descr = null;
     // <mode>
     try
     {
-      mode = Helper.CmdtySecMode.valueOf(cmdLine.getOptionValue("mode"));
+      mode = Helper.CmdtySecSingleSelMode.valueOf(cmdLine.getOptionValue("mode"));
       
-      if ( mode != Helper.CmdtySecMode.NAME )
+      if ( mode != Helper.CmdtySecSingleSelMode.NAME )
       {
-        System.err.println("<mode> '" + Helper.CmdtySecMode.NAME + "' must not be used here");
+        System.err.println("<mode> '" + Helper.CmdtySecSingleSelMode.NAME + "' must not be used here");
         throw new InvalidCommandLineArgsException();
       }
     }
@@ -258,9 +258,9 @@ private static String          descr = null;
     // <security-id>
     if ( cmdLine.hasOption("security-id") )
     {
-      if ( mode != Helper.CmdtySecMode.ID )
+      if ( mode != Helper.CmdtySecSingleSelMode.ID )
       {
-        System.err.println("<security-id> must only be set with <mode> = '" + Helper.CmdtySecMode.ID.toString() + "'");
+        System.err.println("<security-id> must only be set with <mode> = '" + Helper.CmdtySecSingleSelMode.ID.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
       
@@ -276,9 +276,9 @@ private static String          descr = null;
     }
     else
     {
-      if ( mode == Helper.CmdtySecMode.ID )
+      if ( mode == Helper.CmdtySecSingleSelMode.ID )
       {
-        System.err.println("<security-id> must be set with <mode> = '" + Helper.CmdtySecMode.ID.toString() + "'");
+        System.err.println("<security-id> must be set with <mode> = '" + Helper.CmdtySecSingleSelMode.ID.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
     }
@@ -288,9 +288,9 @@ private static String          descr = null;
     // <isin>
     if ( cmdLine.hasOption("isin") )
     {
-      if ( mode != Helper.CmdtySecMode.ISIN )
+      if ( mode != Helper.CmdtySecSingleSelMode.ISIN )
       {
-        System.err.println("<isin> must only be set with <mode> = '" + Helper.CmdtySecMode.ISIN.toString() + "'");
+        System.err.println("<isin> must only be set with <mode> = '" + Helper.CmdtySecSingleSelMode.ISIN.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
       
@@ -306,9 +306,9 @@ private static String          descr = null;
     }
     else
     {
-      if ( mode == Helper.CmdtySecMode.ISIN )
+      if ( mode == Helper.CmdtySecSingleSelMode.ISIN )
       {
-        System.err.println("<isin> must be set with <mode> = '" + Helper.CmdtySecMode.ISIN.toString() + "'");
+        System.err.println("<isin> must be set with <mode> = '" + Helper.CmdtySecSingleSelMode.ISIN.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
     }

@@ -1,15 +1,16 @@
 package org.kmymoney.tools.xml.get.list;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.kmymoney.api.read.KMMSecCurr;
 import org.kmymoney.api.read.KMyMoneySecurity;
@@ -32,7 +33,7 @@ public class GetSecList extends CommandLineTool
   private static Options options;
   
   private static String                kmmFileName = null;
-  private static Helper.SecListMode    mode        = null; 
+  private static Helper.CmdtySecListSelMode    mode        = null; 
   private static KMMSecCurr.Type       type        = null;
   private static String                name        = null;
   
@@ -113,11 +114,11 @@ public class GetSecList extends CommandLineTool
     KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName));
     
     Collection<KMyMoneySecurity> secList = null; 
-    if ( mode == Helper.SecListMode.ALL )
+    if ( mode == Helper.CmdtySecListSelMode.ALL )
         secList = kmmFile.getSecurities();
-    else if ( mode == Helper.SecListMode.TYPE )
+    else if ( mode == Helper.CmdtySecListSelMode.TYPE )
     	secList = kmmFile.getSecuritiesByType(type);
-    else if ( mode == Helper.SecListMode.NAME )
+    else if ( mode == Helper.CmdtySecListSelMode.NAME )
     	secList = kmmFile.getSecuritiesByName(name, true);
 
     if ( secList.size() == 0 ) 
@@ -169,7 +170,7 @@ public class GetSecList extends CommandLineTool
     // <mode>
     try
     {
-      mode = Helper.SecListMode.valueOf(cmdLine.getOptionValue("mode"));
+      mode = Helper.CmdtySecListSelMode.valueOf(cmdLine.getOptionValue("mode"));
     }
     catch ( Exception exc )
     {
@@ -180,9 +181,9 @@ public class GetSecList extends CommandLineTool
     // <type>
     if ( cmdLine.hasOption( "type" ) )
     {
-    	if ( mode != Helper.SecListMode.TYPE )
+    	if ( mode != Helper.CmdtySecListSelMode.TYPE )
     	{
-            System.err.println("Error: <type> must only be set with <mode> = '" + Helper.SecListMode.TYPE + "'");
+            System.err.println("Error: <type> must only be set with <mode> = '" + Helper.CmdtySecListSelMode.TYPE + "'");
             throw new InvalidCommandLineArgsException();
     	}
     	
@@ -198,9 +199,9 @@ public class GetSecList extends CommandLineTool
     }
     else
     {
-    	if ( mode == Helper.SecListMode.TYPE )
+    	if ( mode == Helper.CmdtySecListSelMode.TYPE )
     	{
-            System.err.println("Error: <type> must be set with <mode> = '" + Helper.SecListMode.TYPE + "'");
+            System.err.println("Error: <type> must be set with <mode> = '" + Helper.CmdtySecListSelMode.TYPE + "'");
             throw new InvalidCommandLineArgsException();
     	}
     	
@@ -213,9 +214,9 @@ public class GetSecList extends CommandLineTool
     // <name>
     if ( cmdLine.hasOption( "name" ) )
     {
-    	if ( mode != Helper.SecListMode.NAME )
+    	if ( mode != Helper.CmdtySecListSelMode.NAME )
     	{
-            System.err.println("Error: <name> must only be set with <mode> = '" + Helper.SecListMode.NAME + "'");
+            System.err.println("Error: <name> must only be set with <mode> = '" + Helper.CmdtySecListSelMode.NAME + "'");
             throw new InvalidCommandLineArgsException();
     	}
     	
@@ -231,9 +232,9 @@ public class GetSecList extends CommandLineTool
     }
     else
     {
-    	if ( mode == Helper.SecListMode.NAME )
+    	if ( mode == Helper.CmdtySecListSelMode.NAME )
     	{
-            System.err.println("Error: <name> must be set with <mode> = '" + Helper.SecListMode.NAME + "'");
+            System.err.println("Error: <name> must be set with <mode> = '" + Helper.CmdtySecListSelMode.NAME + "'");
             throw new InvalidCommandLineArgsException();
     	}
     	
@@ -247,12 +248,20 @@ public class GetSecList extends CommandLineTool
   @Override
   protected void printUsage()
   {
-    HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp( "GetSecList", options );
+	HelpFormatter formatter = HelpFormatter.builder().get();
+	try
+	{
+		formatter.printHelp( "GetSecList", "", options, "", true );
+	}
+	catch ( IOException e )
+	{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
     
     System.out.println("");
     System.out.println("Valid values for <mode>:");
-    for ( Helper.SecListMode elt : Helper.SecListMode.values() )
+    for ( Helper.CmdtySecListSelMode elt : Helper.CmdtySecListSelMode.values() )
       System.out.println(" - " + elt);
 
     System.out.println("");

@@ -1,21 +1,7 @@
 package org.kmymoney.tools.xml.get.list;
 
-public class Helper
+public class Helper extends xyz.schnorxoborx.base.cmdlinetools.Helper
 {
-	public enum AcctListMode
-	{
-		TYPE,
-		NAME,
-		ALL
-	}
-
-	public enum SecListMode
-	{
-		TYPE,
-		NAME,
-		ALL
-	}
-
 	public enum PyeListMode
 	{
 		NAME,

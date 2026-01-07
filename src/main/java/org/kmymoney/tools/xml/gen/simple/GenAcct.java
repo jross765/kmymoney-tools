@@ -138,7 +138,7 @@ public class GenAcct extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    KMyMoneyWritableFileImpl kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName));
+    KMyMoneyWritableFileImpl kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName), true);
 
     if ( ! isPlausiCheckOK(kmmFile) ) {
     	System.err.println("Did not pass plausi checks");

@@ -168,7 +168,7 @@ public class GenSec extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    KMyMoneyWritableFileImpl kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName));
+    KMyMoneyWritableFileImpl kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName), true);
 
     // 1) Check whether there already is a security with that ISIN
     KMyMoneySecurity checkSec = kmmFile.getSecurityByCode( isin );

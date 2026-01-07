@@ -82,7 +82,7 @@ public class GetCurrTabInfo extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName));
+    KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName), true);
 
     ComplexPriceTable tab = kmmFile.getCurrencyTable();
     System.out.println(tab.toString());

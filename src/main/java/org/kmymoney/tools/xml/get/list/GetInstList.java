@@ -103,7 +103,7 @@ public class GetInstList extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName));
+    KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName), true);
     
     Collection<KMyMoneyInstitution> cmdtyList = null; 
     if ( mode == Helper.InstListMode.ALL )

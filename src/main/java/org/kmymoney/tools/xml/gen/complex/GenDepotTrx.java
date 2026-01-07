@@ -309,7 +309,7 @@ public class GenDepotTrx extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName));
+    kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName), true);
     
     if ( mode == BookMode.SINGLE_TRX )
     {

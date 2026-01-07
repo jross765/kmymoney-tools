@@ -84,7 +84,7 @@ public class GetFileInfo extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName));
+    KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName), true);
     
     printMetaInfoAndStats(kmmFile);
     printRootAcct(kmmFile);

@@ -99,7 +99,7 @@ public class GenPye extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    KMyMoneyWritableFileImpl kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName));
+    KMyMoneyWritableFileImpl kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName), true);
     
     KMyMoneyWritablePayee pye = kmmFile.createWritablePayee(name);
     // pye.setName(name);

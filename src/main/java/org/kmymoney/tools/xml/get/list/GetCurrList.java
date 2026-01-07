@@ -84,7 +84,7 @@ public class GetCurrList extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName));
+    KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName), true);
     
     Collection<KMyMoneyCurrency> currList = null; 
     currList = kmmFile.getCurrencies();

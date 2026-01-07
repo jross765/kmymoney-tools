@@ -146,7 +146,7 @@ private static String          descr = null;
   @Override
   protected void kernel() throws Exception
   {
-    KMyMoneyWritableFileImpl kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName));
+    KMyMoneyWritableFileImpl kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName), true);
 
     KMyMoneyWritableSecurity sec = null;
     

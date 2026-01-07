@@ -167,7 +167,7 @@ public class GenTrx extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    KMyMoneyWritableFileImpl kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName));
+    KMyMoneyWritableFileImpl kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName), true);
     
     System.err.println("Account name (from): '" + kmmFile.getAccountByID(fromAcctID).getQualifiedName() + "'");
     System.err.println("Account name (to):   '" + kmmFile.getAccountByID(toAcctID).getQualifiedName() + "'");

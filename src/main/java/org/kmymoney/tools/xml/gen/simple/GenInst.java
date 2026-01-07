@@ -99,7 +99,7 @@ public class GenInst extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    KMyMoneyWritableFileImpl kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName));
+    KMyMoneyWritableFileImpl kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName), true);
     
     KMyMoneyWritableInstitution inst = kmmFile.createWritableInstitution(name);
     // inst.setName(name);

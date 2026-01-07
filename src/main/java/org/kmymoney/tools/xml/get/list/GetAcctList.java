@@ -112,7 +112,7 @@ public class GetAcctList extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName));
+    KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName), true);
     
     Collection<KMyMoneyAccount> acctList = null; 
     if ( mode == Helper.AcctListMode.ALL )

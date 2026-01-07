@@ -209,7 +209,7 @@ public class GetTrxSpltList extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName));
+    KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName), true);
     
     // 1) Set filter
     TransactionSplitFilter spltFlt = setFilter();

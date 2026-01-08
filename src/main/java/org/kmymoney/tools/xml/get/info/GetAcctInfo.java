@@ -143,7 +143,7 @@ public class GetAcctInfo extends CommandLineTool
   }
 
   @Override
-  protected void getConfigSettings(PropertiesConfiguration cs) throws Exception
+  protected void getConfigSettings(PropertiesConfiguration cfg) throws Exception
   {
     // ::EMPTY
   }
@@ -240,6 +240,15 @@ public class GetAcctInfo extends CommandLineTool
     catch ( Exception exc )
     {
       System.out.println("Parent ID:       " + "ERROR");
+    }
+    
+    try
+    {
+      System.out.println("Closed:          " + acct.isClosed());
+    }
+    catch ( Exception exc )
+    {
+      System.out.println("Closed:          " + "ERROR");
     }
     
     try

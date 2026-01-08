@@ -181,7 +181,7 @@ public class GenStockAcct extends CommandLineTool
   }
 
   @Override
-  protected void getConfigSettings(PropertiesConfiguration cs) throws Exception
+  protected void getConfigSettings(PropertiesConfiguration cfg) throws Exception
   {
     // ::EMPTY
   }
@@ -589,7 +589,7 @@ public class GenStockAcct extends CommandLineTool
     System.out.println("Valid values for <security-mode>:");
     for ( Helper.CmdtySecSingleSelMode elt : Helper.CmdtySecSingleSelMode.values() )
     {
-        System.out.println(" - " + elt);
+    	System.out.println(" - " + elt);
     }
   }
 }

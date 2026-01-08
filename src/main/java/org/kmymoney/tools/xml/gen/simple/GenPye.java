@@ -26,12 +26,16 @@ public class GenPye extends CommandLineTool
   @SuppressWarnings("unused")
   private static final Logger LOGGER = LoggerFactory.getLogger(GenPye.class);
   
+  // -----------------------------------------------------------------
+
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
   private static String kmmInFileName = null;
   private static String kmmOutFileName = null;
   private static String name = null;
+
+  // -----------------------------------------------------------------
 
   public static void main( String[] args )
   {
@@ -91,7 +95,7 @@ public class GenPye extends CommandLineTool
   }
 
   @Override
-  protected void getConfigSettings(PropertiesConfiguration cs) throws Exception
+  protected void getConfigSettings(PropertiesConfiguration cfg) throws Exception
   {
     // ::EMPTY
   }

@@ -28,6 +28,8 @@ public class GetAcctList extends CommandLineTool
   @SuppressWarnings("unused")
   private static final Logger LOGGER = LoggerFactory.getLogger(GetAcctList.class);
   
+  // -----------------------------------------------------------------
+
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
@@ -35,8 +37,11 @@ public class GetAcctList extends CommandLineTool
   private static Helper.AcctListMode  mode        = null; 
   private static KMyMoneyAccount.Type type        = null;
   private static String               name        = null;
+  private static boolean              exclClosed  = false;
   
   private static boolean scriptMode = false; // ::TODO
+
+  // -----------------------------------------------------------------
 
   public static void main( String[] args )
   {
@@ -94,13 +99,17 @@ public class GetAcctList extends CommandLineTool
       .get();
     	      
     // The convenient ones
-    // ::EMPTY
+    Option optExclClsd= Option.builder("ec")
+      .desc("Exclude closed accounts")
+      .longOpt("exclude-closed")
+      .get();
           
     options = new Options();
     options.addOption(optFile);
     options.addOption(optMode);
     options.addOption(optType);
     options.addOption(optName);
+    options.addOption(optExclClsd);
   }
 
   @Override
@@ -131,7 +140,17 @@ public class GetAcctList extends CommandLineTool
 	System.err.println("Found " + acctList.size() + " account(s).");
     for ( KMyMoneyAccount acct : acctList )
     {
-    	System.out.println(acct.toString());	
+    	if ( exclClosed )
+    	{
+    		if ( ! acct.isClosed() )
+    		{
+            	System.out.println(acct.toString());	
+    		}
+    	}
+    	else
+    	{
+        	System.out.println(acct.toString());	
+    	}
     }
   }
 
@@ -244,6 +263,19 @@ public class GetAcctList extends CommandLineTool
     
     if ( ! scriptMode )
       System.err.println("Name:              " + name);
+
+    // <exclude-closed>
+    if ( cmdLine.hasOption( "exclude-closed" ) )
+    {
+    	exclClosed = true;
+    }
+    else
+    {
+    	exclClosed = false;
+    }
+    
+    if ( ! scriptMode )
+      System.err.println("Exclude closed:    " + exclClosed);
   }
   
   @Override

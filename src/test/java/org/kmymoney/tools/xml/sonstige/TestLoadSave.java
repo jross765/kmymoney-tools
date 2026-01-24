@@ -90,7 +90,7 @@ public class TestLoadSave extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    KMyMoneyWritableFileImpl kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName));
+    KMyMoneyWritableFileImpl kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName), true);
     kmmFile.writeFile(new File(kmmOutFileName));
     System.out.println("OK");
   }

@@ -122,7 +122,7 @@ public class Dump extends CommandLineTool
 	HelpFormatter formatter = HelpFormatter.builder().get();
 	try
 	{
-		formatter.printHelp( "GetStockAcct", "", options, "", true );
+		formatter.printHelp( "Dump", "", options, "", true );
 	}
 	catch ( IOException e )
 	{

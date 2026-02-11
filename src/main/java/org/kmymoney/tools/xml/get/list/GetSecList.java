@@ -29,6 +29,8 @@ public class GetSecList extends CommandLineTool
   @SuppressWarnings("unused")
   private static final Logger LOGGER = LoggerFactory.getLogger(GetSecList.class);
   
+  // -----------------------------------------------------------------
+
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
@@ -38,6 +40,8 @@ public class GetSecList extends CommandLineTool
   private static String                name        = null;
   
   private static boolean scriptMode = false; // ::TODO
+
+  // -----------------------------------------------------------------
 
   public static void main( String[] args )
   {
@@ -77,7 +81,7 @@ public class GetSecList extends CommandLineTool
       .desc("Mode")
       .longOpt("mode")
       .get();
-    	      
+
     Option optType = Option.builder("t")
       .hasArg()
       .argName("type")

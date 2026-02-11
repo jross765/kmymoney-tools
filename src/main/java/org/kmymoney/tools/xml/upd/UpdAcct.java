@@ -119,7 +119,7 @@ public class UpdAcct extends CommandLineTool
       .longOpt("type")
       .get();
         
-    Option optSecCurr = Option.builder("sec")
+    Option optSecCurr = Option.builder("sc")
       .hasArg()
       .argName("sec/curr-id")
       .desc("Security/currency ID")

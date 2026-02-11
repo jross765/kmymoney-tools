@@ -233,9 +233,9 @@ public class GenSec extends CommandLineTool
       System.err.println("Could not parse <kmymoney-in-file>");
       throw new InvalidCommandLineArgsException();
     }
-    
+
     System.err.println("KMyMoney file (in):  '" + kmmInFileName + "'");
-    
+
     // <kmymoney-out-file>
     try
     {
@@ -246,7 +246,7 @@ public class GenSec extends CommandLineTool
       System.err.println("Could not parse <kmymoney-out-file>");
       throw new InvalidCommandLineArgsException();
     }
-    
+
     System.err.println("KMyMoney file (out): '" + kmmOutFileName + "'");
     
     // --
@@ -261,7 +261,7 @@ public class GenSec extends CommandLineTool
       System.err.println("Could not parse <isin>");
       throw new InvalidCommandLineArgsException();
     }
-    
+
     System.err.println("ISIN:                '" + isin + "'");
     
     // <name>
@@ -274,7 +274,7 @@ public class GenSec extends CommandLineTool
       System.err.println("Could not parse <name>");
       throw new InvalidCommandLineArgsException();
     }
-    
+
     System.err.println("Name:                '" + name + "'");
     
     // --

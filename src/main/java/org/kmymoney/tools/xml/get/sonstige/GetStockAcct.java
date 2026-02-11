@@ -32,21 +32,25 @@ public class GetStockAcct extends CommandLineTool
   // Logger
   private static final Logger LOGGER = LoggerFactory.getLogger(GetStockAcct.class);
   
+  // -----------------------------------------------------------------
+
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
-  private static String              kmmFileName = null;
+  private static String                kmmFileName  = null;
   
-  private static Helper.Mode         acctMode    = null;
-  private static KMMComplAcctID      acctID      = null;
-  private static String              acctName    = null;
+  private static Helper.Mode           acctMode     = null;
+  private static KMMComplAcctID        acctID       = null;
+  private static String                acctName     = null;
   
-  private static Helper.CmdtySecSingleSelMode secMode     = null;
-  private static KMMSecID            secID       = null;
-  private static String              isin        = null;
-  private static String              secName     = null;
+  private static Helper.CmdtySecSingleSelMode secMode = null;
+  private static KMMSecID              secID        = null;
+  private static String                isin         = null;
+  private static String                secName      = null;
   
   private static boolean scriptMode = false;
+
+  // -----------------------------------------------------------------
 
   public static void main( String[] args )
   {
@@ -225,23 +229,13 @@ public class GetStockAcct extends CommandLineTool
     }
     else if ( secMode == Helper.CmdtySecSingleSelMode.NAME )
     {
-      Collection<KMyMoneySecurity> cmdtyList = kmmFile.getSecuritiesByName(secName); 
-      if ( cmdtyList.size() == 0 )
+      sec = kmmFile.getSecurityByNameUniq(secName);
+      if ( sec == null )
       {
         if ( ! scriptMode )
-          System.err.println("Could not find securities matching this name.");
+          System.err.println("Could not find security (uniquely) matching this name.");
         throw new NoEntryFoundException();
       }
-      if ( cmdtyList.size() > 1 )
-      {
-        if ( ! scriptMode )
-        {
-          System.err.println("Found " + cmdtyList.size() + "securities matching this name.");
-          System.err.println("Please specify more precisely.");
-        }
-        throw new TooManyEntriesFoundException();
-      }
-      sec = cmdtyList.iterator().next(); // first element
     }
     
     if ( ! scriptMode )

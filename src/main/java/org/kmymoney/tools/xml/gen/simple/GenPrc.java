@@ -94,7 +94,7 @@ public class GenPrc extends CommandLineTool
       .longOpt("kmymoney-out-file")
       .get();
       
-    Option optFromSecCurr= Option.builder("f")
+    Option optFromSecCurr = Option.builder("f")
       .required()
       .hasArg()
       .argName("sec/curr")

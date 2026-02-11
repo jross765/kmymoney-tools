@@ -30,6 +30,8 @@ public class GetCurrInfo extends CommandLineTool
   @SuppressWarnings("unused")
   private static final Logger LOGGER = LoggerFactory.getLogger(GetCurrInfo.class);
   
+  // -----------------------------------------------------------------
+
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
@@ -39,6 +41,8 @@ public class GetCurrInfo extends CommandLineTool
   private static boolean showQuotes = false;
   
   private static boolean scriptMode = false; // ::TODO
+  
+  // -----------------------------------------------------------------
 
   public static void main( String[] args )
   {

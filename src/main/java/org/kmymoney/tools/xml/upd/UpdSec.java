@@ -30,6 +30,8 @@ public class UpdSec extends CommandLineTool
   @SuppressWarnings("unused")
   private static final Logger LOGGER = LoggerFactory.getLogger(UpdSec.class);
   
+  // -----------------------------------------------------------------
+
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
@@ -46,6 +48,8 @@ private static String          descr = null;
   private static KMMSecCurr.Type type = null;
 
   private static KMyMoneyWritableSecurity sec = null;
+
+  // -----------------------------------------------------------------
 
   public static void main( String[] args )
   {
@@ -168,6 +172,7 @@ private static String          descr = null;
         throw new NoEntryFoundException();
       }
     }
+    // NOT by name!
     
     // ----------------------------
     
@@ -223,7 +228,9 @@ private static String          descr = null;
       System.err.println("Could not parse <kmymoney-in-file>");
       throw new InvalidCommandLineArgsException();
     }
-    System.err.println("KMyMoney file (in): '" + kmmInFileName + "'");
+
+//    if ( ! scriptMode )
+    	System.err.println("KMyMoney file (in): '" + kmmInFileName + "'");
     
     // <kmymoney-out-file>
     try
@@ -235,8 +242,10 @@ private static String          descr = null;
       System.err.println("Could not parse <kmymoney-out-file>");
       throw new InvalidCommandLineArgsException();
     }
-    System.err.println("KMyMoney file (out): '" + kmmOutFileName + "'");
-    
+
+//    if ( ! scriptMode )
+    	System.err.println("KMyMoney file (out): '" + kmmOutFileName + "'");
+
     // <mode>
     try
     {
@@ -254,7 +263,8 @@ private static String          descr = null;
       throw new InvalidCommandLineArgsException();
     }
     
-    System.err.println("Mode:         " + mode);
+//    if ( ! scriptMode )
+      System.err.println("Mode:         " + mode);
 
     // <security-id>
     if ( cmdLine.hasOption("security-id") )
@@ -284,7 +294,8 @@ private static String          descr = null;
       }
     }
 
-    System.err.println("Security ID:  '" + secID + "'");
+//    if ( ! scriptMode )
+      System.err.println("Security ID:  '" + secID + "'");
 
     // <isin>
     if ( cmdLine.hasOption("isin") )
@@ -314,7 +325,8 @@ private static String          descr = null;
       }
     }
 
-    System.err.println("ISIN:         '" + isin + "'");
+//    if ( ! scriptMode )
+      System.err.println("ISIN:         '" + isin + "'");
 
     // <name>
     if ( cmdLine.hasOption("name") ) 
@@ -329,7 +341,9 @@ private static String          descr = null;
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Name: '" + name + "'");
+
+//    if ( ! scriptMode )
+      System.err.println("Name: '" + name + "'");
 
     // <type>
     if ( cmdLine.hasOption("type") ) 
@@ -344,7 +358,9 @@ private static String          descr = null;
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Type: '" + type + "'");
+
+//    if ( ! scriptMode )
+      System.err.println("Type: '" + type + "'");
   }
   
   @Override

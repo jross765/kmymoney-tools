@@ -501,7 +501,7 @@ public class GenStockAcct extends CommandLineTool
     }
 
     if (!silent)
-      System.err.println("Security ID:   '" + secID + "'");
+      System.err.println("Security ID:  '" + secID + "'");
 
     // <isin>
     if ( cmdLine.hasOption("isin") )

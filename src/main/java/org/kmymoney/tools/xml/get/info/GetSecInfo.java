@@ -37,6 +37,8 @@ public class GetSecInfo extends CommandLineTool
   @SuppressWarnings("unused")
   private static final Logger LOGGER = LoggerFactory.getLogger(GetSecInfo.class);
   
+  // -----------------------------------------------------------------
+
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
@@ -49,6 +51,8 @@ public class GetSecInfo extends CommandLineTool
   private static boolean showQuotes = false;
   
   private static boolean scriptMode = false; // ::TODO
+  
+  // -----------------------------------------------------------------
 
   public static void main( String[] args )
   {

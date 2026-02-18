@@ -46,7 +46,7 @@ public class UpdPrc extends CommandLineTool
   private static KMMPriceID           prcID = null;
   private static KMMQualifSecCurrID   fromSecCurrID = null;
   private static KMMQualifCurrID      toCurrID = null;
-  private static Helper.DateFormat    dateFormat    = null;
+  private static Helper.DateFormat    dateFmt = null;
   private static LocalDate            date = null;
   
   private static KMyMoneyPrice.Source source = null;
@@ -282,13 +282,13 @@ public class UpdPrc extends CommandLineTool
     }
     
     // <date-format>
-    dateFormat = CmdLineHelper.getDateFormat(cmdLine, "date-format");
-    System.err.println("date-format: " + dateFormat);
+    dateFmt = CmdLineHelper.getDateFormat(cmdLine, "date-format");
+    System.err.println("date-format: " + dateFmt);
 
     // <date>
     try
     {
-      date = CmdLineHelper.getDate(cmdLine, "date", dateFormat); 
+      date = CmdLineHelper.getDate(cmdLine, "date", dateFmt); 
       System.err.println("date: " + date);
     }
     catch ( Exception exc )

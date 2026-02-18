@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
-import xyz.schnorxoborx.base.dateutils.DateHelpers;
 import xyz.schnorxoborx.base.dateutils.LocalDateHelpers;
 import xyz.schnorxoborx.base.numbers.FixedPointNumber;
 
@@ -499,7 +498,7 @@ public class GetTrxList extends CommandLineTool
     {
         try
         {
-        	datePostedFrom = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("from-date-posted"), DateHelpers.DATE_FORMAT_ISO);
+        	datePostedFrom = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("from-date-posted"), Helper.DateFormat.ISO);
         }
         catch ( Exception exc )
         {
@@ -521,7 +520,7 @@ public class GetTrxList extends CommandLineTool
     {
         try
         {
-        	datePostedTo = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("to-date-posted"), DateHelpers.DATE_FORMAT_ISO);
+        	datePostedTo = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("to-date-posted"), Helper.DateFormat.ISO);
         }
         catch ( Exception exc )
         {
@@ -545,7 +544,7 @@ public class GetTrxList extends CommandLineTool
     {
         try
         {
-        	dateEnteredFrom = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("from-date-entered"), DateHelpers.DATE_FORMAT_ISO);
+        	dateEnteredFrom = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("from-date-entered"), Helper.DateFormat.ISO);
         }
         catch ( Exception exc )
         {
@@ -567,7 +566,7 @@ public class GetTrxList extends CommandLineTool
     {
         try
         {
-        	dateEnteredTo = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("to-date-entered"), DateHelpers.DATE_FORMAT_ISO);
+        	dateEnteredTo = LocalDateHelpers.parseLocalDate( cmdLine.getOptionValue("to-date-entered"), Helper.DateFormat.ISO);
         }
         catch ( Exception exc )
         {

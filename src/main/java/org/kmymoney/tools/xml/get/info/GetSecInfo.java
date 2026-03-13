@@ -187,11 +187,11 @@ public class GetSecInfo extends CommandLineTool
 
     try
     {
-      System.out.println("ISIN:              '" + sec.getCode() + "'");
+      System.out.println("Code (ISIN):       '" + sec.getCode() + "'");
     }
     catch (Exception exc)
     {
-      System.out.println("ISIN:              " + "ERROR");
+      System.out.println("Code (ISIN):       " + "ERROR");
     }
 
     try

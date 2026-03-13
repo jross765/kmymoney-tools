@@ -28,7 +28,7 @@ import org.kmymoney.api.write.impl.KMyMoneyWritableFileImpl;
 import org.kmymoney.apiext.secacct.SecuritiesAccountTransactionManager;
 import org.kmymoney.base.basetypes.simple.KMMAcctID;
 import org.kmymoney.base.basetypes.simple.KMMTrxID;
-import org.kmymoney.base.tuples.AcctIDAmountPair;
+import org.kmymoney.base.tuples.AcctIDAmountFPPair;
 import org.kmymoney.tools.CommandLineTool;
 import org.kmymoney.tools.xml.helper.CmdLineHelper;
 import org.slf4j.Logger;
@@ -76,7 +76,7 @@ public class GenDepotTrx extends CommandLineTool
   // accounts. Thus, this is a precautionary measure.
   private static KMMAcctID         stockAcctID = null;
   private static KMMAcctID         incomeAcctID = null;
-  private static Collection<AcctIDAmountPair> expensesAcctAmtList = null;
+  private static Collection<AcctIDAmountFPPair> expensesAcctAmtList = null;
   private static KMMAcctID         offsetAcctID = null;
   
   private static FixedPointNumber  nofStocks = null;
@@ -421,7 +421,7 @@ public class GenDepotTrx extends CommandLineTool
 		}
 	}
 	
-	for ( AcctIDAmountPair elt : expensesAcctAmtList )
+	for ( AcctIDAmountFPPair elt : expensesAcctAmtList )
 	{
 		KMyMoneyAccount expensesAcct = kmmFile.getAccountByID(elt.accountID());
 		if ( expensesAcct == null )
@@ -452,7 +452,7 @@ public class GenDepotTrx extends CommandLineTool
 	}
 
 	int counter = 1;
-	for ( AcctIDAmountPair elt : expensesAcctAmtList )
+	for ( AcctIDAmountFPPair elt : expensesAcctAmtList )
 	{
 		KMyMoneyAccount expensesAcct = kmmFile.getAccountByID(elt.accountID());
 		System.err.println("Account 3." + counter + " name (expenses): '" + expensesAcct.getQualifiedName() + "'");
@@ -910,7 +910,7 @@ public class GenDepotTrx extends CommandLineTool
            		throw new InvalidCommandLineArgsException();
            	}
 
-           	expensesAcctAmtList = new ArrayList<AcctIDAmountPair>();
+           	expensesAcctAmtList = new ArrayList<AcctIDAmountFPPair>();
     	}
     	else
     	{
@@ -942,7 +942,7 @@ public class GenDepotTrx extends CommandLineTool
     		throw new InvalidCommandLineArgsException();
     	}
 
-    	expensesAcctAmtList = new ArrayList<AcctIDAmountPair>();
+    	expensesAcctAmtList = new ArrayList<AcctIDAmountFPPair>();
     }
     if (! silent)
     {
@@ -954,7 +954,7 @@ public class GenDepotTrx extends CommandLineTool
        	else
        	{
        		System.err.println("");
-       		for ( AcctIDAmountPair elt : expensesAcctAmtList )
+       		for ( AcctIDAmountFPPair elt : expensesAcctAmtList )
        			System.err.println(" - " + elt);
        	}
     }

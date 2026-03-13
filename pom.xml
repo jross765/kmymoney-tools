@@ -37,7 +37,7 @@
 			<dependency>
 				<groupId>org.kmymoney</groupId>
 				<artifactId>kmymoney-base</artifactId>
-				<version>0.8.2</version>
+				<version>0.9</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -53,7 +53,7 @@
 			<dependency>
 				<groupId>org.kmymoney</groupId>
 				<artifactId>kmymoney-api-spec</artifactId>
-				<version>0.2</version>
+				<version>0.3</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -123,7 +123,7 @@
 		<dependency>
 			<groupId>org.kmymoney</groupId>
 			<artifactId>kmymoney-base</artifactId>
-			<version>0.8.2</version>
+			<version>0.9</version>
 			<scope>compile</scope>
 		</dependency>
 
@@ -139,7 +139,7 @@
 		<dependency>
 			<groupId>org.kmymoney</groupId>
 			<artifactId>kmymoney-api-spec</artifactId>
-			<version>0.2</version>
+			<version>0.3</version>
 			<scope>compile</scope>
 		</dependency>
 
@@ -163,6 +163,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.5.0</version>
 				<executions>
 					<execution>
 						<goals>
@@ -175,6 +176,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.8.0</version>
 				<configuration>
 					<descriptors>
 						<descriptor>src/main/assembly/test-jar-with-dependencies.xml</descriptor>

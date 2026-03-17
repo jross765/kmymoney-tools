@@ -35,8 +35,8 @@ public class UpdAcct extends CommandLineTool
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
-  private static String         kmmInFileName = null;
-  private static String         kmmOutFileName = null;
+  private static String kmmInFileName = null;
+  private static String kmmOutFileName = null;
   
   private static KMMComplAcctID acctID = null;
 

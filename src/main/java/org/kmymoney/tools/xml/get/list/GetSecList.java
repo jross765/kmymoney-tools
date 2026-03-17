@@ -34,10 +34,10 @@ public class GetSecList extends CommandLineTool
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
-  private static String                kmmFileName = null;
-  private static Helper.CmdtySecListSelMode    mode        = null; 
-  private static KMMSecCurr.Type       type        = null;
-  private static String                name        = null;
+  private static String             kmmFileName  = null;
+  private static Helper.CmdtySecListSelMode mode = null; 
+  private static KMMSecCurr.Type    type         = null;
+  private static String             name         = null;
   
   private static boolean scriptMode = false; // ::TODO
 
@@ -131,7 +131,7 @@ public class GetSecList extends CommandLineTool
     	throw new NoEntryFoundException();
     }
 
-	System.err.println("Found " + secList.size() + " security/ies.");
+    System.err.println("Found " + secList.size() + " security/ies.");
     for ( KMyMoneySecurity sec : secList )
     {
     	System.out.println(sec.toString());	

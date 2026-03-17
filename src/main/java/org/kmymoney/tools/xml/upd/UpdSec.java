@@ -44,7 +44,7 @@ public class UpdSec extends CommandLineTool
   
   private static String          name = null;
   @SuppressWarnings("unused")
-private static String          descr = null;
+  private static String          descr = null;
   private static KMMSecCurr.Type type = null;
 
   private static KMyMoneyWritableSecurity sec = null;

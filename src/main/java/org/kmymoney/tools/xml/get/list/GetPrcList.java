@@ -31,16 +31,20 @@ public class GetPrcList extends CommandLineTool
   @SuppressWarnings("unused")
   private static final Logger LOGGER = LoggerFactory.getLogger(GetPrcList.class);
   
+  // -----------------------------------------------------------------
+
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
   private static String                kmmFileName   = null;
-  private static Helper.CmdtySecSingleSelMode   secMode       = null;
+  private static Helper.CmdtySecSingleSelMode   secMode = null;
   private static KMMQualifSecCurrID    fromSecCurrID = null;
   private static String                fromSecIsin   = null;
   private static String                fromSecName   = null;
   
   private static boolean scriptMode = false; // ::TODO
+
+  // -----------------------------------------------------------------
 
   public static void main( String[] args )
   {
@@ -72,7 +76,7 @@ public class GetPrcList extends CommandLineTool
       .desc("KMyMoney file")
       .longOpt("kmymoney-file")
       .get();
-      
+
     Option optMode = Option.builder("m")
       .required()
       .hasArg()
@@ -80,28 +84,28 @@ public class GetPrcList extends CommandLineTool
       .desc("Security/currency selection mode")
       .longOpt("mode")
       .get();
-    	        
+
     Option optFromSecCurr= Option.builder("fr")
       .hasArg()
-      .argName("qualif-ID")
+      .argName("qualifiD")
       .desc("From-security/currency qualified ID")
       .longOpt("from-sec-curr")
       .get();
-    	    	          
+
     Option optFromISIN = Option.builder("is")
       .hasArg()
       .argName("isin")
       .desc("From-security/currency ISIN")
       .longOpt("isin")
       .get();
-    	        
+
     Option optFromName = Option.builder("fn")
       .hasArg()
       .argName("name")
       .desc("From-security/currency Name (or part of)")
       .longOpt("name")
       .get();
-    	          
+
     // The convenient ones
     // ::EMPTY
           

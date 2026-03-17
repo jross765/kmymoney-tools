@@ -33,11 +33,11 @@ public class GetAcctList extends CommandLineTool
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
-  private static String               kmmFileName = null;
-  private static Helper.AcctListMode  mode        = null; 
-  private static KMyMoneyAccount.Type type        = null;
-  private static String               name        = null;
-  private static boolean              exclClosed  = false;
+  private static String               kmmFileName  = null;
+  private static Helper.AcctListMode  mode         = null;
+  private static KMyMoneyAccount.Type type         = null;
+  private static String               name         = null;
+  private static boolean              exclClosed   = false;
   
   private static boolean scriptMode = false; // ::TODO
 
@@ -99,7 +99,7 @@ public class GetAcctList extends CommandLineTool
       .get();
     	      
     // The convenient ones
-    Option optExclClsd= Option.builder("ec")
+    Option optExclClsd = Option.builder("ec")
       .desc("Exclude closed accounts")
       .longOpt("exclude-closed")
       .get();
@@ -130,14 +130,14 @@ public class GetAcctList extends CommandLineTool
     	acctList = kmmFile.getAccountsByType(type);
     else if ( mode == Helper.AcctListMode.NAME )
     	acctList = kmmFile.getAccountsByName(name, true, true);
-    
+
     if ( acctList.size() == 0 ) 
     {
     	System.err.println("Found no account with that type.");
     	throw new NoEntryFoundException();
     }
 
-	System.err.println("Found " + acctList.size() + " account(s).");
+    System.err.println("Found " + acctList.size() + " account(s).");
     for ( KMyMoneyAccount acct : acctList )
     {
     	if ( exclClosed )

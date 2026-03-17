@@ -50,7 +50,7 @@ public class UpdPrc extends CommandLineTool
   private static LocalDate            date = null;
   
   private static KMyMoneyPrice.Source source = null;
-  private static FixedPointNumber    value = null;
+  private static FixedPointNumber     value  = null;
 
   private static KMyMoneyWritablePrice prc = null;
 
@@ -96,15 +96,15 @@ public class UpdPrc extends CommandLineTool
       .desc("KMyMoney file (out)")
       .longOpt("kmymoney-out-file")
       .get();
-      
+
     Option optFromSecCurr= Option.builder("f")
       .required()
       .hasArg()
-      .argName("cmdty/curr")
-      .desc("From-commodity/currency")
-      .longOpt("from-cmdty-curr")
+      .argName("sec/curr")
+      .desc("From-security/currency")
+      .longOpt("from-sec-curr")
       .get();
-    	          
+
     Option optToCurr = Option.builder("t")
       .required()
       .hasArg()
@@ -112,14 +112,14 @@ public class UpdPrc extends CommandLineTool
       .desc("To-currency")
       .longOpt("to-curr")
       .get();
-    	    
+
     Option optDateFormat = Option.builder("df")
       .hasArg()
       .argName("date-format")
       .desc("Date format")
       .longOpt("date-format")
       .get();
-    	            
+
     Option optDate = Option.builder("dat")
        .required()
        .hasArg()
@@ -127,7 +127,7 @@ public class UpdPrc extends CommandLineTool
        .desc("Date")
        .longOpt("date")
        .get();
-            
+
     Option optSource = Option.builder("s")
       .hasArg()
       .argName("source")
@@ -141,7 +141,7 @@ public class UpdPrc extends CommandLineTool
       .desc("Price value")
       .longOpt("val")
       .get();
-    
+
     // The convenient ones
     // ::EMPTY
           
@@ -257,15 +257,15 @@ public class UpdPrc extends CommandLineTool
     }
     System.err.println("KMyMoney file (out): '" + kmmOutFileName + "'");
     
-    // <from-cmdty-curr>
+    // <from-sec-curr>
     try
     {
-      fromSecCurrID = KMMQualifSecCurrID.parse(cmdLine.getOptionValue("from-cmdty-curr")); 
+      fromSecCurrID = KMMQualifSecCurrID.parse(cmdLine.getOptionValue("from-sec-curr")); 
       System.err.println("from-cmdty-curr: " + fromSecCurrID);
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <from-cmdty-curr>");
+      System.err.println("Could not parse <from-sec-curr>");
       throw new InvalidCommandLineArgsException();
     }
     

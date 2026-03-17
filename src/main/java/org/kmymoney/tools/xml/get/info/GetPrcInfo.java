@@ -87,7 +87,7 @@ public class GetPrcInfo extends CommandLineTool
       .desc("KMyMoney file")
       .longOpt("kmymoney-file")
       .get();
-    
+
     // Note: As opposed to the sister project's variant of this program,
     // it is somewhat senseless here to have the user select the mode
     // and the other parameters accordingly. Why? Because KMyMoney does
@@ -105,28 +105,28 @@ public class GetPrcInfo extends CommandLineTool
       .desc("Selection mode")
       .longOpt("mode")
       .get();
-    	    	      
+
     Option optFromSecCurr= Option.builder("fr")
       .hasArg()
       .argName("sec/curr")
       .desc("From-security/currency (qualified) (for mode = '" + CmdLineHelper.PrcSelectMode.ID + "' only)")
       .longOpt("from-sec-curr")
       .get();
-    	          
+
     Option optToCurr = Option.builder("to")
       .hasArg()
       .argName("curr")
       .desc("To-currency (qualified) (for mode = '" + CmdLineHelper.PrcSelectMode.ID + "' only)")
       .longOpt("to-curr")
       .get();
-    	    
+
     Option optSecID = Option.builder("sec")
       .hasArg()
       .argName("secid")
       .desc("Security ID (for mode = '" + CmdLineHelper.PrcSelectMode.SEC_DATE + "' only)")
       .longOpt("security-id")
       .get();
-    	    	    	          
+
     Option optDateFormat = Option.builder("df")
       .required() // sic, because needed in both modes
       .hasArg()
@@ -134,15 +134,15 @@ public class GetPrcInfo extends CommandLineTool
       .desc("Date format")
       .longOpt("date-format")
       .get();
-    	            
+
     Option optDate = Option.builder("dat")
       .required() // sic, because needed in both modes
       .hasArg()
       .argName("date")
       .desc("Date")
       .longOpt("date")
-      .get();    	          
-          
+      .get();
+
     // The convenient ones
     // ::EMPTY
             

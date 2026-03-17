@@ -108,7 +108,7 @@ public class GetTrxSpltList extends CommandLineTool
     Option optReconState = Option.builder("stat")
       .hasArg()
       .argName("stat")
-      .desc("Reconciliation state (split level)")
+      .desc("Reconciliation state")
       .longOpt("recon-state")
       .get();
     
@@ -117,14 +117,14 @@ public class GetTrxSpltList extends CommandLineTool
     Option optAcct = Option.builder("acct")
       .hasArg()
       .argName("acct")
-      .desc("Account ID (split level)")
+      .desc("Account ID")
       .longOpt("account-id")
       .get();
     	    	          
     Option optPye = Option.builder("pye")
       .hasArg()
       .argName("pye")
-      .desc("Payee ID (split level)")
+      .desc("Payee ID")
       .longOpt("payee-id")
       .get();
     
@@ -133,14 +133,14 @@ public class GetTrxSpltList extends CommandLineTool
     Option optValueFrom = Option.builder("fv")
       .hasArg()
       .argName("value")
-      .desc("From value (split level)")
+      .desc("From value")
       .longOpt("from-value")
       .get();
     	          
     Option optValueTo = Option.builder("tv")
       .hasArg()
       .argName("value")
-      .desc("To value (split level)")
+      .desc("To value")
       .longOpt("to-value")
       .get();
     	    	          
@@ -149,14 +149,14 @@ public class GetTrxSpltList extends CommandLineTool
     Option optNofSharesFrom = Option.builder("fnsh")
       .hasArg()
       .argName("no")
-      .desc("From no. of shares (split level)")
+      .desc("From no. of shares")
       .longOpt("from-nof-shares")
       .get();
     	          
     Option optNofSharesTo = Option.builder("tnsh")
       .hasArg()
       .argName("no")
-      .desc("To no. of shares (split level)")
+      .desc("To no. of shares")
       .longOpt("to-nof-shares")
       .get();
     	    	          
@@ -181,9 +181,6 @@ public class GetTrxSpltList extends CommandLineTool
       .longOpt("show-splits")
       .get();
     	    
-    // ::TODO
-    // - memo (split, part of)
-    // - description (trx, part of)
     	    	          
     options = new Options();
     options.addOption(optFile);

@@ -14,6 +14,8 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.kmymoney.api.read.KMyMoneyTransactionSplit;
 import org.kmymoney.api.read.impl.KMyMoneyFileImpl;
 import org.kmymoney.base.basetypes.complex.KMMQualifSpltID;
+import org.kmymoney.base.basetypes.simple.KMMSpltID;
+import org.kmymoney.base.basetypes.simple.KMMTrxID;
 import org.kmymoney.tools.CommandLineTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,10 +34,10 @@ public class GetTrxSpltInfo extends CommandLineTool
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
-  private static String  kmmFileName = null;
-  private static String  trxID = null;
-  private static String  spltID = null;
-  
+  private static String     kmmFileName  = null;
+  private static KMMTrxID   trxID        = null;
+  private static KMMSpltID  spltID       = null;
+
   private static boolean scriptMode = false; // ::TODO
 
   // -----------------------------------------------------------------
@@ -313,7 +315,7 @@ public class GetTrxSpltInfo extends CommandLineTool
     // <transaction-id>
     try
     {
-      trxID = cmdLine.getOptionValue("transaction-id");
+      trxID = new KMMTrxID( cmdLine.getOptionValue("transaction-id") );
     }
     catch ( Exception exc )
     {
@@ -327,7 +329,7 @@ public class GetTrxSpltInfo extends CommandLineTool
     // <split-id>
     try
     {
-      spltID = cmdLine.getOptionValue("split-id");
+      spltID = new KMMSpltID( cmdLine.getOptionValue("split-id") );
     }
     catch ( Exception exc )
     {

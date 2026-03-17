@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.kmymoney.base.basetypes.simple.KMMAcctID;
+import org.kmymoney.base.basetypes.simple.KMMSecID;
 import org.kmymoney.base.tuples.AcctIDAmountFPPair;
 
 import xyz.schnorxoborx.base.cmdlinetools.Helper;
@@ -192,5 +193,132 @@ public class CmdLineHelper
 
     return newPair;
   }
+  
+  // ------------------------------
+  
+  public static void parseSecStuffWrap(
+		  CommandLine cmdLine,
+		  EnumSecSingleSelMode mode,
+		  KMMSecID secID, StringBuffer isin, StringBuffer secName,
+		  boolean scriptMode) throws InvalidCommandLineArgsException {
+	    // <mode>
+	    try
+	    {
+	      mode.mode = xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.valueOf(cmdLine.getOptionValue("mode"));
+	    }
+	    catch ( Exception exc )
+	    {
+	      System.err.println("Could not parse <mode>");
+	      throw new InvalidCommandLineArgsException();
+	    }
+	    
+	    if ( ! scriptMode )
+	      System.err.println("Mode:         " + mode.mode);
+
+	  	// ---------
+	  	
+	    // <security-id>
+	    if ( cmdLine.hasOption("security-id") )
+	    {
+	      if ( mode.mode != xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID )
+	      {
+	        System.err.println("<security-id> must only be set with <mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID.toString() + "'");
+	        throw new InvalidCommandLineArgsException();
+	      }
+	      
+	      try
+	      {
+	    	// No:
+	        // secID = new KMMSecID( cmdLine.getOptionValue("security-id") );
+	        // Instead:
+	        KMMSecID locSecID = new KMMSecID( cmdLine.getOptionValue("security-id") );
+	        secID.reset();
+	        secID.set(locSecID);
+	      }
+	      catch (Exception exc)
+	      {
+	        System.err.println("Could not parse <security-id>");
+	        throw new InvalidCommandLineArgsException();
+	      }
+	    }
+	    else
+	    {
+	      if ( mode.mode == xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID )
+	      {
+	        System.err.println("<security-id> must be set with <mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID.toString() + "'");
+	        throw new InvalidCommandLineArgsException();
+	      }
+	    }
+
+	    if (!scriptMode)
+	      System.err.println("Security ID:  '" + secID + "'");
+
+	    // ---------
+	  	
+	    // <isin>
+	    if ( cmdLine.hasOption("isin") )
+	    {
+	      if ( mode.mode != xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN )
+	      {
+	        System.err.println("<isin> must only be set with <mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN.toString() + "'");
+	        throw new InvalidCommandLineArgsException();
+	      }
+	      
+	      try
+	      {
+	        isin.append( cmdLine.getOptionValue("isin") );
+	      }
+	      catch (Exception exc)
+	      {
+	        System.err.println("Could not parse <isin>");
+	        throw new InvalidCommandLineArgsException();
+	      }
+	    }
+	    else
+	    {
+	      if ( mode.mode == xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN )
+	      {
+	        System.err.println("<isin> must be set with <mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN.toString() + "'");
+	        throw new InvalidCommandLineArgsException();
+	      }
+	    }
+
+	    if ( ! scriptMode )
+	      System.err.println("ISIN:         '" + isin + "'");
+
+	  	// ---------
+	  	
+	    // <name>
+	    if ( cmdLine.hasOption("name") )
+	    {
+	      if ( mode.mode != xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME )
+	      {
+	        System.err.println("<name> must only be set with <mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME.toString() + "'");
+	        throw new InvalidCommandLineArgsException();
+	      }
+	      
+	      try
+	      {
+	    	secName.append( cmdLine.getOptionValue("name") );
+	      }
+	      catch (Exception exc)
+	      {
+	        System.err.println("Could not parse <name>");
+	        throw new InvalidCommandLineArgsException();
+	      }
+	    }
+	    else
+	    {
+	      if ( mode.mode == xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME )
+	      {
+	        System.err.println("<name> must be set with <mode> = '" + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME.toString() + "'");
+	        throw new InvalidCommandLineArgsException();
+	      }
+	    }
+
+	    if ( ! scriptMode )
+	      System.err.println("Security name: '" + secName + "'");
+  }
 
 }
+

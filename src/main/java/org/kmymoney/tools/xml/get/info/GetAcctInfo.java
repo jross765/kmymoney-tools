@@ -43,7 +43,7 @@ public class GetAcctInfo extends CommandLineTool
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
-  private static String         kmmFileName = null;
+  private static String         kmmFileName  = null;
   private static Helper.Mode    mode         = null;
   private static KMMComplAcctID acctID       = null;
   private static String         acctName     = null;

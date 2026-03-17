@@ -1,4 +1,4 @@
-package org.kmymoney.tools.xml.get.info;
+package org.kmymoney.tools.xml.sonstige;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,10 +11,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.kmymoney.api.read.KMyMoneyPrice;
 import org.kmymoney.api.read.KMyMoneySecurity;
 import org.kmymoney.api.read.impl.KMyMoneyFileImpl;
-import org.kmymoney.base.basetypes.complex.InvalidQualifSecCurrIDException;
 import org.kmymoney.base.basetypes.simple.KMMSecID;
 import org.kmymoney.tools.CommandLineTool;
 import org.kmymoney.tools.xml.helper.CmdLineHelper;
@@ -26,11 +24,11 @@ import org.slf4j.LoggerFactory;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
-public class GetSecInfo extends CommandLineTool
+public class TestSelSec extends CommandLineTool
 {
   // Logger
   @SuppressWarnings("unused")
-  private static final Logger LOGGER = LoggerFactory.getLogger(GetSecInfo.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestSelSec.class);
   
   // -----------------------------------------------------------------
 
@@ -50,9 +48,7 @@ public class GetSecInfo extends CommandLineTool
   private static StringBuffer  isin     = new StringBuffer();
   private static StringBuffer  secName  = new StringBuffer();
   
-  private static boolean showQuotes = false;
-  
-  private static boolean scriptMode = false; // ::TODO
+  private static boolean scriptMode = false;
   
   // -----------------------------------------------------------------
 
@@ -60,7 +56,7 @@ public class GetSecInfo extends CommandLineTool
   {
     try
     {
-      GetSecInfo tool = new GetSecInfo ();
+      TestSelSec tool = new TestSelSec ();
       tool.execute(args);
     }
     catch (CouldNotExecuteException exc) 
@@ -120,10 +116,7 @@ public class GetSecInfo extends CommandLineTool
       .get();
           
     // The convenient ones
-    Option optShowQuote = Option.builder("squt")
-      .desc("Show quotes")
-      .longOpt("show-quotes")
-      .get();
+    // ::EMPTY
             
     options = new Options();
     options.addOption(optFile);
@@ -131,7 +124,6 @@ public class GetSecInfo extends CommandLineTool
     options.addOption(optSecID);
     options.addOption(optISIN);
     options.addOption(optSecName);
-    options.addOption(optShowQuote);
   }
 
   @Override
@@ -143,138 +135,13 @@ public class GetSecInfo extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName), true);
+	KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName), true);
 
     KMyMoneySecurity sec = SecurityHelper.getSec(mode.mode, 
-												 secID, isin.toString(), secName.toString(), 
-												 kmmFile);
-    
-    // ----------------------------
+    											 secID, isin.toString(), secName.toString(), 
+    											 kmmFile);
 
-    try
-    {
-      System.out.println("Qualified ID:      '" + sec.getQualifID() + "'");
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Qualified ID:      " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Code (ISIN):       '" + sec.getCode() + "'");
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Code (ISIN):       " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("toString:          " + sec.toString());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("toString:          " + "ERROR");
-    }
-    
-    try
-    {
-      System.out.println("Type:              " + sec.getType());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Type:              " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Symbol:            '" + sec.getSymbol() + "'");
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Symbol:            " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Name:              '" + sec.getName() + "'");
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Name:              " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("PP:                " + sec.getPP());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("PP:                " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("SAF:               " + sec.getSAF());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("SAF:               " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Rounding method:   " + sec.getRoundingMethod());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Rounding method:   " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Trading currency:  " + sec.getTradingCurrency());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Trading currency:  " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Trading market:    '" + sec.getTradingMarket() + "'");
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Trading market:    " + "ERROR");
-    }
-
-    // ---
-
-    if ( showQuotes )
-      showQuotes(sec);
-  }
-
-  // -----------------------------------------------------------------
-
-  private void showQuotes(KMyMoneySecurity sec)
-  {
-    System.out.println("");
-    System.out.println("Quotes:");
-
-    System.out.println("");
-    System.out.println("Number of quotes: " + sec.getQuotes().size());
-    
-    System.out.println("");
-    for ( KMyMoneyPrice prc : sec.getQuotes() )
-    {
-      System.out.println(" - " + prc.toString());
-    }
-
-    System.out.println("");
-    System.out.println("Youngest Quote:");
-    System.out.println(sec.getYoungestQuote());
+    System.out.println("Selected security: " + sec.toString());
   }
 
   // -----------------------------------------------------------------
@@ -316,19 +183,6 @@ public class GetSecInfo extends CommandLineTool
     								 mode, 
     								 secID, isin, secName, 
     								 scriptMode );
-
-    // <show-quotes>
-    if (cmdLine.hasOption("show-quotes"))
-    {
-      showQuotes = true;
-    }
-    else
-    {
-      showQuotes = false;
-    }
-
-    if (!scriptMode)
-      System.err.println("Show quotes: " + showQuotes);
   }
 
   @Override
@@ -337,7 +191,7 @@ public class GetSecInfo extends CommandLineTool
 	HelpFormatter formatter = HelpFormatter.builder().get();
 	try
 	{
-		formatter.printHelp( "GetSecInfo", "", options, "", true );
+		formatter.printHelp( "TestSelSec", "", options, "", true );
 	}
 	catch ( IOException e )
 	{

@@ -98,7 +98,7 @@ public class GenPrc extends CommandLineTool
       .required()
       .hasArg()
       .argName("sec/curr")
-      .desc("From-commodity/currency")
+      .desc("From-security/currency")
       .longOpt("from-sec-curr")
       .get();
           

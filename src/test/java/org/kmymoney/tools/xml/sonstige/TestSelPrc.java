@@ -1,4 +1,4 @@
-package org.kmymoney.tools.xml.get.info;
+package org.kmymoney.tools.xml.sonstige;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,18 +27,18 @@ import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.Helper;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
-public class GetPrcInfo extends CommandLineTool
+public class TestSelPrc extends CommandLineTool
 {
   // Logger
   @SuppressWarnings("unused")
-  private static final Logger LOGGER = LoggerFactory.getLogger(GetPrcInfo.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestSelPrc.class);
   
   // -----------------------------------------------------------------
 
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
-  private static String kmmFileName = null;
+  private static String  kmmFileName = null;
   
   private static CmdLineHelper_Prc.PrcSelectMode    prcSelMode = null;
   private static CmdLineHelper_Prc.PrcSelectSubMode prcSelSubMode = null;
@@ -65,7 +65,7 @@ public class GetPrcInfo extends CommandLineTool
   {
     try
     {
-      GetPrcInfo tool = new GetPrcInfo ();
+      TestSelPrc tool = new TestSelPrc ();
       tool.execute(args);
     }
     catch (CouldNotExecuteException exc) 
@@ -128,8 +128,7 @@ public class GetPrcInfo extends CommandLineTool
     Option optPrcToCurr = Option.builder("tc")
       .hasArg()
       .argName("curr")
-      .desc("Price to currency ID " +
-    		  "(for <mode> = " + CmdLineHelper_Prc.PrcSelectMode.ID + " only)")
+      .desc("Price to currency ID")
       .longOpt("price-to-curr-id")
       .get();
     
@@ -189,88 +188,7 @@ public class GetPrcInfo extends CommandLineTool
     									kmmFile,
     									scriptMode);
 
-    // ----------------------------
-
-    try
-    {
-      System.out.println("Parent price pair: '" + prc.getParentPricePair() + "'");
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Parent price pair:  " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("toString:          " + prc.toString());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("toString:          " + "ERROR");
-    }
-    
-    try
-    {
-      System.out.println("From sec/curr:     " + prc.getFromSecCurrQualifID());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("From sec/curr:     " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("To curr:           " + prc.getToCurrencyQualifID());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("To curr:           " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Date:              " + prc.getDate());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Date:              " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Value:             " + prc.getValue());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Value:             " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Value (exact):     " + prc.getValueRat());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Value (exact):     " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Value (fmt):       " + prc.getValueFormatted());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Value (fmt):       " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Source:            " + prc.getSource());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Source:            " + "ERROR");
-    }
+    System.out.println("Selected price: " + prc.toString());
   }
 
   // -----------------------------------------------------------------
@@ -322,7 +240,7 @@ public class GetPrcInfo extends CommandLineTool
     
     if ( ! scriptMode )
       System.err.println("Price mode:     " + prcSelMode);
-
+    
     // <prc-sel-sub-mode>
     if ( cmdLine.hasOption("prc-sel-sub-mode") )
     {
@@ -358,7 +276,7 @@ public class GetPrcInfo extends CommandLineTool
 
     // <prc-sel-mode>
     // <price-id>, 
-    // <from-sec-curr-id>, <to-curr-id>, <date>,
+    // <from-sec-curr-id>, <to-curr-id>, <date>
     // <isin>
     try
 	{
@@ -384,7 +302,7 @@ public class GetPrcInfo extends CommandLineTool
 	HelpFormatter formatter = HelpFormatter.builder().get();
 	try
 	{
-		formatter.printHelp( "GetPrcInfo", "", options, "", true );
+		formatter.printHelp( "TestSelPrc", "", options, "", true );
 	}
 	catch ( IOException e )
 	{

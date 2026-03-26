@@ -13,7 +13,7 @@ import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.kmymoney.api.read.KMyMoneyPrice;
 import org.kmymoney.api.read.impl.KMyMoneyFileImpl;
-import org.kmymoney.base.basetypes.complex.KMMPriceID;
+import org.kmymoney.base.basetypes.complex.KMMPrcID;
 import org.kmymoney.base.basetypes.complex.KMMQualifCurrID;
 import org.kmymoney.base.basetypes.complex.KMMQualifSecCurrID;
 import org.kmymoney.tools.CommandLineTool;
@@ -46,7 +46,7 @@ public class TestSelPrc extends CommandLineTool
   // CAUTION: As opposed to most other tools, the following variables
   // have to be instantiated here.
   
-  private static KMMPriceID         prcID         = new KMMPriceID();
+  private static KMMPrcID           prcID         = new KMMPrcID();
   private static KMMQualifSecCurrID fromSecCurrID = new KMMQualifSecCurrID();
   private static KMMQualifCurrID    toCurrID      = new KMMQualifCurrID();
   private static Helper.DateFormat  dateFormat    = null;

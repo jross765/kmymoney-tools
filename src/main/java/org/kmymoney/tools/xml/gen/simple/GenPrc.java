@@ -17,7 +17,7 @@ import org.kmymoney.api.read.impl.KMyMoneyPricePairImpl;
 import org.kmymoney.api.write.KMyMoneyWritablePrice;
 import org.kmymoney.api.write.KMyMoneyWritablePricePair;
 import org.kmymoney.api.write.impl.KMyMoneyWritableFileImpl;
-import org.kmymoney.base.basetypes.complex.KMMPricePairID;
+import org.kmymoney.base.basetypes.complex.KMMPrcPrID;
 import org.kmymoney.base.basetypes.complex.KMMQualifCurrID;
 import org.kmymoney.base.basetypes.complex.KMMQualifSecCurrID;
 import org.kmymoney.tools.CommandLineTool;
@@ -163,7 +163,7 @@ public class GenPrc extends CommandLineTool
   {
     KMyMoneyWritableFileImpl kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName), true);
 
-    KMMPricePairID prcPrID = new KMMPricePairID(fromSecCurrID, toCurrID);
+    KMMPrcPrID prcPrID = new KMMPrcPrID(fromSecCurrID, toCurrID);
     KMyMoneyWritablePricePair prcPr = kmmFile.getWritablePricePairByID(prcPrID);
     if ( prcPr == null ) {
     	System.err.println("Price pair '" + prcPrID + "' does not exist in KMyMoney file yet.");

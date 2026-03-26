@@ -81,7 +81,7 @@ public class UpdTag extends CommandLineTool
       .longOpt("kmymoney-out-file")
       .get();
       
-    Option optID = Option.builder("id")
+    Option optID = Option.builder("tag")
       .required()
       .hasArg()
       .argName("tagid")

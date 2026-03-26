@@ -15,7 +15,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.kmymoney.api.read.KMyMoneyPrice;
 import org.kmymoney.api.write.KMyMoneyWritablePrice;
 import org.kmymoney.api.write.impl.KMyMoneyWritableFileImpl;
-import org.kmymoney.base.basetypes.complex.KMMPriceID;
+import org.kmymoney.base.basetypes.complex.KMMPrcID;
 import org.kmymoney.base.basetypes.complex.KMMQualifCurrID;
 import org.kmymoney.base.basetypes.complex.KMMQualifSecCurrID;
 import org.kmymoney.tools.CommandLineTool;
@@ -43,7 +43,7 @@ public class UpdPrc extends CommandLineTool
   private static String     kmmInFileName = null;
   private static String     kmmOutFileName = null;
 
-  private static KMMPriceID           prcID = null;
+  private static KMMPrcID             prcID = null;
   private static KMMQualifSecCurrID   fromSecCurrID = null;
   private static KMMQualifCurrID      toCurrID = null;
   private static Helper.DateFormat    dateFmt = null;
@@ -167,7 +167,7 @@ public class UpdPrc extends CommandLineTool
 
     try 
     {
-      prcID = new KMMPriceID(fromSecCurrID, toCurrID, date);
+      prcID = new KMMPrcID(fromSecCurrID, toCurrID, date);
       System.err.println("Price ID: " + prcID.toString());
     }
     catch ( Exception exc )

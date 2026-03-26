@@ -7,7 +7,7 @@ import org.kmymoney.api.read.KMyMoneyPrice;
 import org.kmymoney.api.read.KMyMoneySecurity;
 import org.kmymoney.api.write.KMyMoneyWritableFile;
 import org.kmymoney.api.write.KMyMoneyWritablePrice;
-import org.kmymoney.base.basetypes.complex.KMMPriceID;
+import org.kmymoney.base.basetypes.complex.KMMPrcID;
 import org.kmymoney.base.basetypes.complex.KMMQualifCurrID;
 import org.kmymoney.base.basetypes.complex.KMMQualifSecCurrID;
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ public class PriceHelper
 
 	public static KMyMoneyPrice getPrc(
 			CmdLineHelper_Prc.PrcSelectMode prcSelMode, 
-			KMMPriceID prcID, 
+			KMMPrcID prcID, 
 			KMMQualifSecCurrID fromSecCurrID, KMMQualifCurrID toCurrID, 
 			Helper.DateFormat dateFormat, LocalDate date,
 			String isin,
@@ -87,7 +87,7 @@ public class PriceHelper
 
 	public static KMyMoneyWritablePrice getWrtPrc(
 			CmdLineHelper_Prc.PrcSelectMode prcSelMode, 
-			KMMPriceID prcID, 
+			KMMPrcID prcID, 
 			KMMQualifSecCurrID fromSecCurrID, KMMQualifCurrID toCurrID, 
 			Helper.DateFormat dateFormat, LocalDate date,
 			String isin,

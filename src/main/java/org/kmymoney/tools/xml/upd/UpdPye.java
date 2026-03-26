@@ -84,7 +84,7 @@ public class UpdPye extends CommandLineTool
       .longOpt("kmymoney-out-file")
       .get();
       
-    Option optID = Option.builder("id")
+    Option optID = Option.builder("pye")
       .required()
       .hasArg()
       .argName("pyeid")

@@ -3,7 +3,7 @@ package org.kmymoney.tools.xml.helper;
 import java.time.LocalDate;
 
 import org.apache.commons.cli.CommandLine;
-import org.kmymoney.base.basetypes.complex.KMMPriceID;
+import org.kmymoney.base.basetypes.complex.KMMPrcID;
 import org.kmymoney.base.basetypes.complex.KMMQualifCurrID;
 import org.kmymoney.base.basetypes.complex.KMMQualifSecCurrID;
 import org.kmymoney.base.basetypes.simple.KMMIDNotSetException;
@@ -29,12 +29,12 @@ public class CmdLineHelper_Prc {
 
   // -----------------------------------------------------------------
   
-  public static void setPrcID_direct(KMMPriceID prcID,
+  public static void setPrcID_direct(KMMPrcID prcID,
 			CommandLine cmdLine,
 			PrcSelectMode prcSelMode,
 			boolean scriptMode) throws InvalidCommandLineArgsException, KMMIDNotSetException
   {
-	  KMMPriceID locPrcID = getPrcID_direct(cmdLine,
+	  KMMPrcID locPrcID = getPrcID_direct(cmdLine,
 			  							prcSelMode, 
 			  							scriptMode );
 
@@ -42,7 +42,7 @@ public class CmdLineHelper_Prc {
 	  prcID.set(locPrcID);
   }
 
-  public static KMMPriceID getPrcID_direct(
+  public static KMMPrcID getPrcID_direct(
 		  CommandLine cmdLine,
 		  PrcSelectMode prcSelMode,
 		  boolean scriptMode) throws InvalidCommandLineArgsException {
@@ -53,13 +53,13 @@ public class CmdLineHelper_Prc {
 			  scriptMode );
   }
 
-  public static KMMPriceID getPrcID_direct(
+  public static KMMPrcID getPrcID_direct(
 		  CommandLine cmdLine,
 		  PrcSelectMode prcSelMode,
 		  String prcSelModeArgName,
 		  String prcIDArgName,
 		  boolean scriptMode) throws InvalidCommandLineArgsException {
-	  KMMPriceID prcID = null;
+	  KMMPrcID prcID = null;
 	    
 	  // < prcIDArgName >
 	  if ( cmdLine.hasOption( prcIDArgName ) )
@@ -72,7 +72,7 @@ public class CmdLineHelper_Prc {
 	    		
 		  try
 		  {
-			  prcID = KMMPriceID.parse( cmdLine.getOptionValue(prcIDArgName) ); 
+			  prcID = KMMPrcID.parse( cmdLine.getOptionValue(prcIDArgName) ); 
 		  }	
 		  catch ( Exception exc )
 		  {
@@ -97,7 +97,7 @@ public class CmdLineHelper_Prc {
 
   //------------------------------
   
-  public static KMMPriceID getPrcID_indirect(CommandLine cmdLine,
+  public static KMMPrcID getPrcID_indirect(CommandLine cmdLine,
 		  PrcSelectMode prcSelmode, PrcSelectSubMode prcSelSubMode,
 			boolean scriptMode) throws InvalidCommandLineArgsException
   {
@@ -108,7 +108,7 @@ public class CmdLineHelper_Prc {
 			  scriptMode);
   }
 
-  public static KMMPriceID getPrcID_indirect(CommandLine cmdLine,
+  public static KMMPrcID getPrcID_indirect(CommandLine cmdLine,
 		  PrcSelectMode prcSelmode, PrcSelectSubMode prcSelSubMode,
 			String fromSecCurrIDArgName, String toCurrIDArgName, 
 			String dateFormatArgName, String dateArgName,
@@ -213,7 +213,7 @@ public class CmdLineHelper_Prc {
 			System.err.println( "Date:           " + date );
 		}
 
-		KMMPriceID prcID = new KMMPriceID( fromSecCurrID, toCurrID, date );
+		KMMPrcID prcID = new KMMPrcID( fromSecCurrID, toCurrID, date );
 
 		if ( !scriptMode )
 			System.err.println( "Price ID (indirect): " + prcID );
@@ -221,12 +221,12 @@ public class CmdLineHelper_Prc {
 		return prcID;
 	}
 
-  public static void setPrcID_indirect(KMMPriceID prcID, 
+  public static void setPrcID_indirect(KMMPrcID prcID, 
 			CommandLine cmdLine, 
 			PrcSelectMode prcSelMode, PrcSelectSubMode prcSelSubMode,
 			boolean scriptMode) throws InvalidCommandLineArgsException
 	{
-		KMMPriceID locPrcID = getPrcID_indirect( cmdLine, prcSelMode, prcSelSubMode, scriptMode );
+		KMMPrcID locPrcID = getPrcID_indirect( cmdLine, prcSelMode, prcSelSubMode, scriptMode );
 
 		prcID.set(locPrcID);
 	}
@@ -236,7 +236,7 @@ public class CmdLineHelper_Prc {
   public static void parsePrcStuffWrap(
 		  CommandLine cmdLine,
 		  PrcSelectMode prcSelMode, PrcSelectSubMode prcSelSubMode,
-		  KMMPriceID prcID, 
+		  KMMPrcID prcID, 
 		  KMMQualifSecCurrID fromSecCurrID, KMMQualifCurrID toCurrID, 
 		  Helper.DateFormat dateFormat, LocalDateWrp date,
 		  StringBuffer isin,
@@ -255,7 +255,7 @@ public class CmdLineHelper_Prc {
   public static void parsePrcStuffWrap(
 		  CommandLine cmdLine,
 		  PrcSelectMode prcSelMode, PrcSelectSubMode prcSelSubMode,
-		  String prcIDArgName, KMMPriceID prcID, 
+		  String prcIDArgName, KMMPrcID prcID, 
 		  String fromSecCurrIDArgName, KMMQualifSecCurrID fromSecCurrID,
 		  String toCurrIDArgName, KMMQualifCurrID toCurrID,
 		  String dateFormatArgName, Helper.DateFormat dateFormat,
@@ -328,7 +328,7 @@ public class CmdLineHelper_Prc {
   private static void parsePrcStuffWrap_ID_direct(
 		  CommandLine cmdLine,
 		  PrcSelectMode prcSelMode,
-		  KMMPriceID prcID,
+		  KMMPrcID prcID,
 		  boolean scriptMode) throws InvalidCommandLineArgsException {
 	  	if ( prcSelMode != PrcSelectMode.ID ) {
 			System.err.println("Error: Wrong <prc-sel-mode>" );
@@ -344,7 +344,7 @@ public class CmdLineHelper_Prc {
   private static void parsePrcStuffWrap_ID_direct(
 		  CommandLine cmdLine,
 		  PrcSelectMode prcSelMode,
-		  String prcIDArgName, KMMPriceID prcID,
+		  String prcIDArgName, KMMPrcID prcID,
 		  boolean scriptMode) throws InvalidCommandLineArgsException {
 	  	if ( prcSelMode != PrcSelectMode.ID ) {
 			System.err.println("Error: Wrong <prc-sel-mode>" );
@@ -380,7 +380,7 @@ public class CmdLineHelper_Prc {
   private static void parsePrcStuffWrap_ID_indirect(
 		  CommandLine cmdLine,
 		  PrcSelectMode prcSelMode, PrcSelectSubMode prcSelSubMode,
-		  KMMPriceID prcID, 
+		  KMMPrcID prcID, 
 		  KMMQualifSecCurrID fromSecCurrID, KMMQualifCurrID toCurrID, 
 		  Helper.DateFormat dateFormat, LocalDateWrp date,
 		  StringBuffer isin,
@@ -404,7 +404,7 @@ public class CmdLineHelper_Prc {
   private static void parsePrcStuffWrap_ID_indirect(
 		  CommandLine cmdLine,
 		  PrcSelectMode prcSelMode, PrcSelectSubMode prcSelSubMode,
-		  String prcIDArgName, KMMPriceID prcID, 
+		  String prcIDArgName, KMMPrcID prcID, 
 		  String fromSecCurrIDArgName, KMMQualifSecCurrID fromSecCurrID,
 		  String toCurrIDArgName, KMMQualifCurrID toCurrID,
 		  String dateFormatArgName, Helper.DateFormat dateFormat,

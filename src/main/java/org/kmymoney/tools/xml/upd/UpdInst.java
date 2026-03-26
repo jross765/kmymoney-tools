@@ -79,7 +79,7 @@ public class UpdInst extends CommandLineTool
       .longOpt("kmymoney-out-file")
       .get();
       
-    Option optID = Option.builder("id")
+    Option optID = Option.builder("inst")
       .required()
       .hasArg()
       .argName("instid")

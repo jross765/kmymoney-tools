@@ -262,7 +262,7 @@ public class GetAcctList extends CommandLineTool
     }
     
     if ( ! scriptMode )
-      System.err.println("Name:              " + name);
+      System.err.println("Name:              '" + name + "'");
 
     // <exclude-closed>
     if ( cmdLine.hasOption( "exclude-closed" ) )

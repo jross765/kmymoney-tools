@@ -46,7 +46,7 @@ public class PriceHelper
 			if ( fromSecCurrID != null &&
 				 date != null ) {
 				if ( ! fromSecCurrID.isSet() ) {
-					LOGGER.debug("getPrc: from-sec-curr-ID is not set");
+					LOGGER.debug("getPrc: security-ID is not set");
 					return null;
 				}
 				prc = kmmFile.getPriceByQualifSecCurrIDDate(fromSecCurrID, date);
@@ -111,7 +111,7 @@ public class PriceHelper
 			if ( fromSecCurrID != null &&
 				 date != null ) {
 				if ( isin.equals("") ) {
-					LOGGER.debug("getPrc: ISIN is empty");
+					LOGGER.debug("getPrc: security-ID is not set");
 					return null;
 				}
 				prc = kmmFile.getWritablePriceByQualifSecCurrIDDate(fromSecCurrID, date);

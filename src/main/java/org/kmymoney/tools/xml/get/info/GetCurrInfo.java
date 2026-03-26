@@ -15,7 +15,7 @@ import org.kmymoney.api.read.KMyMoneyCurrency;
 import org.kmymoney.api.read.KMyMoneyPrice;
 import org.kmymoney.api.read.impl.KMyMoneyFileImpl;
 import org.kmymoney.base.basetypes.complex.InvalidQualifSecCurrIDException;
-import org.kmymoney.base.basetypes.complex.KMMQualifCurrID;
+import org.kmymoney.base.basetypes.simple.KMMCurrID;
 import org.kmymoney.tools.CommandLineTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +36,8 @@ public class GetCurrInfo extends CommandLineTool
   private static Options options;
   
   private static String  kmmFileName = null;
-  private static String  symbol      = null;
+  
+  private static KMMCurrID currID = null;
   
   private static boolean showQuotes = false;
   
@@ -62,8 +63,6 @@ public class GetCurrInfo extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // acctID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 
@@ -77,13 +76,14 @@ public class GetCurrInfo extends CommandLineTool
       .longOpt("kmymoney-file")
       .get();
       
-    Option optSymbol = Option.builder("s")
+    Option optISO= Option.builder("iso")
+      .required()
       .hasArg()
-      .argName("symbol")
-      .desc("Symbol (ISO 4127)")
-      .longOpt("symbol")
+      .argName("code")
+      .desc("ISO 4217 currency code")
+      .longOpt("iso-code")
       .get();
-          
+
     // The convenient ones
     Option optShowQuote = Option.builder("squt")
       .desc("Show quotes")
@@ -92,7 +92,7 @@ public class GetCurrInfo extends CommandLineTool
             
     options = new Options();
     options.addOption(optFile);
-    options.addOption(optSymbol);
+    options.addOption(optISO);
     options.addOption(optShowQuote);
   }
 
@@ -107,13 +107,14 @@ public class GetCurrInfo extends CommandLineTool
   {
     KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName), true);
 
-    KMMQualifCurrID currID = new KMMQualifCurrID(symbol);
-    KMyMoneyCurrency curr = kmmFile.getCurrencyByQualifID(currID);
+    KMyMoneyCurrency curr = kmmFile.getCurrencyByID(currID.toString());
     if ( curr == null )
     {
       System.err.println("Could not find currency with qualif. ID " + currID.toString());
       throw new NoEntryFoundException();
     }
+    
+    // ----------------------------
 
     try
     {
@@ -126,15 +127,6 @@ public class GetCurrInfo extends CommandLineTool
 
     try
     {
-      System.out.println("Symbol:            '" + curr.getSymbol() + "'");
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Symbol:            " + "ERROR");
-    }
-
-    try
-    {
       System.out.println("toString:          " + curr.toString());
     }
     catch (Exception exc)
@@ -142,6 +134,15 @@ public class GetCurrInfo extends CommandLineTool
       System.out.println("toString:          " + "ERROR");
     }
     
+    try
+    {
+      System.out.println("Symbol:            '" + curr.getSymbol() + "'");
+    }
+    catch (Exception exc)
+    {
+      System.out.println("Symbol:            " + "ERROR");
+    }
+
     try
     {
       System.out.println("Name:              '" + curr.getName() + "'");
@@ -204,7 +205,7 @@ public class GetCurrInfo extends CommandLineTool
     System.out.println("Number of quotes: " + curr.getQuotes().size());
     
     System.out.println("");
-    for (KMyMoneyPrice prc : curr.getQuotes())
+    for ( KMyMoneyPrice prc : curr.getQuotes() )
     {
       System.out.println(" - " + prc.toString());
     }
@@ -248,19 +249,19 @@ public class GetCurrInfo extends CommandLineTool
     if (!scriptMode)
       System.err.println("KMyMoney file: '" + kmmFileName + "'");
 
-    // <symbol>
-    try
+    // <iso-code>
+    try 
     {
-      symbol = cmdLine.getOptionValue("symbol");
-    }
+    	currID = new KMMCurrID(cmdLine.getOptionValue("iso-code"));
+    } 
     catch (Exception exc)
     {
-      System.err.println("Could not parse <symbol>");
-      throw new InvalidCommandLineArgsException();
+        System.err.println("Could not parse <iso-code>");
+        throw new InvalidCommandLineArgsException();
     }
 
     if (!scriptMode)
-      System.err.println("Symbol:   '" + symbol + "'");
+    	System.err.println("Curr. ID:   '" + currID + "'");
 
     // <show-quotes>
     if (cmdLine.hasOption("show-quotes"))

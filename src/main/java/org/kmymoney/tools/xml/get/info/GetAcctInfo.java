@@ -2,7 +2,6 @@ package org.kmymoney.tools.xml.get.info;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -16,13 +15,13 @@ import org.kmymoney.api.read.KMyMoneyAccount;
 import org.kmymoney.api.read.KMyMoneyTransaction;
 import org.kmymoney.api.read.aux.KMMAccountReconciliation;
 import org.kmymoney.api.read.impl.KMyMoneyFileImpl;
-import org.kmymoney.base.basetypes.complex.KMMComplAcctID;
+import org.kmymoney.base.basetypes.simple.KMMAcctID;
 import org.kmymoney.tools.CommandLineTool;
+import org.kmymoney.tools.xml.helper.AccountHelper;
+import org.kmymoney.tools.xml.helper.CmdLineHelper_Acct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
-import xyz.schnorxoborx.base.beanbase.TooManyEntriesFoundException;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.Helper;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
@@ -43,15 +42,22 @@ public class GetAcctInfo extends CommandLineTool
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
-  private static String         kmmFileName  = null;
-  private static Helper.Mode    mode         = null;
-  private static KMMComplAcctID acctID       = null;
-  private static String         acctName     = null;
+  private static String  kmmFileName  = null;
+
+  private static Helper.Mode acctSelMode = null;
+
+  // CAUTION: As opposed to most other tools, the following variables
+  // have to be instantiated here.
+  
+  private static KMMAcctID     acctID   = new KMMAcctID(); // KMMComplAcctID would be poassible...
+  // The following: sic, StringBuffer, not String,
+  // for it has to be mutable because of the way the args are parsed.
+  private static StringBuffer  acctName = new StringBuffer();
   
   private static boolean showParents  = false;
   private static boolean showChildren = false;
   private static boolean showTrx      = false;
-  private static boolean showRcn   = false;
+  private static boolean showRcn      = false;
   
   private static boolean scriptMode = false; // ::TODO
 
@@ -88,28 +94,28 @@ public class GetAcctInfo extends CommandLineTool
       .longOpt("kmymoney-file")
       .get();
       
-    Option optMode = Option.builder("m")
+    Option optAcctMode = Option.builder("asm")
       .required()
       .hasArg()
       .argName("mode")
-      .desc("Selection mode")
-      .longOpt("mode")
+      .desc("Selection mode for account")
+      .longOpt("acct-sel-mode")
       .get();
-      
+
     Option optAcctID = Option.builder("acct")
       .hasArg()
       .argName("acctid")
       .desc("Account-ID")
       .longOpt("account-id")
       .get();
-    
-    Option optAcctName = Option.builder("n")
+
+    Option optAcctName = Option.builder("an")
       .hasArg()
       .argName("name")
       .desc("Account name (or part of)")
-      .longOpt("name")
+      .longOpt("account-name")
       .get();
-      
+
     // The convenient ones
     Option optShowPrnt = Option.builder("sprnt")
       .desc("Show parents")
@@ -130,10 +136,10 @@ public class GetAcctInfo extends CommandLineTool
       .desc("Show reconciliations")
       .longOpt("show-reconciliations")
       .get();
-    	          
+
     options = new Options();
     options.addOption(optFile);
-    options.addOption(optMode);
+    options.addOption(optAcctMode);
     options.addOption(optAcctID);
     options.addOption(optAcctName);
     options.addOption(optShowPrnt);
@@ -151,36 +157,13 @@ public class GetAcctInfo extends CommandLineTool
   @Override
   protected void kernel() throws Exception
   {
-    KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName), true);
-    
-    KMyMoneyAccount acct = null;
-    if ( mode == Helper.Mode.ID )
-    {
-      acct = kmmFile.getAccountByID(acctID);
-      if ( acct == null )
-      {
-        System.err.println("Found no account with this ID");
-        throw new NoEntryFoundException();
-      }
-    }
-    else if ( mode == Helper.Mode.NAME )
-    {
-      Collection <KMyMoneyAccount> acctList = null; 
-      acctList = kmmFile.getAccountsByName(acctName, true, true);
-      if ( acctList.size() == 0 ) 
-      {
-        System.err.println("Could not find accounts matching this name.");
-        throw new NoEntryFoundException();
-      }
-      else if ( acctList.size() > 1 ) 
-      {
-        System.err.println("Found " + acctList.size() + " accounts matching this name.");
-        System.err.println("Please specify more precisely.");
-        throw new TooManyEntriesFoundException();
-      }
-      acct = acctList.iterator().next();
-    }
-    
+    KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName), ! scriptMode);
+
+    KMyMoneyAccount acct = AccountHelper.getAcct(acctSelMode, 
+												 acctID, acctName.toString(), 
+												 kmmFile,
+												 scriptMode);
+
     printAcctInfo(acct, 0);
   }
 
@@ -443,85 +426,32 @@ public class GetAcctInfo extends CommandLineTool
       System.err.println("Could not parse <kmymoney-file>");
       throw new InvalidCommandLineArgsException();
     }
-    
+
     if ( ! scriptMode )
       System.err.println("KMyMoney file:        '" + kmmFileName + "'");
     
-    // <mode>
+    // <acct-sel-mode>
     try
     {
-      mode = Helper.Mode.valueOf(cmdLine.getOptionValue("mode"));
+      acctSelMode = Helper.Mode.valueOf(cmdLine.getOptionValue("acct-sel-mode"));
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <mode>");
+      System.err.println("Could not parse <acct-sel-mode>");
       throw new InvalidCommandLineArgsException();
     }
     
     if ( ! scriptMode )
-      System.err.println("Mode:                 " + mode);
+      System.err.println("Account mode:  " + acctSelMode);
 
-    // <account-id>
-    if ( cmdLine.hasOption("account-id") )
-    {
-      if ( mode != Helper.Mode.ID )
-      {
-        System.err.println("<account-id> must only be set with <mode> = '" + Helper.Mode.ID.toString() + "'");
-        throw new InvalidCommandLineArgsException();
-      }
-      
-      try
-      {
-        acctID = new KMMComplAcctID( cmdLine.getOptionValue("account-id") );
-      }
-      catch ( Exception exc )
-      {
-        System.err.println("Could not parse <account-id>");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
-    else
-    {
-      if ( mode == Helper.Mode.ID )
-      {
-        System.err.println("<account-id> must be set with <mode> = '" + Helper.Mode.ID.toString() + "'");
-        throw new InvalidCommandLineArgsException();
-      }      
-    }
-    
-    if ( ! scriptMode )
-      System.err.println("Account ID:           '" + acctID + "'");
+  	// ---------
 
-    // <name>
-    if ( cmdLine.hasOption("account-name") )
-    {
-      if ( mode != Helper.Mode.NAME )
-      {
-        System.err.println("<account-name> must only be set with <mode> = '" + Helper.Mode.NAME.toString() + "'");
-        throw new InvalidCommandLineArgsException();
-      }
-      
-      try
-      {
-        acctName = cmdLine.getOptionValue("name");
-      }
-      catch ( Exception exc )
-      {
-        System.err.println("Could not parse <name>");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
-    else
-    {
-      if ( mode == Helper.Mode.NAME )
-      {
-        System.err.println("<account-name> must be set with <mode> = '" + Helper.Mode.NAME.toString() + "'");
-        throw new InvalidCommandLineArgsException();
-      }      
-    }
-    
-    if ( ! scriptMode )
-      System.err.println("Name:                 '" + acctName + "'");
+    // <acct-sel-mode>
+    // <account-id>, <acct-name>
+    CmdLineHelper_Acct.parseAcctStuffWrap( cmdLine, 
+    									acctSelMode,
+    									acctID, acctName,
+    									scriptMode );
 
     // <show-parents>
     if ( cmdLine.hasOption("show-parents"))
@@ -591,7 +521,7 @@ public class GetAcctInfo extends CommandLineTool
 	}
     
     System.out.println("");
-    System.out.println("Valid values for <mode>:");
+    System.out.println("Valid values for <acct-sel-mode>:");
     for ( Helper.Mode elt : Helper.Mode.values() )
       System.out.println(" - " + elt);
   }

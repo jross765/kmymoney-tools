@@ -14,16 +14,15 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.kmymoney.api.read.KMyMoneyPrice;
 import org.kmymoney.api.read.KMyMoneySecurity;
 import org.kmymoney.api.read.impl.KMyMoneyFileImpl;
-import org.kmymoney.base.basetypes.complex.InvalidQualifSecCurrIDException;
 import org.kmymoney.base.basetypes.simple.KMMSecID;
 import org.kmymoney.tools.CommandLineTool;
-import org.kmymoney.tools.xml.helper.CmdLineHelper;
-import org.kmymoney.tools.xml.helper.EnumSecSingleSelMode;
+import org.kmymoney.tools.xml.helper.CmdLineHelper_Sec;
 import org.kmymoney.tools.xml.helper.SecurityHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
+import xyz.schnorxoborx.base.cmdlinetools.Helper;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
 public class GetSecInfo extends CommandLineTool
@@ -39,15 +38,19 @@ public class GetSecInfo extends CommandLineTool
   
   private static String  kmmFileName = null;
   
+  private static Helper.CmdtySecSingleSelMode secSelMode = null;
+
   // CAUTION: As opposed to most other tools, the following variables
   // have to be instantiated here.
   
-  private static EnumSecSingleSelMode mode = new EnumSecSingleSelMode();
-
   private static KMMSecID      secID    = new KMMSecID();
   // This one and the following: sic, StringBuffer, not String,
   // for it has to be mutable because of the way the args are parsed.
   private static StringBuffer  isin     = new StringBuffer();
+  // Possibly later:
+  // private static StringBuffer  wkn      = new StringBuffer();
+  // private static StringBuffer  cusip    = new StringBuffer();
+  // private static StringBuffer  sedol    = new StringBuffer();
   private static StringBuffer  secName  = new StringBuffer();
   
   private static boolean showQuotes = false;
@@ -87,38 +90,38 @@ public class GetSecInfo extends CommandLineTool
       .longOpt("kmymoney-file")
       .get();
       
-    Option optMode = Option.builder("m")
+    Option optMode = Option.builder("ssm")
       .required()
       .hasArg()
       .argName("mode")
-      .desc("Selection mode")
-      .longOpt("mode")
+      .desc("Selection mode for security")
+      .longOpt("sec-sel-mode")
       .get();
-        
+
     Option optSecID = Option.builder("sec")
       .hasArg()
       .argName("ID")
       .desc("Security ID " + 
-      		"(for <mode> = " + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ID + " only)")
+      		"(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " only)")
       .longOpt("security-id")
       .get();
-    	          
+
     Option optISIN = Option.builder("is")
       .hasArg()
       .argName("isin")
       .desc("ISIN " + 
-  		   	"(for <mode> = " + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.ISIN + " only)")
+  		   	"(for <mode> = " + Helper.CmdtySecSingleSelMode.ISIN + " only)")
       .longOpt("isin")
       .get();
-        
-    Option optSecName = Option.builder("n")
+
+    Option optSecName = Option.builder("sn")
       .hasArg()
       .argName("name")
       .desc("Security name (full) " + 
-  		    "(for <mode> = " + xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.NAME + " only)")
-      .longOpt("name")
+  		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.NAME + " only)")
+      .longOpt("security-name")
       .get();
-          
+
     // The convenient ones
     Option optShowQuote = Option.builder("squt")
       .desc("Show quotes")
@@ -145,9 +148,10 @@ public class GetSecInfo extends CommandLineTool
   {
     KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName), true);
 
-    KMyMoneySecurity sec = SecurityHelper.getSec(mode.mode, 
+    KMyMoneySecurity sec = SecurityHelper.getSec(secSelMode,
 												 secID, isin.toString(), secName.toString(), 
-												 kmmFile);
+												 kmmFile,
+												 scriptMode);
     
     // ----------------------------
 
@@ -311,11 +315,29 @@ public class GetSecInfo extends CommandLineTool
     if (!scriptMode)
       System.err.println("KMyMoney file: '" + kmmFileName + "'");
 
+  	// ---------
+  	
+    // <sec-sel-mode>
+    try
+    {
+      secSelMode = Helper.CmdtySecSingleSelMode.valueOf(cmdLine.getOptionValue("sec-sel-mode"));
+    }
+    catch ( Exception exc )
+    {
+      System.err.println("Could not parse <sec-sel-mode>");
+      throw new InvalidCommandLineArgsException();
+    }
+    
+    if ( ! scriptMode )
+      System.err.println("Security mode:         " + secSelMode);
+
+  	// ---------
+  	
     // <mode>, <security-id>, <isin>, <name>
-    CmdLineHelper.parseSecStuffWrap( cmdLine, 
-    								 mode, 
-    								 secID, isin, secName, 
-    								 scriptMode );
+    CmdLineHelper_Sec.parseSecStuffWrap( cmdLine,
+    									secSelMode, null,
+    									secID, isin, secName,
+    									scriptMode );
 
     // <show-quotes>
     if (cmdLine.hasOption("show-quotes"))
@@ -346,8 +368,8 @@ public class GetSecInfo extends CommandLineTool
 	}
     
     System.out.println("");
-    System.out.println("Valid values for <mode>:");
-    for ( xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode elt : xyz.schnorxoborx.base.cmdlinetools.Helper.CmdtySecSingleSelMode.values() )
+    System.out.println("Valid values for <sec-sel-mode>:");
+    for ( Helper.CmdtySecSingleSelMode elt : Helper.CmdtySecSingleSelMode.values() )
       System.out.println(" - " + elt);
   }
 }

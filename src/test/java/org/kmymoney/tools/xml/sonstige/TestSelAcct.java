@@ -11,24 +11,24 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.kmymoney.api.read.KMyMoneySecurity;
+import org.kmymoney.api.read.KMyMoneyAccount;
 import org.kmymoney.api.read.impl.KMyMoneyFileImpl;
-import org.kmymoney.base.basetypes.simple.KMMSecID;
+import org.kmymoney.base.basetypes.simple.KMMAcctID;
 import org.kmymoney.tools.CommandLineTool;
-import org.kmymoney.tools.xml.helper.CmdLineHelper_Sec;
-import org.kmymoney.tools.xml.helper.SecurityHelper;
+import org.kmymoney.tools.xml.get.list.Helper;
+import org.kmymoney.tools.xml.helper.AccountHelper;
+import org.kmymoney.tools.xml.helper.CmdLineHelper_Acct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
-import xyz.schnorxoborx.base.cmdlinetools.Helper;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
-public class TestSelSec extends CommandLineTool
+public class TestSelAcct extends CommandLineTool
 {
   // Logger
   @SuppressWarnings("unused")
-  private static final Logger LOGGER = LoggerFactory.getLogger(TestSelSec.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestSelAcct.class);
   
   // -----------------------------------------------------------------
 
@@ -37,20 +37,15 @@ public class TestSelSec extends CommandLineTool
   
   private static String  kmmFileName = null;
   
-  private static Helper.CmdtySecSingleSelMode secSelMode = null;
+  private static Helper.Mode acctSelMode = null;
 
   // CAUTION: As opposed to most other tools, the following variables
   // have to be instantiated here.
   
-  private static KMMSecID      secID    = new KMMSecID();
-  // This one and the following: sic, StringBuffer, not String,
+  private static KMMAcctID    acctID    = new KMMAcctID();
+  // This following: sic, StringBuffer, not String,
   // for it has to be mutable because of the way the args are parsed.
-  private static StringBuffer  isin     = new StringBuffer();
-  // Possibly later:
-  // private static StringBuffer  wkn      = new StringBuffer();
-  // private static StringBuffer  cusip    = new StringBuffer();
-  // private static StringBuffer  sedol    = new StringBuffer();
-  private static StringBuffer  secName  = new StringBuffer();
+  private static StringBuffer  acctName = new StringBuffer();
   
   private static boolean scriptMode = false;
   
@@ -60,7 +55,7 @@ public class TestSelSec extends CommandLineTool
   {
     try
     {
-      TestSelSec tool = new TestSelSec ();
+      TestSelAcct tool = new TestSelAcct ();
       tool.execute(args);
     }
     catch (CouldNotExecuteException exc) 
@@ -87,47 +82,36 @@ public class TestSelSec extends CommandLineTool
       .longOpt("kmymoney-file")
       .get();
       
-    Option optMode = Option.builder("ssm")
+    Option optAcctMode = Option.builder("asm")
       .required()
       .hasArg()
       .argName("mode")
-      .desc("Selection mode for security")
-      .longOpt("sec-sel-mode")
+      .desc("Selection mode for account")
+      .longOpt("acct-sel-mode")
       .get();
-        
-    Option optSecID = Option.builder("sec")
+
+    Option optAcctID = Option.builder("acct")
       .hasArg()
-      .argName("secid")
-      .desc("Security ID " + 
-      		"(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " only)")
-      .longOpt("security-id")
+      .argName("UUID")
+      .desc("Account-ID")
+      .longOpt("account-id")
       .get();
-    	          
-    Option optISIN = Option.builder("is")
-      .hasArg()
-      .argName("isin")
-      .desc("ISIN " + 
-  		   	"(for <mode> = " + Helper.CmdtySecSingleSelMode.ISIN + " only)")
-      .longOpt("isin")
-      .get();
-        
-    Option optSecName = Option.builder("sn")
+
+    Option optAcctName = Option.builder("an")
       .hasArg()
       .argName("name")
-      .desc("Security name (full) " + 
-  		    "(for <mode> = " + Helper.CmdtySecSingleSelMode.NAME + " only)")
-      .longOpt("security-name")
+      .desc("Account name (or part of)")
+      .longOpt("account-name")
       .get();
-          
+
     // The convenient ones
     // ::EMPTY
-            
+
     options = new Options();
     options.addOption(optFile);
-    options.addOption(optMode);
-    options.addOption(optSecID);
-    options.addOption(optISIN);
-    options.addOption(optSecName);
+    options.addOption(optAcctMode);
+    options.addOption(optAcctID);
+    options.addOption(optAcctName);
   }
 
   @Override
@@ -141,12 +125,12 @@ public class TestSelSec extends CommandLineTool
   {
 	KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName), ! scriptMode);
 
-    KMyMoneySecurity sec = SecurityHelper.getSec(secSelMode, 
-    											 secID, isin.toString(), secName.toString(), 
-    											 kmmFile,
-    											 scriptMode);
+    KMyMoneyAccount acct = AccountHelper.getAcct(acctSelMode, 
+    											acctID, acctName.toString(), 
+    											kmmFile,
+    											scriptMode);
 
-    System.out.println("Selected security: " + sec.toString());
+    System.out.println("Selected account: " + acct.toString());
   }
 
   // -----------------------------------------------------------------
@@ -174,38 +158,38 @@ public class TestSelSec extends CommandLineTool
     {
       kmmFileName = cmdLine.getOptionValue("kmymoney-file");
     }
-    catch (Exception exc)
+    catch ( Exception exc )
     {
       System.err.println("Could not parse <kmymoney-file>");
       throw new InvalidCommandLineArgsException();
     }
 
-    if (!scriptMode)
+    if ( ! scriptMode )
       System.err.println("KMyMoney file: '" + kmmFileName + "'");
 
   	// ---------
   	
-    // <mode>
+    // <acct-sel-mode>
     try
     {
-      secSelMode = Helper.CmdtySecSingleSelMode.valueOf(cmdLine.getOptionValue("sec-sel-mode"));
+      acctSelMode = Helper.Mode.valueOf(cmdLine.getOptionValue("acct-sel-mode"));
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <sec-sel-mode>");
+      System.err.println("Could not parse <acct-sel-mode>");
       throw new InvalidCommandLineArgsException();
     }
     
     if ( ! scriptMode )
-      System.err.println("Security mode:         " + secSelMode);
-
+      System.err.println("Account mode:  " + acctSelMode);
+    
   	// ---------
-  	
-    // <mode>, 
-    // <security-id>, <isin>, <name>
-    CmdLineHelper_Sec.parseSecStuffWrap( cmdLine, 
-    								 secSelMode, null,
-    								 secID, isin, secName, 
+
+    // <acct-sel-mode>
+    // <account-id>, <acct-name>
+    CmdLineHelper_Acct.parseAcctStuffWrap( cmdLine, 
+    								 acctSelMode, 
+    								 acctID, acctName, 
     								 scriptMode );
   }
 
@@ -215,7 +199,7 @@ public class TestSelSec extends CommandLineTool
 	HelpFormatter formatter = HelpFormatter.builder().get();
 	try
 	{
-		formatter.printHelp( "TestSelSec", "", options, "", true );
+		formatter.printHelp( "TestSelAcct", "", options, "", true );
 	}
 	catch ( IOException e )
 	{
@@ -224,8 +208,8 @@ public class TestSelSec extends CommandLineTool
 	}
     
     System.out.println("");
-    System.out.println("Valid values for <sec-sel-mode>:");
-    for ( Helper.CmdtySecSingleSelMode elt : Helper.CmdtySecSingleSelMode.values() )
+    System.out.println("Valid values for <acct-sel-mode>:");
+    for ( Helper.Mode elt : Helper.Mode.values() )
       System.out.println(" - " + elt);
   }
 }

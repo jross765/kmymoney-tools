@@ -38,7 +38,7 @@ public class TestSelPrc extends CommandLineTool
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
-  private static String  kmmFileName = null;
+  private static String kmmFileName = null;
   
   private static CmdLineHelper_Prc.PrcSelectMode    prcSelMode = null;
   private static CmdLineHelper_Prc.PrcSelectSubMode prcSelSubMode = null;

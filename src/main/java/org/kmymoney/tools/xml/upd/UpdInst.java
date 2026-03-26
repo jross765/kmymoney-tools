@@ -36,7 +36,7 @@ public class UpdInst extends CommandLineTool
   
   private static KMMInstID instID = null;
 
-  private static String name = null;
+  private static String newName = null;
 
   private static KMyMoneyWritableInstitution inst = null;
 
@@ -58,8 +58,6 @@ public class UpdInst extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // instID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 
@@ -89,18 +87,11 @@ public class UpdInst extends CommandLineTool
       .longOpt("institution-id")
       .get();
             
-    Option optNumber = Option.builder("num")
-      .hasArg()
-      .argName("number")
-      .desc("Institution number")
-      .longOpt("number")
-      .get();
-    	    
     Option optName = Option.builder("nam")
       .hasArg()
       .argName("name")
-      .desc("Institution name")
-      .longOpt("name")
+      .desc("Institution name (new)")
+      .longOpt("new-name")
       .get();
     
     // The convenient ones
@@ -110,7 +101,6 @@ public class UpdInst extends CommandLineTool
     options.addOption(optFileIn);
     options.addOption(optFileOut);
     options.addOption(optID);
-    options.addOption(optNumber);
     options.addOption(optName);
   }
 
@@ -138,7 +128,7 @@ public class UpdInst extends CommandLineTool
       throw new NoEntryFoundException();
     }
     
-    doChanges(kmmFile);
+    doChanges();
     System.err.println("Institution after update: " + inst.toString());
     
     kmmFile.writeFile(new File(kmmOutFileName));
@@ -146,12 +136,12 @@ public class UpdInst extends CommandLineTool
     System.out.println("OK");
   }
 
-  private void doChanges(KMyMoneyWritableFileImpl kmmFile) throws Exception
+  private void doChanges() throws Exception
   {
-    if ( name != null )
+    if ( newName != null )
     {
       System.err.println("Setting name");
-      inst.setName(name);
+      inst.setName(newName);
     }
   }
 
@@ -210,20 +200,20 @@ public class UpdInst extends CommandLineTool
     }
     System.err.println("Institution ID: " + instID);
 
-    // <name>
-    if ( cmdLine.hasOption("name") ) 
+    // <new-name>
+    if ( cmdLine.hasOption("new-name") ) 
     {
       try
       {
-        name = cmdLine.getOptionValue("name");
+        newName = cmdLine.getOptionValue("new-name").trim();
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <name>");
+        System.err.println("Could not parse <new-name>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Name: '" + name + "'");
+    System.err.println("New name: '" + newName + "'");
   }
   
   @Override

@@ -36,9 +36,9 @@ public class UpdTag extends CommandLineTool
   
   private static KMMTagID tagID = null;
 
-  private static String name  = null;
-  private static String descr = null;
-  private static String color = null;
+  private static String newName  = null;
+  private static String newDescr = null;
+  private static String newColor = null;
 
   private static KMyMoneyWritableTag tag = null;
 
@@ -60,8 +60,6 @@ public class UpdTag extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // TagID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 
@@ -94,22 +92,22 @@ public class UpdTag extends CommandLineTool
     Option optName = Option.builder("nam")
       .hasArg()
       .argName("name")
-      .desc("Tag name")
-      .longOpt("name")
+      .desc("Tag name (new)")
+      .longOpt("new-name")
       .get();
     
     Option optDescr = Option.builder("desc")
       .hasArg()
       .argName("descr")
-      .desc("Tag description")
-      .longOpt("description")
+      .desc("Tag description (new)")
+      .longOpt("new-description")
       .get();
       
     Option optColor = Option.builder("c")
       .hasArg()
       .argName("descr")
-      .desc("Tag color")
-      .longOpt("color")
+      .desc("Tag color (new)")
+      .longOpt("new-color")
       .get();
     	      
     // The convenient ones
@@ -148,7 +146,7 @@ public class UpdTag extends CommandLineTool
       throw new NoEntryFoundException();
     }
     
-    doChanges(kmmFile);
+    doChanges();
     System.err.println("Tag after update: " + tag.toString());
     
     kmmFile.writeFile(new File(kmmOutFileName));
@@ -156,24 +154,24 @@ public class UpdTag extends CommandLineTool
     System.out.println("OK");
   }
 
-  private void doChanges(KMyMoneyWritableFileImpl kmmFile) throws Exception
+  private void doChanges() throws Exception
   {
-    if ( name != null )
+    if ( newName != null )
     {
       System.err.println("Setting name");
-      tag.setName(name);
+      tag.setName(newName);
     }
 
-    if ( descr != null )
+    if ( newDescr != null )
     {
       System.err.println("Setting description");
-      tag.setNotes(descr);
+      tag.setNotes(newDescr);
     }
 
-    if ( color != null )
+    if ( newColor != null )
     {
       System.err.println("Setting color");
-      tag.setColor(color);
+      tag.setColor(newColor);
     }
   }
 
@@ -232,50 +230,50 @@ public class UpdTag extends CommandLineTool
     }
     System.err.println("Tag ID: " + tagID);
 
-    // <name>
-    if ( cmdLine.hasOption("name") ) 
+    // <new-name>
+    if ( cmdLine.hasOption("new-name") ) 
     {
       try
       {
-        name = cmdLine.getOptionValue("name");
+        newName = cmdLine.getOptionValue("new-name").trim();
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <name>");
+        System.err.println("Could not parse <new-name>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Name: '" + name + "'");
+    System.err.println("New name: '" + newName + "'");
 
-    // <description>
-    if ( cmdLine.hasOption("description") ) 
+    // <new-description>
+    if ( cmdLine.hasOption("new-description") ) 
     {
       try
       {
-        descr = cmdLine.getOptionValue("description");
+        newDescr = cmdLine.getOptionValue("new-description").trim();
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <description>");
+        System.err.println("Could not parse <new-description>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Description: '" + descr + "'");
+    System.err.println("New description: '" + newDescr + "'");
 
-    // <color>
-    if ( cmdLine.hasOption("color") ) 
+    // <new-color>
+    if ( cmdLine.hasOption("new-color") ) 
     {
       try
       {
-        color = cmdLine.getOptionValue("color");
+        newColor = cmdLine.getOptionValue("new-color").trim();
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <color>");
+        System.err.println("Could not parse <new-color>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Color: '" + color + "'");
+    System.err.println("New color: '" + newColor + "'");
   }
   
   @Override

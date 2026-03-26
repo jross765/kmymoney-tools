@@ -49,8 +49,8 @@ public class UpdPrc extends CommandLineTool
   private static Helper.DateFormat    dateFmt = null;
   private static LocalDate            date = null;
   
-  private static KMyMoneyPrice.Source source = null;
-  private static FixedPointNumber     value  = null;
+  private static KMyMoneyPrice.Source newSource = null;
+  private static FixedPointNumber     newValue  = null;
 
   private static KMyMoneyWritablePrice prc = null;
 
@@ -74,8 +74,6 @@ public class UpdPrc extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // prcID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 
@@ -131,15 +129,15 @@ public class UpdPrc extends CommandLineTool
     Option optSource = Option.builder("s")
       .hasArg()
       .argName("source")
-      .desc("Price source")
-      .longOpt("source")
+      .desc("Price source (new)")
+      .longOpt("new-source")
       .get();
-    	    	    
+
     Option optValue = Option.builder("v")
       .hasArg()
       .argName("value")
-      .desc("Price value")
-      .longOpt("val")
+      .desc("Price value (new)")
+      .longOpt("new-value")
       .get();
 
     // The convenient ones
@@ -191,7 +189,7 @@ public class UpdPrc extends CommandLineTool
       throw new NoEntryFoundException();
     }
     
-    doChanges(kmmFile);
+    doChanges();
     System.err.println("Price after update: " + prc.toString());
     
     kmmFile.writeFile(new File(kmmOutFileName));
@@ -199,18 +197,18 @@ public class UpdPrc extends CommandLineTool
     System.out.println("OK");
   }
 
-  private void doChanges(KMyMoneyWritableFileImpl kmmFile) throws Exception
+  private void doChanges() throws Exception
   {
-    if ( source != null )
+    if ( newSource != null )
     {
       System.err.println("Setting source");
-      prc.setSource(source);
+      prc.setSource(newSource);
     }
 
-    if ( value != null )
+    if ( newValue != null )
     {
       System.err.println("Setting value");
-      prc.setValue(value);
+      prc.setValue(newValue);
     }
   }
 
@@ -297,35 +295,35 @@ public class UpdPrc extends CommandLineTool
       throw new InvalidCommandLineArgsException();
     }
 
-    // <source>
-    if ( cmdLine.hasOption("source") ) 
+    // <new-source>
+    if ( cmdLine.hasOption("new-source") ) 
     {
       try
       {
-    	source = KMyMoneyPrice.Source.valueOf( cmdLine.getOptionValue("source") );
+    	newSource = KMyMoneyPrice.Source.valueOf( cmdLine.getOptionValue("new-source") );
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <source>");
+        System.err.println("Could not parse <new-source>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Source: " + source);
+    System.err.println("New source: " + newSource);
 
-    // <value>
-    if ( cmdLine.hasOption("value") ) 
+    // <new-value>
+    if ( cmdLine.hasOption("new-value") ) 
     {
       try
       {
-        value = new FixedPointNumber( cmdLine.getOptionValue("value") );
+        newValue = new FixedPointNumber( cmdLine.getOptionValue("new-value") );
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <value>");
+        System.err.println("Could not parse <new-value>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Value: " + value);
+    System.err.println("New value: " + newValue);
   }
   
   @Override

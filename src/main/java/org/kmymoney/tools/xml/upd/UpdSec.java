@@ -16,10 +16,11 @@ import org.kmymoney.api.write.KMyMoneyWritableSecurity;
 import org.kmymoney.api.write.impl.KMyMoneyWritableFileImpl;
 import org.kmymoney.base.basetypes.simple.KMMSecID;
 import org.kmymoney.tools.CommandLineTool;
+import org.kmymoney.tools.xml.helper.CmdLineHelper_Sec;
+import org.kmymoney.tools.xml.helper.SecurityHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.Helper;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
@@ -35,19 +36,30 @@ public class UpdSec extends CommandLineTool
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
-  private static String         kmmInFileName  = null;
-  private static String         kmmOutFileName = null;
+  private static String kmmInFileName  = null;
+  private static String kmmOutFileName = null;
 
-  private static Helper.CmdtySecSingleSelMode mode        = null;
-  private static KMMSecID            secID       = null;
-  private static String              isin        = null;
+  private static Helper.CmdtySecSingleSelMode secSelMode = null;
+
+  // CAUTION: As opposed to most other tools, the following variables
+  // have to be instantiated here.
   
-  private static String          name = null;
-  @SuppressWarnings("unused")
-  private static String          descr = null;
-  private static KMMSecCurr.Type type = null;
+  private static KMMSecID      secID    = new KMMSecID();
+  // This one and the following: sic, StringBuffer, not String,
+  // for it has to be mutable because of the way the args are parsed.
+  private static StringBuffer  isin     = new StringBuffer();
+  // Possibly later:
+  // private static StringBuffer  wkn      = new StringBuffer();
+  // private static StringBuffer  cusip    = new StringBuffer();
+  // private static StringBuffer  sedol    = new StringBuffer();
+  // private static StringBuffer  secName  = new StringBuffer(); // <-- NOT for selection
+
+  private static String          newName  = null;
+  private static KMMSecCurr.Type newType  = null;
 
   private static KMyMoneyWritableSecurity sec = null;
+
+  private static boolean scriptMode = false; // ::TODO
 
   // -----------------------------------------------------------------
 
@@ -69,8 +81,6 @@ public class UpdSec extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // acctID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 
@@ -83,7 +93,7 @@ public class UpdSec extends CommandLineTool
       .desc("KMyMoney file (in)")
       .longOpt("kmymoney-in-file")
       .get();
-          
+
     Option optFileOut = Option.builder("of")
       .required()
       .hasArg()
@@ -91,43 +101,47 @@ public class UpdSec extends CommandLineTool
       .desc("KMyMoney file (out)")
       .longOpt("kmymoney-out-file")
       .get();
-      
-    Option optMode = Option.builder("m")
+
+    Option optMode = Option.builder("ssm")
       .required()
       .hasArg()
       .argName("mode")
-      .desc("Selection mode")
-      .longOpt("mode")
+      .desc("Selection mode for security")
+      .longOpt("sec-sel-mode")
       .get();
-    	        
+
     Option optSecID = Option.builder("sec")
       .hasArg()
-      .argName("ID")
-      .desc("Security ID")
+      .argName("secid")
+      .desc("Security ID"+
+        		"(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " only)")
       .longOpt("security-id")
       .get();
     	          
     Option optISIN = Option.builder("is")
       .hasArg()
       .argName("isin")
-      .desc("ISIN")
+      .desc("ISIN" + 
+    		  "(for <mode> = " + Helper.CmdtySecSingleSelMode.ISIN + " only)")
       .longOpt("isin")
       .get();
-            
-    Option optName = Option.builder("n")
+
+    // ---
+    
+    Option optName = Option.builder("nam")
       .hasArg()
       .argName("name")
-      .desc("Security name")
-      .longOpt("name")
+      .desc("Security name (new)") // <-- !
+      .longOpt("new-name")
       .get();
     
     Option optType = Option.builder("t")
       .hasArg()
       .argName("type")
-      .desc("Security type")
-      .longOpt("type")
+      .desc("Security type (new)")
+      .longOpt("new-type")
       .get();
-        
+
     // The convenient ones
     // ::EMPTY
           
@@ -152,31 +166,15 @@ public class UpdSec extends CommandLineTool
   {
     KMyMoneyWritableFileImpl kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName), true);
 
-    KMyMoneyWritableSecurity sec = null;
-    
-    if ( mode == Helper.CmdtySecSingleSelMode.ID )
-    {
-      sec = kmmFile.getWritableSecurityByID(secID);
-      if ( sec == null )
-      {
-        System.err.println("Could not find a security with this ID.");
-        throw new NoEntryFoundException();
-      }
-    }
-    else if ( mode == Helper.CmdtySecSingleSelMode.ISIN )
-    {
-      sec = kmmFile.getWritableSecurityByCode(isin);
-      if ( sec == null )
-      {
-        System.err.println("Could not find securities with this ISIN.");
-        throw new NoEntryFoundException();
-      }
-    }
-    // NOT by name!
-    
+    sec = SecurityHelper.getWrtSec(secSelMode,
+								secID, isin.toString(), null, // <-- sic, not by name 
+								kmmFile,
+								scriptMode);
+    System.err.println("Security before update: " + sec.toString());
+
     // ----------------------------
     
-    doChanges(kmmFile);
+    doChanges();
     System.err.println("Security after update: " + sec.toString());
     
     kmmFile.writeFile(new File(kmmOutFileName));
@@ -184,18 +182,18 @@ public class UpdSec extends CommandLineTool
     System.out.println("OK");
   }
 
-  private void doChanges(KMyMoneyWritableFileImpl kmmFile) throws Exception
+  private void doChanges() throws Exception
   {
-    if ( name != null )
+    if ( newName != null )
     {
       System.err.println("Setting name");
-      sec.setName(name);
+      sec.setName(newName);
     }
 
-    if ( type != null )
+    if ( newType != null )
     {
       System.err.println("Setting type");
-      sec.setType(type);
+      sec.setType(newType);
     }
   }
 
@@ -229,7 +227,7 @@ public class UpdSec extends CommandLineTool
       throw new InvalidCommandLineArgsException();
     }
 
-//    if ( ! scriptMode )
+    if ( ! scriptMode )
     	System.err.println("KMyMoney file (in): '" + kmmInFileName + "'");
     
     // <kmymoney-out-file>
@@ -243,124 +241,76 @@ public class UpdSec extends CommandLineTool
       throw new InvalidCommandLineArgsException();
     }
 
-//    if ( ! scriptMode )
+    if ( ! scriptMode )
     	System.err.println("KMyMoney file (out): '" + kmmOutFileName + "'");
 
-    // <mode>
+    // <-sec-sel-mode>
     try
     {
-      mode = Helper.CmdtySecSingleSelMode.valueOf(cmdLine.getOptionValue("mode"));
+      secSelMode = Helper.CmdtySecSingleSelMode.valueOf(cmdLine.getOptionValue("sec-sel-mode"));
       
-      if ( mode != Helper.CmdtySecSingleSelMode.NAME )
+      if ( secSelMode == Helper.CmdtySecSingleSelMode.NAME )
       {
-        System.err.println("<mode> '" + Helper.CmdtySecSingleSelMode.NAME + "' must not be used here");
+        System.err.println("<sec-sel-mode> '" + Helper.CmdtySecSingleSelMode.NAME + "' must not be used here");
         throw new InvalidCommandLineArgsException();
       }
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <mode>");
+      System.err.println("Could not parse <sec-sel-mode>");
       throw new InvalidCommandLineArgsException();
     }
     
-//    if ( ! scriptMode )
-      System.err.println("Mode:         " + mode);
+    if ( ! scriptMode )
+      System.err.println("Security mode:         " + secSelMode);
 
-    // <security-id>
-    if ( cmdLine.hasOption("security-id") )
-    {
-      if ( mode != Helper.CmdtySecSingleSelMode.ID )
-      {
-        System.err.println("<security-id> must only be set with <mode> = '" + Helper.CmdtySecSingleSelMode.ID.toString() + "'");
-        throw new InvalidCommandLineArgsException();
-      }
-      
-      try
-      {
-        secID = new KMMSecID( cmdLine.getOptionValue("security-id") );
-      }
-      catch (Exception exc)
-      {
-        System.err.println("Could not parse <security-id>");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
-    else
-    {
-      if ( mode == Helper.CmdtySecSingleSelMode.ID )
-      {
-        System.err.println("<security-id> must be set with <mode> = '" + Helper.CmdtySecSingleSelMode.ID.toString() + "'");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
+  	// ---------
 
-//    if ( ! scriptMode )
-      System.err.println("Security ID:  '" + secID + "'");
+    // <sec-sel-mode>,
+    // <secid-type>, <isin>
+    // NOT NAME!
+    CmdLineHelper_Sec.parseSecStuffWrap( cmdLine, 
+    									secSelMode, null,
+    									secID, 
+    									isin, 
+    									null, // <-- !
+    									scriptMode );
 
-    // <isin>
-    if ( cmdLine.hasOption("isin") )
-    {
-      if ( mode != Helper.CmdtySecSingleSelMode.ISIN )
-      {
-        System.err.println("<isin> must only be set with <mode> = '" + Helper.CmdtySecSingleSelMode.ISIN.toString() + "'");
-        throw new InvalidCommandLineArgsException();
-      }
-      
-      try
-      {
-        isin = cmdLine.getOptionValue("isin");
-      }
-      catch (Exception exc)
-      {
-        System.err.println("Could not parse <isin>");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
-    else
-    {
-      if ( mode == Helper.CmdtySecSingleSelMode.ISIN )
-      {
-        System.err.println("<isin> must be set with <mode> = '" + Helper.CmdtySecSingleSelMode.ISIN.toString() + "'");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
+  	// ---------
 
-//    if ( ! scriptMode )
-      System.err.println("ISIN:         '" + isin + "'");
-
-    // <name>
-    if ( cmdLine.hasOption("name") ) 
+    // <new-name>
+    if ( cmdLine.hasOption("new-name") ) 
     {
       try
       {
-        name = cmdLine.getOptionValue("name");
+        newName = cmdLine.getOptionValue("new-name").trim();
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <name>");
+        System.err.println("Could not parse <new-name>");
         throw new InvalidCommandLineArgsException();
       }
     }
 
-//    if ( ! scriptMode )
-      System.err.println("Name: '" + name + "'");
+    if ( ! scriptMode )
+      System.err.println("New name: '" + newName + "'");
 
-    // <type>
-    if ( cmdLine.hasOption("type") ) 
+    // <new-type>
+    if ( cmdLine.hasOption("new-type") ) 
     {
       try
       {
-        type = KMMSecCurr.Type.valueOf( cmdLine.getOptionValue("type") );
+        newType = KMMSecCurr.Type.valueOf( cmdLine.getOptionValue("new-type") );
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <type>");
+        System.err.println("Could not parse <new-type>");
         throw new InvalidCommandLineArgsException();
       }
     }
 
-//    if ( ! scriptMode )
-      System.err.println("Type: '" + type + "'");
+    if ( ! scriptMode )
+      System.err.println("New type: '" + newType + "'");
   }
   
   @Override
@@ -378,7 +328,12 @@ public class UpdSec extends CommandLineTool
 	}
     
     System.out.println("");
-    System.out.println("Valid values for <type>:");
+    System.out.println("Valid values for <sec-sel-mode>:");
+    for ( Helper.CmdtySecSingleSelMode elt : Helper.CmdtySecSingleSelMode.values() )
+      System.out.println(" - " + elt);
+    
+    System.out.println("");
+    System.out.println("Valid values for <new-type>:");
     for ( KMMSecCurr.Type elt : KMMSecCurr.Type.values() )
       System.out.println(" - " + elt);
   }

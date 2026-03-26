@@ -38,8 +38,8 @@ public class UpdPye extends CommandLineTool
   
   private static KMMPyeID pyeID = null;
 
-  private static String name = null;
-  private static String descr = null;
+  private static String newName = null;
+  private static String newDescr = null;
 
   private static KMyMoneyWritablePayee pye = null;
 
@@ -63,8 +63,6 @@ public class UpdPye extends CommandLineTool
   @Override
   protected void init() throws Exception
   {
-    // pyeID = UUID.randomUUID();
-
 //    cfg = new PropertiesConfiguration(System.getProperty("config"));
 //    getConfigSettings(cfg);
 
@@ -94,25 +92,18 @@ public class UpdPye extends CommandLineTool
       .longOpt("payee-id")
       .get();
             
-    Option optNumber = Option.builder("num")
-      .hasArg()
-      .argName("number")
-      .desc("Payee number")
-      .longOpt("number")
-      .get();
-    	    
     Option optName = Option.builder("nam")
       .hasArg()
       .argName("name")
-      .desc("Payee name")
-      .longOpt("name")
+      .desc("Payee name (new)")
+      .longOpt("new-name")
       .get();
     
     Option optDescr = Option.builder("desc")
       .hasArg()
       .argName("descr")
-      .desc("Payee description")
-      .longOpt("description")
+      .desc("Payee description (new)")
+      .longOpt("new-description")
       .get();
       
     // The convenient ones
@@ -122,7 +113,6 @@ public class UpdPye extends CommandLineTool
     options.addOption(optFileIn);
     options.addOption(optFileOut);
     options.addOption(optID);
-    options.addOption(optNumber);
     options.addOption(optName);
     options.addOption(optDescr);
   }
@@ -151,7 +141,7 @@ public class UpdPye extends CommandLineTool
       throw new NoEntryFoundException();
     }
     
-    doChanges(kmmFile);
+    doChanges();
     System.err.println("Payee after update: " + pye.toString());
     
     kmmFile.writeFile(new File(kmmOutFileName));
@@ -159,18 +149,18 @@ public class UpdPye extends CommandLineTool
     System.out.println("OK");
   }
 
-  private void doChanges(KMyMoneyWritableFileImpl kmmFile) throws Exception
+  private void doChanges() throws Exception
   {
-    if ( name != null )
+    if ( newName != null )
     {
       System.err.println("Setting name");
-      pye.setName(name);
+      pye.setName(newName);
     }
 
-    if ( descr != null )
+    if ( newDescr != null )
     {
       System.err.println("Setting description");
-      pye.setNotes(descr);
+      pye.setNotes(newDescr);
     }
   }
 
@@ -229,35 +219,35 @@ public class UpdPye extends CommandLineTool
     }
     System.err.println("Payee ID: " + pyeID);
 
-    // <name>
-    if ( cmdLine.hasOption("name") ) 
+    // <new-name>
+    if ( cmdLine.hasOption("new-name") ) 
     {
       try
       {
-        name = cmdLine.getOptionValue("name");
+        newName = cmdLine.getOptionValue("new-name").trim();
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <name>");
+        System.err.println("Could not parse <new-name>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Name: '" + name + "'");
+    System.err.println("New name: '" + newName + "'");
 
-    // <description>
-    if ( cmdLine.hasOption("description") ) 
+    // <new-description>
+    if ( cmdLine.hasOption("new-description") ) 
     {
       try
       {
-        descr = cmdLine.getOptionValue("description");
+        newDescr = cmdLine.getOptionValue("new-description").trim();
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <description>");
+        System.err.println("Could not parse <new-description>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("Description: '" + descr + "'");
+    System.err.println("New description: '" + newDescr + "'");
   }
   
   @Override

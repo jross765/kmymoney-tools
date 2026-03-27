@@ -160,7 +160,7 @@ public class GetAcctInfo extends CommandLineTool
     KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName), ! scriptMode);
 
     KMyMoneyAccount acct = AccountHelper.getAcct(acctSelMode, 
-												 acctID, acctName.toString(), 
+												 acctID, acctName.toString(), true,
 												 kmmFile,
 												 scriptMode);
 

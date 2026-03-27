@@ -14,7 +14,7 @@ public class AccountHelper
 
 	public static KMyMoneyAccount getAcct(
 			Helper.Mode acctSelMode, 
-			KMMAcctID acctID, String acctName, 
+			KMMAcctID acctID, String acctName, boolean acctNameQualif,
 			KMyMoneyFile kmmFile,
 			boolean scriptMode) throws Exception {
 		KMyMoneyAccount acct = null;
@@ -33,7 +33,7 @@ public class AccountHelper
 			}
 	    } else if ( acctSelMode == Helper.Mode.NAME ) {
 			if ( acctName != null ) {
-				acct = kmmFile.getAccountByNameUniq(acctName, true);
+				acct = kmmFile.getAccountByNameUniq(acctName, acctNameQualif);
 				if ( acct == null ) {
 					if ( ! scriptMode )
 						System.err.println("Could not find an account (uniquely) matching this name.");

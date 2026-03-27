@@ -54,15 +54,15 @@ public class GetStockAcct extends CommandLineTool
   
   private static Helper.CmdtySecSingleSelMode secSelMode = null;
 
-  private static KMMSecID              secID        = new KMMSecID();
+  private static KMMSecID      secID    = new KMMSecID();
   // This one and the following: sic, StringBuffer, not String,
   // for it has to be mutable because of the way the args are parsed.
-  private static StringBuffer          isin         = new StringBuffer();
+  private static StringBuffer  isin     = new StringBuffer();
   // Possibly later:
-  // private static String  wkn      = new StringBuffer();
-  // private static String  cusip    = new StringBuffer();
-  // private static String  sedol    = new StringBuffer();
-  private static StringBuffer          secName      = new StringBuffer();
+  // private static StringBuffer  wkn      = new StringBuffer();
+  // private static StringBuffer  cusip    = new StringBuffer();
+  // private static StringBuffer  sedol    = new StringBuffer();
+  private static StringBuffer  secName  = new StringBuffer();
   
   // ---
   
@@ -192,7 +192,7 @@ public class GetStockAcct extends CommandLineTool
     // ---
 
     KMyMoneyAccount acct = AccountHelper.getAcct(acctSelMode,
-												acctID, acctName.toString(), 
+												acctID, acctName.toString(), false,
 												kmmFile,
 												scriptMode);
 
@@ -213,8 +213,8 @@ public class GetStockAcct extends CommandLineTool
     
     SecuritiesAccountManager secAcctMgr = new SecuritiesAccountManager(acct);
     
-    for ( KMyMoneyAccount chld : secAcctMgr.getShareAccts(true) ) { // ::TODO: optionally non-active accounts 
-      if ( chld.getQualifSecCurrID().equals( sec.getQualifID() ) ) {
+    for ( KMyMoneyAccount chld : secAcctMgr.getShareAccts(true) ) { // ::TODO: optionally non-active accounts
+      if ( chld.getQualifSecCurrID().toString().equals( sec.getQualifID().toString() ) ) { // toString() -- not absolutely necessary, but better
           System.out.println(chld.getID());
       }
     }

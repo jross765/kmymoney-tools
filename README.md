@@ -34,10 +34,12 @@ to come).
 * New tools: 
   * GetTrxList
   * GetTrxSpltList
+  * TestSel[Acct|Prc|Sec]
 
-* Existing tools: 
+* Existing tools:
+  * Better encapsulation of selection of accounts, securities and prices.
   * GenSec: More optional fields; check whether security with given ISIN already exists.
-  * Others: Small improvements
+  * Overall: Small improvements, general maintenance
 
 ### V. 0.7 &rarr; 0.8
 * New tools: 

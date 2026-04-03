@@ -20,7 +20,7 @@ import org.kmymoney.apiext.Const;
 import org.kmymoney.apiext.trxmgr.TransactionFilter;
 import org.kmymoney.apiext.trxmgr.TransactionFilter.SplitLogic;
 import org.kmymoney.apiext.trxmgr.TransactionFinder;
-import org.kmymoney.apiext.trxmgr.TransactionSplitFilter;
+import org.kmymoney.apiext.trxmgr.TransactionSplitFilter_FP;
 import org.kmymoney.base.basetypes.simple.KMMAcctID;
 import org.kmymoney.base.basetypes.simple.KMMIDNotSetException;
 import org.kmymoney.base.basetypes.simple.KMMPyeID;
@@ -308,7 +308,7 @@ public class GetTrxList extends CommandLineTool
 
   private TransactionFilter setFilter() throws KMMIDNotSetException
   {
-	TransactionSplitFilter spltFlt = new TransactionSplitFilter();
+	TransactionSplitFilter_FP spltFlt = new TransactionSplitFilter_FP();
     
     if ( action != null )
     	spltFlt.action = action;

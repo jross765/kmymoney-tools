@@ -15,7 +15,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.kmymoney.api.read.KMyMoneyTransactionSplit;
 import org.kmymoney.api.read.impl.KMyMoneyFileImpl;
 import org.kmymoney.apiext.Const;
-import org.kmymoney.apiext.trxmgr.TransactionSplitFilter;
+import org.kmymoney.apiext.trxmgr.TransactionSplitFilter_FP;
 import org.kmymoney.apiext.trxmgr.TransactionSplitFinder;
 import org.kmymoney.base.basetypes.simple.KMMAcctID;
 import org.kmymoney.base.basetypes.simple.KMMIDNotSetException;
@@ -209,7 +209,7 @@ public class GetTrxSpltList extends CommandLineTool
     KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName), true);
     
     // 1) Set filter
-    TransactionSplitFilter spltFlt = setFilter();
+    TransactionSplitFilter_FP spltFlt = setFilter();
     
     if ( showFlt )
     {
@@ -228,9 +228,9 @@ public class GetTrxSpltList extends CommandLineTool
 
   // -----------------------------------------------------------------
 
-  private TransactionSplitFilter setFilter() throws KMMIDNotSetException
+  private TransactionSplitFilter_FP setFilter() throws KMMIDNotSetException
   {
-	TransactionSplitFilter spltFlt = new TransactionSplitFilter();
+	TransactionSplitFilter_FP spltFlt = new TransactionSplitFilter_FP();
     
     if ( action != null )
     	spltFlt.action = action;

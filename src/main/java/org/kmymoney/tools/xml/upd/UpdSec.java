@@ -54,12 +54,14 @@ public class UpdSec extends CommandLineTool
   // private static StringBuffer  sedol    = new StringBuffer();
   // private static StringBuffer  secName  = new StringBuffer(); // <-- NOT for selection
 
-  private static String          newName  = null;
-  private static KMMSecCurr.Type newType  = null;
+  // ---
 
   private static KMyMoneyWritableSecurity sec = null;
 
-  private static boolean scriptMode = false; // ::TODO
+  private static String          newName  = null;
+  private static KMMSecCurr.Type newType  = null;
+
+  private static boolean scriptMode = false;
 
   // -----------------------------------------------------------------
 
@@ -112,17 +114,17 @@ public class UpdSec extends CommandLineTool
 
     Option optSecID = Option.builder("sec")
       .hasArg()
-      .argName("secid")
-      .desc("Security ID"+
-        		"(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " only)")
+      .argName("ID")
+      .desc("Security ID " + 
+      		"(for <mode> = " + Helper.CmdtySecSingleSelMode.ID + " only)")
       .longOpt("security-id")
       .get();
-    	          
+
     Option optISIN = Option.builder("is")
       .hasArg()
       .argName("isin")
-      .desc("ISIN" + 
-    		  "(for <mode> = " + Helper.CmdtySecSingleSelMode.ISIN + " only)")
+      .desc("ISIN " + 
+  		   	"(for <mode> = " + Helper.CmdtySecSingleSelMode.ISIN + " only)")
       .longOpt("isin")
       .get();
 
@@ -143,8 +145,11 @@ public class UpdSec extends CommandLineTool
       .get();
 
     // The convenient ones
-    // ::EMPTY
-          
+    Option optScript = Option.builder("sl")
+      .desc("Script Mode")
+      .longOpt("script")
+      .get();            
+
     options = new Options();
     options.addOption(optFileIn);
     options.addOption(optFileOut);
@@ -153,6 +158,7 @@ public class UpdSec extends CommandLineTool
     options.addOption(optISIN);
     options.addOption(optName);
     options.addOption(optType);
+    options.addOption(optScript);
   }
 
   @Override
@@ -172,7 +178,7 @@ public class UpdSec extends CommandLineTool
 								scriptMode);
     System.err.println("Security before update: " + sec.toString());
 
-    // ----------------------------
+	// ----------------------------
     
     doChanges();
     System.err.println("Security after update: " + sec.toString());
@@ -214,6 +220,15 @@ public class UpdSec extends CommandLineTool
       throw new InvalidCommandLineArgsException();
     }
 
+    // ---
+
+    // <script>
+    if ( cmdLine.hasOption("script") )
+    {
+      scriptMode = true; 
+    }
+    // System.err.println("Script mode: " + scriptMode);
+    
     // ---
 
     // <kmymoney-in-file>

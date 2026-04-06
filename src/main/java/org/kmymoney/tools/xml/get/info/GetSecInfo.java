@@ -56,7 +56,7 @@ public class GetSecInfo extends CommandLineTool
   private static boolean showQuotes = false;
   
   private static boolean scriptMode = false; // ::TODO
-  
+
   // -----------------------------------------------------------------
 
   public static void main( String[] args )
@@ -89,7 +89,7 @@ public class GetSecInfo extends CommandLineTool
       .desc("KMyMoney file")
       .longOpt("kmymoney-file")
       .get();
-      
+
     Option optMode = Option.builder("ssm")
       .required()
       .hasArg()
@@ -127,7 +127,7 @@ public class GetSecInfo extends CommandLineTool
       .desc("Show quotes")
       .longOpt("show-quotes")
       .get();
-            
+        
     options = new Options();
     options.addOption(optFile);
     options.addOption(optMode);

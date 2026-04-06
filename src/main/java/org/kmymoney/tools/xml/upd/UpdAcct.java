@@ -40,12 +40,16 @@ public class UpdAcct extends CommandLineTool
   
   private static KMMAcctID acctID = null; // sic, not KMMComplAcctID
 
+  // ---
+
+  private static KMyMoneyWritableAccount acct = null;
+
   private static String               newName      = null;
   private static String               newMemo      = null;
   private static KMyMoneyAccount.Type newType      = null;
   private static KMMQualifSecCurrID   newSecCurrID = null;
-
-  private static KMyMoneyWritableAccount acct = null;
+  
+  private static boolean scriptMode = false;
 
   // -----------------------------------------------------------------
 
@@ -125,7 +129,10 @@ public class UpdAcct extends CommandLineTool
       .get();
       
     // The convenient ones
-    // ::EMPTY
+    Option optScript = Option.builder("sl")
+      .desc("Script Mode")
+      .longOpt("script")
+      .get();            
           
     options = new Options();
     options.addOption(optFileIn);
@@ -135,6 +142,7 @@ public class UpdAcct extends CommandLineTool
     options.addOption(optMemo);
     options.addOption(optType);
     options.addOption(optSecCurr);
+    options.addOption(optScript);
   }
 
   @Override
@@ -215,6 +223,15 @@ public class UpdAcct extends CommandLineTool
       throw new InvalidCommandLineArgsException();
     }
 
+    // ---
+
+    // <script>
+    if ( cmdLine.hasOption("script") )
+    {
+      scriptMode = true; 
+    }
+    // System.err.println("Script mode: " + scriptMode);
+    
     // ---
 
     // <kmymoney-in-file>

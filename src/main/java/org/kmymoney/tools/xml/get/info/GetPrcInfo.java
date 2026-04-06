@@ -132,7 +132,7 @@ public class GetPrcInfo extends CommandLineTool
     		  "(for <mode> = " + CmdLineHelper_Prc.PrcSelectMode.ID + " only)")
       .longOpt("price-to-curr-id")
       .get();
-    
+
     Option optPrcDateFormat = Option.builder("df")
       .hasArg()
       .argName("date-format")

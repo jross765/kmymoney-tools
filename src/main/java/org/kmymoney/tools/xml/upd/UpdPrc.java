@@ -2,7 +2,6 @@ package org.kmymoney.tools.xml.upd;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -19,11 +18,12 @@ import org.kmymoney.base.basetypes.complex.KMMPrcID;
 import org.kmymoney.base.basetypes.complex.KMMQualifCurrID;
 import org.kmymoney.base.basetypes.complex.KMMQualifSecCurrID;
 import org.kmymoney.tools.CommandLineTool;
-import org.kmymoney.tools.xml.helper.CmdLineHelper;
+import org.kmymoney.tools.xml.helper.CmdLineHelper_Prc;
+import org.kmymoney.tools.xml.helper.LocalDateWrp;
+import org.kmymoney.tools.xml.helper.PriceHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.Helper;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
@@ -43,16 +43,31 @@ public class UpdPrc extends CommandLineTool
   private static String     kmmInFileName = null;
   private static String     kmmOutFileName = null;
 
-  private static KMMPrcID             prcID = null;
-  private static KMMQualifSecCurrID   fromSecCurrID = null;
-  private static KMMQualifCurrID      toCurrID = null;
-  private static Helper.DateFormat    dateFmt = null;
-  private static LocalDate            date = null;
+  private static CmdLineHelper_Prc.PrcSelectMode    prcSelMode = null;
+  private static CmdLineHelper_Prc.PrcSelectSubMode prcSelSubMode = null;
+
+  // CAUTION: As opposed to most other tools, the following variables
+  // have to be instantiated here.
   
+  private static KMMPrcID           prcID         = new KMMPrcID();
+  private static KMMQualifSecCurrID fromSecCurrID = new KMMQualifSecCurrID();
+  private static KMMQualifCurrID    toCurrID      = new KMMQualifCurrID();
+  private static Helper.DateFormat  dateFormat    = null;
+  private static LocalDateWrp       date          = new LocalDateWrp();
+  private static StringBuffer       isin          = new StringBuffer();
+  // Possibly later:
+  // private static StringBuffer  wkn             = new StringBuffer();
+  // private static StringBuffer  cusip           = new StringBuffer();
+  // private static StringBuffer  sedol           = new StringBuffer();
+  
+  // ---
+  
+  private static KMyMoneyWritablePrice prc = null;
+
   private static KMyMoneyPrice.Source newSource = null;
   private static FixedPointNumber     newValue  = null;
 
-  private static KMyMoneyWritablePrice prc = null;
+  private static boolean scriptMode = false;
 
   // -----------------------------------------------------------------
 
@@ -86,7 +101,7 @@ public class UpdPrc extends CommandLineTool
       .desc("KMyMoney file (in)")
       .longOpt("kmymoney-in-file")
       .get();
-          
+
     Option optFileOut = Option.builder("of")
       .required()
       .hasArg()
@@ -95,36 +110,68 @@ public class UpdPrc extends CommandLineTool
       .longOpt("kmymoney-out-file")
       .get();
 
-    Option optFromSecCurr= Option.builder("f")
+    Option optPrcMode = Option.builder("psm")
       .required()
+      .hasArg()
+      .argName("mode")
+      .desc("Selection mode for price")
+      .longOpt("prc-sel-mode")
+      .get();
+
+    Option optPrcSubMode = Option.builder("pssm")
+      .hasArg()
+      .argName("submode")
+      .desc("Selection sub-mode for price " +
+    		  "(for <mode> = " + CmdLineHelper_Prc.PrcSelectMode.ID + " only)")
+      .longOpt("prc-sel-sub-mode")
+      .get();
+
+    Option optPrcID = Option.builder("prc")
+      .hasArg()
+      .argName("prcid")
+      .desc("Price-ID" +
+    		  "(for <mode> = " + CmdLineHelper_Prc.PrcSelectMode.ID + " only)")
+      .longOpt("price-id")
+      .get();
+
+    Option optPrcFromSecCurr = Option.builder("fsc")
       .hasArg()
       .argName("sec/curr")
-      .desc("From-security/currency")
-      .longOpt("from-sec-curr")
+      .desc("Price from security/currency ID " +
+    		  "(for <mode> = " + CmdLineHelper_Prc.PrcSelectMode.ID + " or " +
+    		       "<mode> = " + CmdLineHelper_Prc.PrcSelectMode.SEC_DATE + " only)")
+      .longOpt("price-from-sec-curr-id")
       .get();
 
-    Option optToCurr = Option.builder("t")
-      .required()
+    Option optPrcToCurr = Option.builder("tc")
       .hasArg()
       .argName("curr")
-      .desc("To-currency")
-      .longOpt("to-curr")
+      .desc("Price to currency ID " +
+    		  "(for <mode> = " + CmdLineHelper_Prc.PrcSelectMode.ID + " only)")
+      .longOpt("price-to-curr-id")
       .get();
 
-    Option optDateFormat = Option.builder("df")
+    Option optPrcDateFormat = Option.builder("df")
       .hasArg()
       .argName("date-format")
-      .desc("Date format")
-      .longOpt("date-format")
+      .desc("Price date format")
+      .longOpt("price-date-format")
       .get();
 
-    Option optDate = Option.builder("dat")
-       .required()
-       .hasArg()
-       .argName("date")
-       .desc("Date")
-       .longOpt("date")
-       .get();
+    Option optPrcDate = Option.builder("dat")
+      .hasArg()
+      .argName("date")
+      .desc("Price date")
+      .longOpt("price-date")
+      .get();
+
+    Option optPrcISIN = Option.builder("is")
+      .hasArg()
+      .argName("isin")
+      .desc("ISIN " + 
+    		  "(for <mode> = " + CmdLineHelper_Prc.PrcSelectMode.ISIN_DATE + " only)")
+      .longOpt("isin")
+      .get();
 
     Option optSource = Option.builder("s")
       .hasArg()
@@ -141,17 +188,25 @@ public class UpdPrc extends CommandLineTool
       .get();
 
     // The convenient ones
-    // ::EMPTY
-          
+    Option optScript = Option.builder("sl")
+      .desc("Script Mode")
+      .longOpt("script")
+      .get();            
+
     options = new Options();
     options.addOption(optFileIn);
     options.addOption(optFileOut);
-    options.addOption(optFromSecCurr);
-    options.addOption(optToCurr);
-    options.addOption(optDateFormat);
-    options.addOption(optDate);
+    options.addOption(optPrcMode);
+    options.addOption(optPrcSubMode);
+    options.addOption(optPrcID);
+    options.addOption(optPrcFromSecCurr);
+    options.addOption(optPrcToCurr);
+    options.addOption(optPrcDateFormat);
+    options.addOption(optPrcDate);
+    options.addOption(optPrcISIN);
     options.addOption(optSource);
     options.addOption(optValue);
+    options.addOption(optScript);
   }
 
   @Override
@@ -165,29 +220,15 @@ public class UpdPrc extends CommandLineTool
   {
     KMyMoneyWritableFileImpl kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName), true);
 
-    try 
-    {
-      prcID = new KMMPrcID(fromSecCurrID, toCurrID, date);
-      System.err.println("Price ID: " + prcID.toString());
-    }
-    catch ( Exception exc )
-    {
-      System.err.println("Error: Could not instantiate price ID");
-      throw new Exception();
-    }
-    
-    try 
-    {
-      prc = kmmFile.getWritablePriceByID(prcID);
-      System.err.println("Price before update: " + prc.toString());
-    }
-    catch ( Exception exc )
-    {
-      System.err.println("Error: Could not find/instantiate price with ID '" + prcID + "'");
-      // ::TODO
-//      throw new PriceNotFoundException();
-      throw new NoEntryFoundException();
-    }
+    prc = PriceHelper.getWrtPrc(prcSelMode, 
+    									prcID, 
+    									fromSecCurrID, toCurrID, 
+    									dateFormat, date.dat,
+    									isin.toString(),
+    									kmmFile,
+    									scriptMode);
+
+    // ----------------------------
     
     doChanges();
     System.err.println("Price after update: " + prc.toString());
@@ -231,6 +272,15 @@ public class UpdPrc extends CommandLineTool
 
     // ---
 
+    // <script>
+    if ( cmdLine.hasOption("script") )
+    {
+      scriptMode = true; 
+    }
+    // System.err.println("Script mode: " + scriptMode);
+    
+    // ---
+
     // <kmymoney-in-file>
     try
     {
@@ -241,7 +291,9 @@ public class UpdPrc extends CommandLineTool
       System.err.println("Could not parse <kmymoney-in-file>");
       throw new InvalidCommandLineArgsException();
     }
-    System.err.println("KMyMoney file (in): '" + kmmInFileName + "'");
+    
+    if ( ! scriptMode )
+    	System.err.println("KMyMoney file (in): '" + kmmInFileName + "'");
     
     // <kmymoney-out-file>
     try
@@ -253,47 +305,79 @@ public class UpdPrc extends CommandLineTool
       System.err.println("Could not parse <kmymoney-out-file>");
       throw new InvalidCommandLineArgsException();
     }
-    System.err.println("KMyMoney file (out): '" + kmmOutFileName + "'");
     
-    // <from-sec-curr>
+    if ( ! scriptMode )
+    	System.err.println("KMyMoney file (out): '" + kmmOutFileName + "'");
+    
+  	// ---------
+  	
+    // <prc-sel-mode>
     try
     {
-      fromSecCurrID = KMMQualifSecCurrID.parse(cmdLine.getOptionValue("from-sec-curr")); 
-      System.err.println("from-cmdty-curr: " + fromSecCurrID);
+      prcSelMode = CmdLineHelper_Prc.PrcSelectMode.valueOf(cmdLine.getOptionValue("prc-sel-mode"));
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <from-sec-curr>");
+      System.err.println("Could not parse <prc-sel-mode>");
       throw new InvalidCommandLineArgsException();
     }
     
-    // <to-curr>
-    try
-    {
-      toCurrID = KMMQualifCurrID.parse(cmdLine.getOptionValue("to-curr")); 
-      System.err.println("to-curr: " + toCurrID);
-    }
-    catch ( Exception exc )
-    {
-      System.err.println("Could not parse <to-curr>");
-      throw new InvalidCommandLineArgsException();
-    }
-    
-    // <date-format>
-    dateFmt = CmdLineHelper.getDateFormat(cmdLine, "date-format");
-    System.err.println("date-format: " + dateFmt);
+    if ( ! scriptMode )
+      System.err.println("Price mode:     " + prcSelMode);
 
-    // <date>
+    // <prc-sel-sub-mode>
+    if ( cmdLine.hasOption("prc-sel-sub-mode") )
+    {
+        if ( prcSelMode != CmdLineHelper_Prc.PrcSelectMode.ID )
+        {
+          System.err.println("<prc-sel-sub-mode> may only be set with <prc-sel-mode> = '" + CmdLineHelper_Prc.PrcSelectMode.ID + "'");
+          throw new InvalidCommandLineArgsException();
+        }
+        
+        try
+        {
+          prcSelSubMode = CmdLineHelper_Prc.PrcSelectSubMode.valueOf(cmdLine.getOptionValue("prc-sel-sub-mode"));
+        }
+        catch ( Exception exc )
+        {
+          System.err.println("Could not parse <prc-sel-sub-mode>");
+          throw new InvalidCommandLineArgsException();
+        }
+    }
+    else
+    {
+        if ( prcSelMode == CmdLineHelper_Prc.PrcSelectMode.ID )
+        {
+          System.err.println("<sec-sel-sub-mode> must be set with <sec-sel-mode> = '" + CmdLineHelper_Prc.PrcSelectMode.ID + "'");
+          throw new InvalidCommandLineArgsException();
+        }
+    }
+    
+    if ( ! scriptMode )
+      System.err.println("Price sub-mode: " + prcSelSubMode);
+    
+  	// ---------
+
+    // <prc-sel-mode>
+    // <price-id>, 
+    // <from-sec-curr-id>, <to-curr-id>, <date>,
+    // <isin>
     try
-    {
-      date = CmdLineHelper.getDate(cmdLine, "date", dateFmt); 
-      System.err.println("date: " + date);
-    }
-    catch ( Exception exc )
-    {
-      System.err.println("Could not parse <date>");
-      throw new InvalidCommandLineArgsException();
-    }
+	{
+		CmdLineHelper_Prc.parsePrcStuffWrap( cmdLine, 
+										 prcSelMode, prcSelSubMode,
+										 prcID,
+										 fromSecCurrID, toCurrID, 
+										 dateFormat, date, 
+										 isin,
+										 scriptMode );
+	}
+	catch ( Exception exc )
+	{
+		// TODO Auto-generated catch block
+		exc.printStackTrace();
+		throw new InvalidCommandLineArgsException();
+	}
 
     // <new-source>
     if ( cmdLine.hasOption("new-source") ) 
@@ -308,7 +392,9 @@ public class UpdPrc extends CommandLineTool
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("New source: " + newSource);
+    
+    if ( ! scriptMode )
+    	System.err.println("New source: " + newSource);
 
     // <new-value>
     if ( cmdLine.hasOption("new-value") ) 
@@ -323,7 +409,9 @@ public class UpdPrc extends CommandLineTool
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("New value: " + newValue);
+    
+    if ( ! scriptMode )
+    	System.err.println("New value: " + newValue);
   }
   
   @Override
@@ -339,5 +427,20 @@ public class UpdPrc extends CommandLineTool
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
+    
+    System.out.println("");
+    System.out.println("Valid values for <prc-sel-mode>:");
+    for ( CmdLineHelper_Prc.PrcSelectMode elt : CmdLineHelper_Prc.PrcSelectMode.values() )
+      System.out.println(" - " + elt);
+    
+    System.out.println("");
+    System.out.println("Valid values for <prc-sel-sub-mode>:");
+    for ( CmdLineHelper_Prc.PrcSelectSubMode elt : CmdLineHelper_Prc.PrcSelectSubMode.values() )
+      System.out.println(" - " + elt);
+    
+    System.out.println("");
+    System.out.println("Valid values for <price-date-format>:");
+    for ( Helper.DateFormat elt : Helper.DateFormat.values() )
+      System.out.println(" - " + elt);
   }
 }

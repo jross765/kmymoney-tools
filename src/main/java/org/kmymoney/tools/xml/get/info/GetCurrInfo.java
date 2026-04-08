@@ -107,10 +107,10 @@ public class GetCurrInfo extends CommandLineTool
   {
     KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName), true);
 
-    KMyMoneyCurrency curr = kmmFile.getCurrencyByID(currID.toString());
+    KMyMoneyCurrency curr = kmmFile.getCurrencyByID(currID);
     if ( curr == null )
     {
-      System.err.println("Could not find currency with qualif. ID " + currID.toString());
+      System.err.println("Could not find currency with ID " + currID.toString());
       throw new NoEntryFoundException();
     }
     

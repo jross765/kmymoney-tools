@@ -1,4 +1,4 @@
-package org.kmymoney.tools.xml.upd;
+package org.kmymoney.tools.xml.upd.simple;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,9 +11,9 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.kmymoney.api.write.KMyMoneyWritableTag;
+import org.kmymoney.api.write.KMyMoneyWritableInstitution;
 import org.kmymoney.api.write.impl.KMyMoneyWritableFileImpl;
-import org.kmymoney.base.basetypes.simple.KMMTagID;
+import org.kmymoney.base.basetypes.simple.KMMInstID;
 import org.kmymoney.tools.CommandLineTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,31 +22,29 @@ import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
-public class UpdTag extends CommandLineTool
+public class UpdInst extends CommandLineTool
 {
   // Logger
   @SuppressWarnings("unused")
-  private static final Logger LOGGER = LoggerFactory.getLogger(UpdTag.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(UpdInst.class);
   
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
-  private static String   kmmInFileName = null;
-  private static String   kmmOutFileName = null;
+  private static String    kmmInFileName = null;
+  private static String    kmmOutFileName = null;
   
-  private static KMMTagID tagID = null;
+  private static KMMInstID instID = null;
 
-  private static String newName  = null;
-  private static String newDescr = null;
-  private static String newColor = null;
+  private static String newName = null;
 
-  private static KMyMoneyWritableTag tag = null;
+  private static KMyMoneyWritableInstitution inst = null;
 
   public static void main( String[] args )
   {
     try
     {
-      UpdTag tool = new UpdTag ();
+      UpdInst tool = new UpdInst ();
       tool.execute(args);
     }
     catch (CouldNotExecuteException exc) 
@@ -81,35 +79,21 @@ public class UpdTag extends CommandLineTool
       .longOpt("kmymoney-out-file")
       .get();
       
-    Option optID = Option.builder("tag")
+    Option optID = Option.builder("inst")
       .required()
       .hasArg()
-      .argName("tagid")
-      .desc("Tag ID")
-      .longOpt("Tag-id")
+      .argName("instid")
+      .desc("Institution ID")
+      .longOpt("institution-id")
       .get();
             
     Option optName = Option.builder("nam")
       .hasArg()
       .argName("name")
-      .desc("Tag name (new)")
+      .desc("Institution name (new)")
       .longOpt("new-name")
       .get();
     
-    Option optDescr = Option.builder("desc")
-      .hasArg()
-      .argName("descr")
-      .desc("Tag description (new)")
-      .longOpt("new-description")
-      .get();
-      
-    Option optColor = Option.builder("c")
-      .hasArg()
-      .argName("descr")
-      .desc("Tag color (new)")
-      .longOpt("new-color")
-      .get();
-    	      
     // The convenient ones
     // ::EMPTY
           
@@ -118,8 +102,6 @@ public class UpdTag extends CommandLineTool
     options.addOption(optFileOut);
     options.addOption(optID);
     options.addOption(optName);
-    options.addOption(optDescr);
-    options.addOption(optColor);
   }
 
   @Override
@@ -135,19 +117,19 @@ public class UpdTag extends CommandLineTool
 
     try 
     {
-      tag = kmmFile.getWritableTagByID(tagID);
-      System.err.println("Tag before update: " + tag.toString());
+      inst = kmmFile.getWritableInstitutionByID(instID);
+      System.err.println("Institution before update: " + inst.toString());
     }
     catch ( Exception exc )
     {
-      System.err.println("Error: Could not find/instantiate Tag with ID '" + tagID + "'");
+      System.err.println("Error: Could not find/instantiate institution with ID '" + instID + "'");
       // ::TODO
-//      throw new TagNotFoundException();
+//      throw new InstitutionNotFoundException();
       throw new NoEntryFoundException();
     }
     
     doChanges();
-    System.err.println("Tag after update: " + tag.toString());
+    System.err.println("Institution after update: " + inst.toString());
     
     kmmFile.writeFile(new File(kmmOutFileName));
     
@@ -159,19 +141,7 @@ public class UpdTag extends CommandLineTool
     if ( newName != null )
     {
       System.err.println("Setting name");
-      tag.setName(newName);
-    }
-
-    if ( newDescr != null )
-    {
-      System.err.println("Setting description");
-      tag.setNotes(newDescr);
-    }
-
-    if ( newColor != null )
-    {
-      System.err.println("Setting color");
-      tag.setColor(newColor);
+      inst.setName(newName);
     }
   }
 
@@ -218,17 +188,17 @@ public class UpdTag extends CommandLineTool
     }
     System.err.println("KMyMoney file (out): '" + kmmOutFileName + "'");
     
-    // <tag-id>
+    // <institution-id>
     try
     {
-    	tagID = new KMMTagID( cmdLine.getOptionValue("tag-id") );
+      instID = new KMMInstID( cmdLine.getOptionValue("institution-id") );
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <tag-id>");
+      System.err.println("Could not parse <institution-id>");
       throw new InvalidCommandLineArgsException();
     }
-    System.err.println("Tag ID: " + tagID);
+    System.err.println("Institution ID: " + instID);
 
     // <new-name>
     if ( cmdLine.hasOption("new-name") ) 
@@ -244,36 +214,6 @@ public class UpdTag extends CommandLineTool
       }
     }
     System.err.println("New name: '" + newName + "'");
-
-    // <new-description>
-    if ( cmdLine.hasOption("new-description") ) 
-    {
-      try
-      {
-        newDescr = cmdLine.getOptionValue("new-description").trim();
-      }
-      catch ( Exception exc )
-      {
-        System.err.println("Could not parse <new-description>");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
-    System.err.println("New description: '" + newDescr + "'");
-
-    // <new-color>
-    if ( cmdLine.hasOption("new-color") ) 
-    {
-      try
-      {
-        newColor = cmdLine.getOptionValue("new-color").trim();
-      }
-      catch ( Exception exc )
-      {
-        System.err.println("Could not parse <new-color>");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
-    System.err.println("New color: '" + newColor + "'");
   }
   
   @Override
@@ -282,7 +222,7 @@ public class UpdTag extends CommandLineTool
 	HelpFormatter formatter = HelpFormatter.builder().get();
 	try
 	{
-		formatter.printHelp( "UpdTag", "", options, "", true );
+		formatter.printHelp( "UpdInst", "", options, "", true );
 	}
 	catch ( IOException e )
 	{

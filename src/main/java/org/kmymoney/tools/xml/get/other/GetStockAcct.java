@@ -1,4 +1,4 @@
-package org.kmymoney.tools.xml.get.sonstige;
+package org.kmymoney.tools.xml.get.other;
 
 import java.io.File;
 import java.io.IOException;

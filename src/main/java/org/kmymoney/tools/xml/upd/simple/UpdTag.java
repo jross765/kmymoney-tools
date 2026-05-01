@@ -1,4 +1,4 @@
-package org.kmymoney.tools.xml.upd;
+package org.kmymoney.tools.xml.upd.simple;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,53 +11,42 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.kmymoney.api.read.KMyMoneyAccount;
-import org.kmymoney.api.write.KMyMoneyWritableAccount;
+import org.kmymoney.api.write.KMyMoneyWritableTag;
 import org.kmymoney.api.write.impl.KMyMoneyWritableFileImpl;
-import org.kmymoney.base.basetypes.complex.KMMQualifSecCurrID;
-import org.kmymoney.base.basetypes.simple.KMMAcctID;
+import org.kmymoney.base.basetypes.simple.KMMTagID;
 import org.kmymoney.tools.CommandLineTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import xyz.schnorxoborx.base.beanbase.AccountNotFoundException;
+import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
-public class UpdAcct extends CommandLineTool
+public class UpdTag extends CommandLineTool
 {
   // Logger
   @SuppressWarnings("unused")
-  private static final Logger LOGGER = LoggerFactory.getLogger(UpdAcct.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(UpdTag.class);
   
-  // -----------------------------------------------------------------
-
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
-  private static String kmmInFileName = null;
-  private static String kmmOutFileName = null;
+  private static String   kmmInFileName = null;
+  private static String   kmmOutFileName = null;
   
-  private static KMMAcctID acctID = null; // sic, not KMMComplAcctID
+  private static KMMTagID tagID = null;
 
-  // ---
+  private static String newName  = null;
+  private static String newDescr = null;
+  private static String newColor = null;
 
-  private static KMyMoneyWritableAccount acct = null;
-
-  private static String               newName      = null;
-  private static String               newMemo      = null;
-  private static KMyMoneyAccount.Type newType      = null;
-  private static KMMQualifSecCurrID   newSecCurrID = null;
-  
-  private static boolean scriptMode = false;
-
-  // -----------------------------------------------------------------
+  private static KMyMoneyWritableTag tag = null;
 
   public static void main( String[] args )
   {
     try
     {
-      UpdAcct tool = new UpdAcct ();
+      UpdTag tool = new UpdTag ();
       tool.execute(args);
     }
     catch (CouldNotExecuteException exc) 
@@ -92,57 +81,45 @@ public class UpdAcct extends CommandLineTool
       .longOpt("kmymoney-out-file")
       .get();
       
-    Option optID = Option.builder("acct")
+    Option optID = Option.builder("tag")
       .required()
       .hasArg()
-      .argName("acctid")
-      .desc("Account-ID")
-      .longOpt("account-id")
+      .argName("tagid")
+      .desc("Tag ID")
+      .longOpt("Tag-id")
       .get();
-
+            
     Option optName = Option.builder("nam")
       .hasArg()
       .argName("name")
-      .desc("Account name (new)")
+      .desc("Tag name (new)")
       .longOpt("new-name")
       .get();
     
-    Option optMemo = Option.builder("mem")
+    Option optDescr = Option.builder("desc")
       .hasArg()
-      .argName("memo")
-      .desc("Account memo (new)")
-      .longOpt("new-memo")
+      .argName("descr")
+      .desc("Tag description (new)")
+      .longOpt("new-description")
       .get();
       
-    Option optType = Option.builder("t")
+    Option optColor = Option.builder("c")
       .hasArg()
-      .argName("type")
-      .desc("Account type (new)")
-      .longOpt("new-type")
+      .argName("descr")
+      .desc("Tag color (new)")
+      .longOpt("new-color")
       .get();
-        
-    Option optSecCurr = Option.builder("sc")
-      .hasArg()
-      .argName("sec/curr-id")
-      .desc("Security/currency ID (new)")
-      .longOpt("new-security-currency-id")
-      .get();
-      
+    	      
     // The convenient ones
-    Option optScript = Option.builder("sl")
-      .desc("Script Mode")
-      .longOpt("script")
-      .get();            
+    // ::EMPTY
           
     options = new Options();
     options.addOption(optFileIn);
     options.addOption(optFileOut);
     options.addOption(optID);
     options.addOption(optName);
-    options.addOption(optMemo);
-    options.addOption(optType);
-    options.addOption(optSecCurr);
-    options.addOption(optScript);
+    options.addOption(optDescr);
+    options.addOption(optColor);
   }
 
   @Override
@@ -156,23 +133,21 @@ public class UpdAcct extends CommandLineTool
   {
     KMyMoneyWritableFileImpl kmmFile = new KMyMoneyWritableFileImpl(new File(kmmInFileName), true);
 
-    // CAUTION: Here, we intentionally do not use AccountHelper.getWrtAcct(),
-    // because that would necessitate the use of CmdLineHelper_Acct.parseAcctStuffWrap(),
-    // and that makes no sense here because there is only one way to select an
-    // account: by its ID (the name arg. is for tne *new* name)
     try 
     {
-      acct = kmmFile.getWritableAccountByID(acctID);
-      System.err.println("Account before update: " + acct.toString());
+      tag = kmmFile.getWritableTagByID(tagID);
+      System.err.println("Tag before update: " + tag.toString());
     }
     catch ( Exception exc )
     {
-      System.err.println("Error: Could not find/instantiate account with ID '" + acctID + "'");
-      throw new AccountNotFoundException();
+      System.err.println("Error: Could not find/instantiate Tag with ID '" + tagID + "'");
+      // ::TODO
+//      throw new TagNotFoundException();
+      throw new NoEntryFoundException();
     }
     
     doChanges();
-    System.err.println("Account after update: " + acct.toString());
+    System.err.println("Tag after update: " + tag.toString());
     
     kmmFile.writeFile(new File(kmmOutFileName));
     
@@ -184,25 +159,19 @@ public class UpdAcct extends CommandLineTool
     if ( newName != null )
     {
       System.err.println("Setting name");
-      acct.setName(newName);
+      tag.setName(newName);
     }
 
-    if ( newMemo != null )
+    if ( newDescr != null )
     {
-      System.err.println("Setting memo");
-      acct.setMemo(newMemo);
+      System.err.println("Setting description");
+      tag.setNotes(newDescr);
     }
 
-    if ( newType != null )
+    if ( newColor != null )
     {
-      System.err.println("Setting type");
-      acct.setType(newType);
-    }
-
-    if ( newSecCurrID != null )
-    {
-      System.err.println("Setting security/currency");
-      acct.setQualifSecCurrID(newSecCurrID);
+      System.err.println("Setting color");
+      tag.setColor(newColor);
     }
   }
 
@@ -223,15 +192,6 @@ public class UpdAcct extends CommandLineTool
       throw new InvalidCommandLineArgsException();
     }
 
-    // ---
-
-    // <script>
-    if ( cmdLine.hasOption("script") )
-    {
-      scriptMode = true; 
-    }
-    // System.err.println("Script mode: " + scriptMode);
-    
     // ---
 
     // <kmymoney-in-file>
@@ -258,20 +218,17 @@ public class UpdAcct extends CommandLineTool
     }
     System.err.println("KMyMoney file (out): '" + kmmOutFileName + "'");
     
-    // CAUTION: Here, we CmdLineHelper_Acct.parseAcctStuffWrap(),
-    // because there is only one way to select an account: by its ID 
-    // (the name arg. is for tne *new* name).
-    // <account-id>
+    // <tag-id>
     try
     {
-      acctID = new KMMAcctID( cmdLine.getOptionValue("account-id") );
+    	tagID = new KMMTagID( cmdLine.getOptionValue("tag-id") );
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <account-id>");
+      System.err.println("Could not parse <tag-id>");
       throw new InvalidCommandLineArgsException();
     }
-    System.err.println("Account ID: " + acctID);
+    System.err.println("Tag ID: " + tagID);
 
     // <new-name>
     if ( cmdLine.hasOption("new-name") ) 
@@ -288,50 +245,35 @@ public class UpdAcct extends CommandLineTool
     }
     System.err.println("New name: '" + newName + "'");
 
-    // <new-memo>
-    if ( cmdLine.hasOption("new-memo") ) 
+    // <new-description>
+    if ( cmdLine.hasOption("new-description") ) 
     {
       try
       {
-        newMemo = cmdLine.getOptionValue("new-memo").trim();
+        newDescr = cmdLine.getOptionValue("new-description").trim();
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <new-memo>");
+        System.err.println("Could not parse <new-description>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("New memo: '" + newMemo + "'");
-    
-    // <new-type>
-    if ( cmdLine.hasOption("new-type") ) 
-    {
-      try
-      {
-        newType = KMyMoneyAccount.Type.valueOf( cmdLine.getOptionValue("new-type") );
-      }
-      catch ( Exception exc )
-      {
-        System.err.println("Could not parse <new-type>");
-        throw new InvalidCommandLineArgsException();
-      }
-    }
-    System.err.println("New type: '" + newType + "'");
+    System.err.println("New description: '" + newDescr + "'");
 
-    // <new-security-currency-id>
-    if ( cmdLine.hasOption("new-security-currency-id") ) 
+    // <new-color>
+    if ( cmdLine.hasOption("new-color") ) 
     {
       try
       {
-        newSecCurrID = KMMQualifSecCurrID.parse( cmdLine.getOptionValue("new-security-currency-id") );
+        newColor = cmdLine.getOptionValue("new-color").trim();
       }
       catch ( Exception exc )
       {
-        System.err.println("Could not parse <new-security-currency-id>");
+        System.err.println("Could not parse <new-color>");
         throw new InvalidCommandLineArgsException();
       }
     }
-    System.err.println("New sec/Curr: '" + newSecCurrID + "'");
+    System.err.println("New color: '" + newColor + "'");
   }
   
   @Override
@@ -340,17 +282,12 @@ public class UpdAcct extends CommandLineTool
 	HelpFormatter formatter = HelpFormatter.builder().get();
 	try
 	{
-		formatter.printHelp( "UpdAcct", "", options, "", true );
+		formatter.printHelp( "UpdTag", "", options, "", true );
 	}
 	catch ( IOException e )
 	{
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	}
-    
-    System.out.println("");
-    System.out.println("Valid values for <new-type>:");
-    for ( KMyMoneyAccount.Type elt : KMyMoneyAccount.Type.values() )
-      System.out.println(" - " + elt);
   }
 }

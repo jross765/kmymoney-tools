@@ -1,4 +1,4 @@
-package org.kmymoney.tools.xml.upd;
+package org.kmymoney.tools.xml.upd.simple;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,9 +11,9 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.kmymoney.api.write.KMyMoneyWritableInstitution;
+import org.kmymoney.api.write.KMyMoneyWritablePayee;
 import org.kmymoney.api.write.impl.KMyMoneyWritableFileImpl;
-import org.kmymoney.base.basetypes.simple.KMMInstID;
+import org.kmymoney.base.basetypes.simple.KMMPyeID;
 import org.kmymoney.tools.CommandLineTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,29 +22,34 @@ import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
-public class UpdInst extends CommandLineTool
+public class UpdPye extends CommandLineTool
 {
   // Logger
   @SuppressWarnings("unused")
-  private static final Logger LOGGER = LoggerFactory.getLogger(UpdInst.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(UpdPye.class);
   
+  // -----------------------------------------------------------------
+
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
-  private static String    kmmInFileName = null;
-  private static String    kmmOutFileName = null;
+  private static String   kmmInFileName = null;
+  private static String   kmmOutFileName = null;
   
-  private static KMMInstID instID = null;
+  private static KMMPyeID pyeID = null;
 
   private static String newName = null;
+  private static String newDescr = null;
 
-  private static KMyMoneyWritableInstitution inst = null;
+  private static KMyMoneyWritablePayee pye = null;
+
+  // -----------------------------------------------------------------
 
   public static void main( String[] args )
   {
     try
     {
-      UpdInst tool = new UpdInst ();
+      UpdPye tool = new UpdPye ();
       tool.execute(args);
     }
     catch (CouldNotExecuteException exc) 
@@ -79,21 +84,28 @@ public class UpdInst extends CommandLineTool
       .longOpt("kmymoney-out-file")
       .get();
       
-    Option optID = Option.builder("inst")
+    Option optID = Option.builder("pye")
       .required()
       .hasArg()
-      .argName("instid")
-      .desc("Institution ID")
-      .longOpt("institution-id")
+      .argName("pyeid")
+      .desc("Payee ID")
+      .longOpt("payee-id")
       .get();
             
     Option optName = Option.builder("nam")
       .hasArg()
       .argName("name")
-      .desc("Institution name (new)")
+      .desc("Payee name (new)")
       .longOpt("new-name")
       .get();
     
+    Option optDescr = Option.builder("desc")
+      .hasArg()
+      .argName("descr")
+      .desc("Payee description (new)")
+      .longOpt("new-description")
+      .get();
+      
     // The convenient ones
     // ::EMPTY
           
@@ -102,6 +114,7 @@ public class UpdInst extends CommandLineTool
     options.addOption(optFileOut);
     options.addOption(optID);
     options.addOption(optName);
+    options.addOption(optDescr);
   }
 
   @Override
@@ -117,19 +130,19 @@ public class UpdInst extends CommandLineTool
 
     try 
     {
-      inst = kmmFile.getWritableInstitutionByID(instID);
-      System.err.println("Institution before update: " + inst.toString());
+      pye = kmmFile.getWritablePayeeByID(pyeID);
+      System.err.println("Payee before update: " + pye.toString());
     }
     catch ( Exception exc )
     {
-      System.err.println("Error: Could not find/instantiate institution with ID '" + instID + "'");
+      System.err.println("Error: Could not find/instantiate payee with ID '" + pyeID + "'");
       // ::TODO
-//      throw new InstitutionNotFoundException();
+//      throw new PayeeNotFoundException();
       throw new NoEntryFoundException();
     }
     
     doChanges();
-    System.err.println("Institution after update: " + inst.toString());
+    System.err.println("Payee after update: " + pye.toString());
     
     kmmFile.writeFile(new File(kmmOutFileName));
     
@@ -141,7 +154,13 @@ public class UpdInst extends CommandLineTool
     if ( newName != null )
     {
       System.err.println("Setting name");
-      inst.setName(newName);
+      pye.setName(newName);
+    }
+
+    if ( newDescr != null )
+    {
+      System.err.println("Setting description");
+      pye.setNotes(newDescr);
     }
   }
 
@@ -188,17 +207,17 @@ public class UpdInst extends CommandLineTool
     }
     System.err.println("KMyMoney file (out): '" + kmmOutFileName + "'");
     
-    // <institution-id>
+    // <payee-id>
     try
     {
-      instID = new KMMInstID( cmdLine.getOptionValue("institution-id") );
+      pyeID = new KMMPyeID( cmdLine.getOptionValue("payee-id") );
     }
     catch ( Exception exc )
     {
-      System.err.println("Could not parse <institution-id>");
+      System.err.println("Could not parse <payee-id>");
       throw new InvalidCommandLineArgsException();
     }
-    System.err.println("Institution ID: " + instID);
+    System.err.println("Payee ID: " + pyeID);
 
     // <new-name>
     if ( cmdLine.hasOption("new-name") ) 
@@ -214,6 +233,21 @@ public class UpdInst extends CommandLineTool
       }
     }
     System.err.println("New name: '" + newName + "'");
+
+    // <new-description>
+    if ( cmdLine.hasOption("new-description") ) 
+    {
+      try
+      {
+        newDescr = cmdLine.getOptionValue("new-description").trim();
+      }
+      catch ( Exception exc )
+      {
+        System.err.println("Could not parse <new-description>");
+        throw new InvalidCommandLineArgsException();
+      }
+    }
+    System.err.println("New description: '" + newDescr + "'");
   }
   
   @Override
@@ -222,7 +256,7 @@ public class UpdInst extends CommandLineTool
 	HelpFormatter formatter = HelpFormatter.builder().get();
 	try
 	{
-		formatter.printHelp( "UpdInst", "", options, "", true );
+		formatter.printHelp( "UpdPye", "", options, "", true );
 	}
 	catch ( IOException e )
 	{

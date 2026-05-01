@@ -1,4 +1,4 @@
-package org.kmymoney.tools.xml.upd;
+package org.kmymoney.tools.xml.upd.simple;
 
 import java.io.File;
 import java.io.IOException;

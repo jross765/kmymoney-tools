@@ -1,4 +1,4 @@
-package org.kmymoney.tools.xml.sonstige;
+package org.kmymoney.tools.xml.other;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

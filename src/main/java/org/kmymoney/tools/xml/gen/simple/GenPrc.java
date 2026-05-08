@@ -12,6 +12,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.numbers.fraction.BigFraction;
 import org.kmymoney.api.read.KMyMoneyPrice;
 import org.kmymoney.api.read.impl.KMyMoneyPricePairImpl;
 import org.kmymoney.api.write.KMyMoneyWritablePrice;
@@ -21,6 +22,7 @@ import org.kmymoney.base.basetypes.complex.KMMPrcPrID;
 import org.kmymoney.base.basetypes.complex.KMMQualifCurrID;
 import org.kmymoney.base.basetypes.complex.KMMQualifSecCurrID;
 import org.kmymoney.tools.CommandLineTool;
+import org.kmymoney.tools.Const;
 import org.kmymoney.tools.xml.helper.CmdLineHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.Helper;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
-import xyz.schnorxoborx.base.numbers.FixedPointNumber;
 
 public class GenPrc extends CommandLineTool
 {
@@ -48,7 +49,7 @@ public class GenPrc extends CommandLineTool
   private static KMMQualifCurrID      toCurrID = null;
   private static Helper.DateFormat    dateFmt = null;
   private static LocalDate            date = null;
-  private static FixedPointNumber     value = null;
+  private static BigFraction          value = null;
   private static KMyMoneyPrice.Source source = null;
 
   // -----------------------------------------------------------------
@@ -271,7 +272,8 @@ public class GenPrc extends CommandLineTool
     // <value>
     try
     {
-      value = new FixedPointNumber( Double.parseDouble( cmdLine.getOptionValue("value") ) ) ; 
+      double temp = Double.parseDouble( cmdLine.getOptionValue("value") );
+      value = BigFraction.from(temp, Const.EPS, Const.ITER_MAX) ; 
       System.err.println("value: " + value);
     }
     catch ( Exception exc )

@@ -13,6 +13,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.numbers.fraction.BigFraction;
 import org.joda.money.BigMoney;
 import org.joda.money.CurrencyUnit;
 import org.kmymoney.api.write.KMyMoneyWritableTransaction;
@@ -21,13 +22,13 @@ import org.kmymoney.api.write.impl.KMyMoneyWritableFileImpl;
 import org.kmymoney.base.basetypes.simple.KMMAcctID;
 import org.kmymoney.base.basetypes.simple.KMMPyeID;
 import org.kmymoney.tools.CommandLineTool;
+import org.kmymoney.tools.Const;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 import xyz.schnorxoborx.base.dateutils.LocalDateHelpers;
-import xyz.schnorxoborx.base.numbers.FixedPointNumber;
 
 public class GenTrx extends CommandLineTool
 {
@@ -45,8 +46,8 @@ public class GenTrx extends CommandLineTool
   private static KMMAcctID        fromAcctID = null; // sic, not KMMComplAcctID
   private static KMMAcctID        toAcctID = null;   // dto.
   private static KMMPyeID         pyeID = null;
-  private static FixedPointNumber amount = null;
-  private static FixedPointNumber quantity = null;
+  private static BigFraction      amount = null;
+  private static BigFraction      quantity = null;
   private static LocalDate        datePosted = null;
   private static String           description = null;
 
@@ -186,8 +187,8 @@ public class GenTrx extends CommandLineTool
     // ---
     
     KMyMoneyWritableTransactionSplit split1 = trx.createWritableSplit(kmmFile.getAccountByID(fromAcctID));
-    split1.setValue(new FixedPointNumber(amount.copy().negate()));
-    split1.setShares(new FixedPointNumber(quantity.copy().negate()));
+    split1.setValue(amount.negate());
+    split1.setShares(quantity.negate());
 
     if ( pyeID != null )
     	split1.setPayeeID(pyeID);
@@ -198,8 +199,8 @@ public class GenTrx extends CommandLineTool
     // ---
     
     KMyMoneyWritableTransactionSplit split2 = trx.createWritableSplit(kmmFile.getAccountByID(toAcctID));
-    split2.setValue(new FixedPointNumber(amount));
-    split2.setShares(new FixedPointNumber(quantity));
+    split2.setValue(amount);
+    split2.setShares(quantity);
 
     if ( pyeID != null )
     	split2.setPayeeID(pyeID);
@@ -290,7 +291,7 @@ public class GenTrx extends CommandLineTool
     try
     {
       BigMoney betrag = BigMoney.of(CurrencyUnit.EUR, Double.parseDouble(cmdLine.getOptionValue("amount")));
-      amount = new FixedPointNumber(betrag.getAmount());
+      amount = BigFraction.from(betrag.getAmount().doubleValue(), Const.EPS, Const.ITER_MAX);
     }
     catch ( Exception exc )
     {
@@ -302,7 +303,8 @@ public class GenTrx extends CommandLineTool
     // <quantity>
     try
     {
-      quantity = new FixedPointNumber(Double.parseDouble(cmdLine.getOptionValue("quantity")));
+      double temp = Double.parseDouble( cmdLine.getOptionValue("quantity") );
+      quantity = BigFraction.from(temp, Const.EPS, Const.ITER_MAX);
     }
     catch ( Exception exc )
     {

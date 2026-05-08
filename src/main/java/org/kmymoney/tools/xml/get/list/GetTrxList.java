@@ -13,6 +13,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.numbers.fraction.BigFraction;
 import org.kmymoney.api.read.KMyMoneyTransaction;
 import org.kmymoney.api.read.KMyMoneyTransactionSplit;
 import org.kmymoney.api.read.impl.KMyMoneyFileImpl;
@@ -20,7 +21,7 @@ import org.kmymoney.apiext.Const;
 import org.kmymoney.apiext.trxmgr.TransactionFilter;
 import org.kmymoney.apiext.trxmgr.TransactionFilter.SplitLogic;
 import org.kmymoney.apiext.trxmgr.TransactionFinder;
-import org.kmymoney.apiext.trxmgr.TransactionSplitFilter_FP;
+import org.kmymoney.apiext.trxmgr.TransactionSplitFilter_BF;
 import org.kmymoney.base.basetypes.simple.KMMAcctID;
 import org.kmymoney.base.basetypes.simple.KMMIDNotSetException;
 import org.kmymoney.base.basetypes.simple.KMMPyeID;
@@ -32,7 +33,6 @@ import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 import xyz.schnorxoborx.base.dateutils.LocalDateHelpers;
-import xyz.schnorxoborx.base.numbers.FixedPointNumber;
 
 public class GetTrxList extends CommandLineTool
 {
@@ -47,34 +47,34 @@ public class GetTrxList extends CommandLineTool
   
   // ------------------------------
   
-  private static String     kmmFileName     = null;
+  private static String      kmmFileName     = null;
   
   private static KMyMoneyTransactionSplit.Action     action     = null;
   private static KMyMoneyTransactionSplit.ReconState reconState = null;
   
-  private static KMMAcctID  acctID          = null; // sic, not KMMComplAcctID
-  private static KMMPyeID   pyeID           = null;
+  private static KMMAcctID   acctID          = null; // sic, not KMMComplAcctID
+  private static KMMPyeID    pyeID           = null;
   
-  private static LocalDate  datePostedFrom  = TransactionFilter.DATE_UNSET; 
-  private static LocalDate  datePostedTo    = TransactionFilter.DATE_UNSET; 
+  private static LocalDate   datePostedFrom  = TransactionFilter.DATE_UNSET; 
+  private static LocalDate   datePostedTo    = TransactionFilter.DATE_UNSET; 
   
-  private static LocalDate  dateEnteredFrom = TransactionFilter.DATE_UNSET; 
-  private static LocalDate  dateEnteredTo   = TransactionFilter.DATE_UNSET; 
+  private static LocalDate   dateEnteredFrom = TransactionFilter.DATE_UNSET; 
+  private static LocalDate   dateEnteredTo   = TransactionFilter.DATE_UNSET; 
   
-  private static double     valueFrom       = Const.UNSET_VALUE; 
-  private static double     valueTo         = Const.UNSET_VALUE; 
+  private static BigFraction valueFrom       = Const.UNSET_VALUE_BF;
+  private static BigFraction valueTo         = Const.UNSET_VALUE_BF;
   
-  private static double     nofSharesFrom   = Const.UNSET_VALUE; 
-  private static double     nofSharesTo     = Const.UNSET_VALUE; 
+  private static BigFraction nofSharesFrom   = Const.UNSET_VALUE_BF;
+  private static BigFraction nofSharesTo     = Const.UNSET_VALUE_BF;
   
-  private static int        nofSplitsFrom   = TransactionFilter.NOF_SPLT_UNSET; 
-  private static int        nofSplitsTo     = TransactionFilter.NOF_SPLT_UNSET; 
+  private static int         nofSplitsFrom   = TransactionFilter.NOF_SPLT_UNSET; 
+  private static int         nofSplitsTo     = TransactionFilter.NOF_SPLT_UNSET; 
   
-  private static String     memoTrx         = null; 
-  private static String     memoSplt        = null; 
+  private static String      memoTrx         = null; 
+  private static String      memoSplt        = null; 
   
-  private static boolean    showFlt         = false; 
-  private static boolean    showSplt        = false; 
+  private static boolean     showFlt         = false; 
+  private static boolean     showSplt        = false; 
   
   // ------------------------------
   
@@ -308,7 +308,7 @@ public class GetTrxList extends CommandLineTool
 
   private TransactionFilter setFilter() throws KMMIDNotSetException
   {
-	TransactionSplitFilter_FP spltFlt = new TransactionSplitFilter_FP();
+	TransactionSplitFilter_BF spltFlt = new TransactionSplitFilter_BF();
     
     if ( action != null )
     	spltFlt.action = action;
@@ -320,16 +320,16 @@ public class GetTrxList extends CommandLineTool
     if ( pyeID != null )
     	spltFlt.pyeID.set( pyeID );
     
-    if ( valueFrom != Const.UNSET_VALUE )
-    	spltFlt.valueFrom = new FixedPointNumber(valueFrom);
-    if ( valueTo   != Const.UNSET_VALUE )
-    	spltFlt.valueTo   = new FixedPointNumber(valueTo);
+    if ( valueFrom.compareTo(Const.UNSET_VALUE_BF) != 0 )
+    	spltFlt.valueFrom = valueFrom;
+    if ( valueTo.compareTo(Const.UNSET_VALUE_BF) != 0 )
+    	spltFlt.valueTo   = valueTo;
     spltFlt.valueAbs = true;
 
-    if ( nofSharesFrom != Const.UNSET_VALUE )
-    	spltFlt.sharesFrom = new FixedPointNumber(nofSharesFrom);
-    if ( nofSharesTo   != Const.UNSET_VALUE )
-    	spltFlt.sharesTo   = new FixedPointNumber(nofSharesTo);
+    if ( nofSharesFrom.compareTo(Const.UNSET_VALUE_BF) != 0 )
+    	spltFlt.sharesFrom = nofSharesFrom;
+    if ( nofSharesTo.compareTo(Const.UNSET_VALUE_BF) != 0 )
+    	spltFlt.sharesTo   = nofSharesTo;
     spltFlt.sharesAbs = true;
     
     if ( memoSplt != null )
@@ -590,7 +590,8 @@ public class GetTrxList extends CommandLineTool
     {
         try
         {
-        	valueFrom = Double.parseDouble( cmdLine.getOptionValue("from-value") );
+        	double temp = Double.parseDouble( cmdLine.getOptionValue("from-value") );
+        	valueFrom = BigFraction.from(temp, org.kmymoney.tools.Const.EPS, org.kmymoney.tools.Const.ITER_MAX);
         }
         catch ( Exception exc )
         {
@@ -601,7 +602,7 @@ public class GetTrxList extends CommandLineTool
     
     if ( ! scriptMode )
     {
-    	if ( valueFrom == Const.UNSET_VALUE )
+    	if ( valueFrom.compareTo(Const.UNSET_VALUE_BF) == 0 )
     		System.err.println("From value:         " + "(unset)");
     	else
     		System.err.println("From value:         " + valueFrom);
@@ -612,7 +613,8 @@ public class GetTrxList extends CommandLineTool
     {
         try
         {
-        	valueTo = Double.parseDouble( cmdLine.getOptionValue("to-value") );
+        	double temp = Double.parseDouble( cmdLine.getOptionValue("to-value") );
+        	valueTo = BigFraction.from(temp, org.kmymoney.tools.Const.EPS, org.kmymoney.tools.Const.ITER_MAX);
         }
         catch ( Exception exc )
         {
@@ -623,7 +625,7 @@ public class GetTrxList extends CommandLineTool
     
     if ( ! scriptMode )
     {
-    	if ( valueTo == Const.UNSET_VALUE )
+    	if ( valueTo.compareTo(Const.UNSET_VALUE_BF) == 0 )
     		System.err.println("To value:           " + "(unset)");
     	else
     		System.err.println("To value:           " + valueTo);
@@ -636,7 +638,8 @@ public class GetTrxList extends CommandLineTool
     {
         try
         {
-        	nofSharesFrom = Double.parseDouble( cmdLine.getOptionValue("from-nof-shares") );
+        	double temp = Double.parseDouble( cmdLine.getOptionValue("from-nof-shares") );
+        	nofSharesFrom = BigFraction.from(temp, org.kmymoney.tools.Const.EPS, org.kmymoney.tools.Const.ITER_MAX);
         }
         catch ( Exception exc )
         {
@@ -647,7 +650,7 @@ public class GetTrxList extends CommandLineTool
     
     if ( ! scriptMode )
     {
-    	if ( nofSharesFrom == Const.UNSET_VALUE )
+    	if ( nofSharesFrom.compareTo(Const.UNSET_VALUE_BF) == 0 )
     		System.err.println("From no. of shares: " + "(unset)");
     	else
     		System.err.println("From no. of shares: " + nofSharesFrom);
@@ -658,7 +661,8 @@ public class GetTrxList extends CommandLineTool
     {
         try
         {
-        	nofSharesTo = Double.parseDouble( cmdLine.getOptionValue("to-nof-shares") );
+        	double temp = Double.parseDouble( cmdLine.getOptionValue("to-nof-shares") );
+        	nofSharesTo = BigFraction.from(temp, org.kmymoney.tools.Const.EPS, org.kmymoney.tools.Const.ITER_MAX);
         }
         catch ( Exception exc )
         {
@@ -669,7 +673,7 @@ public class GetTrxList extends CommandLineTool
     
     if ( ! scriptMode )
     {
-    	if ( nofSharesTo == Const.UNSET_VALUE )
+    	if ( nofSharesTo.compareTo(Const.UNSET_VALUE_BF) == 0 )
     		System.err.println("To no. of shares:   " + "(unset)");
     	else
     		System.err.println("To no. of shares:   " + nofSharesTo);

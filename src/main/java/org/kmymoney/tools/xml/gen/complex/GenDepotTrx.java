@@ -33,7 +33,7 @@ import org.kmymoney.base.tuples.AcctIDAmountBFPair;
 import org.kmymoney.tools.CommandLineTool;
 import org.kmymoney.tools.Const;
 import org.kmymoney.tools.xml.helper.CmdLineHelper;
-import org.kmymoney.tools.xml.helper.CmdLineHelper_AcctAmntPr_BF;
+import org.kmymoney.tools.xml.helper.CmdLineHelper_AcctAmntPr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -908,7 +908,7 @@ public class GenDepotTrx extends CommandLineTool
            						   SecuritiesAccountTransactionManager_BF.Type.BUY_STOCK + "' or '" +
            						   SecuritiesAccountTransactionManager_BF.Type.DIVIDEND + "' or '" +
            						   SecuritiesAccountTransactionManager_BF.Type.DISTRIBUTION + "'");
-           		System.err.println("If logically unset, set to '" + CmdLineHelper_AcctAmntPr_BF.ACCT_AMT_DUMMY_ARG + "'");
+           		System.err.println("If logically unset, set to '" + CmdLineHelper_AcctAmntPr.ACCT_AMT_DUMMY_ARG + "'");
            		throw new InvalidCommandLineArgsException();
            	}
 
@@ -927,7 +927,7 @@ public class GenDepotTrx extends CommandLineTool
            		throw new InvalidCommandLineArgsException();
            	}
 
-           	expensesAcctAmtList = CmdLineHelper_AcctAmntPr_BF.getExpAcctAmtMulti(tuple.expensesAcctAmtList, "expense-account-amounts");
+           	expensesAcctAmtList = CmdLineHelper_AcctAmntPr.getExpAcctAmtMulti(tuple.expensesAcctAmtList, "expense-account-amounts");
     	}    	
     }
     else
@@ -940,7 +940,7 @@ public class GenDepotTrx extends CommandLineTool
     						   SecuritiesAccountTransactionManager_BF.Type.BUY_STOCK + "' or '" +
     						   SecuritiesAccountTransactionManager_BF.Type.DIVIDEND + "' or '" +
     						   SecuritiesAccountTransactionManager_BF.Type.DISTRIBUTION + "'");
-    		System.err.println("If logically unset, set to '" + CmdLineHelper_AcctAmntPr_BF.ACCT_AMT_DUMMY_ARG + "'");
+    		System.err.println("If logically unset, set to '" + CmdLineHelper_AcctAmntPr.ACCT_AMT_DUMMY_ARG + "'");
     		throw new InvalidCommandLineArgsException();
     	}
 

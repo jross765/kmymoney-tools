@@ -5,14 +5,14 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.numbers.fraction.BigFraction;
 import org.kmymoney.base.basetypes.simple.KMMAcctID;
-import org.kmymoney.base.tuples.AcctIDAmountFPPair;
+import org.kmymoney.base.tuples.AcctIDAmountBFPair;
+import org.kmymoney.tools.Const;
 
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
-import xyz.schnorxoborx.base.numbers.FixedPointNumber;
 
-@Deprecated
-public class CmdLineHelper_AcctAmntPr_FP {
+public class CmdLineHelper_AcctAmntPr {
 
   // ::MAGIC
   public  static final String ACCT_AMT_DUMMY_ARG = "DUMMY";
@@ -21,10 +21,9 @@ public class CmdLineHelper_AcctAmntPr_FP {
 
   // -----------------------------------------------------------------
   
-  @Deprecated
-  public static Collection<AcctIDAmountFPPair> getExpAcctAmtMulti(CommandLine cmdLine, String argName) throws InvalidCommandLineArgsException
+  public static Collection<AcctIDAmountBFPair> getExpAcctAmtMulti(CommandLine cmdLine, String argName) throws InvalidCommandLineArgsException
   {
-    List<AcctIDAmountFPPair> result = new ArrayList<AcctIDAmountFPPair>();
+    List<AcctIDAmountBFPair> result = new ArrayList<AcctIDAmountBFPair>();
 
     if ( cmdLine.hasOption(argName) )
     {
@@ -40,10 +39,9 @@ public class CmdLineHelper_AcctAmntPr_FP {
     return result;
   }
 
-  @Deprecated
-  public static Collection<AcctIDAmountFPPair> getExpAcctAmtMulti(String arg, String argName) throws InvalidCommandLineArgsException
+  public static Collection<AcctIDAmountBFPair> getExpAcctAmtMulti(String arg, String argName) throws InvalidCommandLineArgsException
   {
-    List<AcctIDAmountFPPair> result = new ArrayList<AcctIDAmountFPPair>();
+    List<AcctIDAmountBFPair> result = new ArrayList<AcctIDAmountBFPair>();
 
     if ( arg == null )
     	return result;
@@ -63,7 +61,7 @@ public class CmdLineHelper_AcctAmntPr_FP {
     		// System.err.println("*** pair: '" + pairStr + "'");
     		if ( ! pairStr.trim().equals( "" ) )
     		{
-        		AcctIDAmountFPPair newPair = getExpAcctAmtSingle( pairStr );
+        		AcctIDAmountBFPair newPair = getExpAcctAmtSingle( pairStr );
         		result.add(newPair);
     		}
     	}
@@ -77,8 +75,7 @@ public class CmdLineHelper_AcctAmntPr_FP {
     return result;
   }
 
-  @Deprecated
-  private static AcctIDAmountFPPair getExpAcctAmtSingle(String pairStr) throws InvalidCommandLineArgsException
+  private static AcctIDAmountBFPair getExpAcctAmtSingle(String pairStr) throws InvalidCommandLineArgsException
   {
 	int pos = pairStr.indexOf(ACCT_AMT_SEP_INNER);
 	if ( pos < 0 )
@@ -94,7 +91,7 @@ public class CmdLineHelper_AcctAmntPr_FP {
 	Double amtDbl = Double.valueOf(amtStr);
 	// System.err.println(" - elt2: " + acctIDStr + " / " + amtStr);
         		
-	AcctIDAmountFPPair newPair = new AcctIDAmountFPPair(acctID, new FixedPointNumber(amtDbl));
+	AcctIDAmountBFPair newPair = new AcctIDAmountBFPair(acctID, BigFraction.from(amtDbl, Const.EPS, Const.ITER_MAX));
 
     return newPair;
   }

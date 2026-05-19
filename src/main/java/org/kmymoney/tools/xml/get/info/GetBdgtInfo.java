@@ -12,10 +12,11 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.kmymoney.api.read.KMyMoneyAccount;
-import org.kmymoney.api.read.KMyMoneyInstitution;
+import org.kmymoney.api.read.KMyMoneyBudget;
+import org.kmymoney.api.read.aux.KMMBudgetAccount;
+import org.kmymoney.api.read.aux.KMMBudgetPeriod;
 import org.kmymoney.api.read.impl.KMyMoneyFileImpl;
-import org.kmymoney.base.basetypes.simple.KMMInstID;
+import org.kmymoney.base.basetypes.simple.KMMBdgtID;
 import org.kmymoney.tools.CommandLineTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,21 +27,22 @@ import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.Helper;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
-public class GetInstInfo extends CommandLineTool
+public class GetBdgtInfo extends CommandLineTool
 {
   // Logger
   @SuppressWarnings("unused")
-  private static final Logger LOGGER = LoggerFactory.getLogger(GetInstInfo.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GetBdgtInfo.class);
   
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
   private static String      kmmFileName = null;
   private static Helper.Mode mode        = null;
-  private static KMMInstID   instID      = null;
+  private static KMMBdgtID   bdgtID      = null;
   private static String      name        = null;
   
   private static boolean showAcct   = false;
+  private static boolean showPrd    = false;
 
   private static boolean scriptMode = false; // ::TODO
 
@@ -48,7 +50,7 @@ public class GetInstInfo extends CommandLineTool
   {
     try
     {
-      GetInstInfo tool = new GetInstInfo ();
+      GetBdgtInfo tool = new GetBdgtInfo ();
       tool.execute(args);
     }
     catch (CouldNotExecuteException exc) 
@@ -83,11 +85,11 @@ public class GetInstInfo extends CommandLineTool
       .longOpt("mode")
       .get();
         
-    Option optInstID = Option.builder("inst")
+    Option optBdgtID = Option.builder("bdgt")
       .hasArg()
       .argName("ID")
-      .desc("Institution ID")
-      .longOpt("institution-id")
+      .desc("Budget ID")
+      .longOpt("bdgtitution-id")
       .get();
           
     Option optName = Option.builder("n")
@@ -103,12 +105,18 @@ public class GetInstInfo extends CommandLineTool
       .longOpt("show-accounts")
       .get();
             
+    Option optShowPrd = Option.builder("sprd")
+      .desc("Show periods")
+      .longOpt("show-periods")
+      .get();
+    	            
     options = new Options();
     options.addOption(optFile);
     options.addOption(optMode);
-    options.addOption(optInstID);
+    options.addOption(optBdgtID);
     options.addOption(optName);
     options.addOption(optShowAcct);
+    options.addOption(optShowPrd);
   }
 
   @Override
@@ -122,39 +130,39 @@ public class GetInstInfo extends CommandLineTool
   {
     KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName), true);
 
-    KMyMoneyInstitution inst = null;
+    KMyMoneyBudget bdgt = null;
     
     if ( mode == Helper.Mode.ID )
     {
-      inst = kmmFile.getInstitutionByID(instID);
-      if ( inst == null )
+      bdgt = kmmFile.getBudgetByID(bdgtID);
+      if ( bdgt == null )
       {
-        System.err.println("Could not find an institution with this ID.");
+        System.err.println("Could not find a budget with this ID.");
         throw new NoEntryFoundException();
       }
     }
     else if ( mode == Helper.Mode.NAME )
     {
-      Collection<KMyMoneyInstitution> instList = kmmFile.getInstitutionsByName(name); 
-      if ( instList.size() == 0 )
+      Collection<KMyMoneyBudget> bdgtList = kmmFile.getBudgetsByName(name); 
+      if ( bdgtList.size() == 0 )
       {
-        System.err.println("Could not find institutions matching this name.");
+        System.err.println("Could not find budgets matching this name.");
         throw new NoEntryFoundException();
       }
-      if ( instList.size() > 1 )
+      if ( bdgtList.size() > 1 )
       {
-        System.err.println("Found " + instList.size() + " institutions matching this name.");
+        System.err.println("Found " + bdgtList.size() + " budgets matching this name.");
         System.err.println("Please specify more precisely.");
         throw new TooManyEntriesFoundException();
       }
-      inst = instList.iterator().next(); // first element
+      bdgt = bdgtList.iterator().next(); // first element
     }
     
     // ----------------------------
 
     try
     {
-      System.out.println("ID:                '" + inst.getID() + "'");
+      System.out.println("ID:                '" + bdgt.getID() + "'");
     }
     catch (Exception exc)
     {
@@ -163,7 +171,7 @@ public class GetInstInfo extends CommandLineTool
 
     try
     {
-      System.out.println("toString:          " + inst.toString());
+      System.out.println("toString:          " + bdgt.toString());
     }
     catch (Exception exc)
     {
@@ -172,63 +180,35 @@ public class GetInstInfo extends CommandLineTool
     
     try
     {
-      System.out.println("Name:              '" + inst.getName() + "'");
+      System.out.println("Name:              '" + bdgt.getName() + "'");
     }
     catch (Exception exc)
     {
       System.out.println("Name:              " + "ERROR");
     }
 
-    try
-    {
-      System.out.println("Sort code:         " + inst.getSortCode());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Sort code:             " + "ERROR");
-    }
-
-    try
-    {
-      System.out.println("Address:           " + inst.getAddress());
-    }
-    catch (Exception exc)
-    {
-      System.out.println("Address:           " + "ERROR");
-    }
-    
-    try
-    {
-      System.out.println("BIC:               '" + inst.getBIC() + "'");
-    }
-    catch (Exception exc)
-    {
-      System.out.println("BIC:               " + "ERROR");
-    }
-    
-    try
-    {
-      System.out.println("URL:               '" + inst.getURL() + "'");
-    }
-    catch (Exception exc)
-    {
-      System.out.println("URL:               " + "ERROR");
-    }
-    
     // ---
     
     if ( showAcct )
-      showAccounts(inst);
+      showAccounts(bdgt);
   }
 
-  private void showAccounts(KMyMoneyInstitution inst)
+  private void showAccounts(KMyMoneyBudget bdgt)
   {
     System.out.println("");
     System.out.println("Accounts:");
     
-    for ( KMyMoneyAccount acct : inst.getAccounts() )
+    for ( KMMBudgetAccount acct : bdgt.getAccounts() )
     {
       System.out.println(" - " + acct.toString());
+      
+      if ( showPrd )
+      {
+          for ( KMMBudgetPeriod prd : acct.getPeriods() )
+          {
+            System.out.println("   o " + prd.toString());
+          }
+      }
     }
   }
 
@@ -280,22 +260,22 @@ public class GetInstInfo extends CommandLineTool
     if ( ! scriptMode )
       System.err.println("Mode:     " + mode);
 
-    // <institution-id>
-    if ( cmdLine.hasOption("institution-id") )
+    // <bdgtitution-id>
+    if ( cmdLine.hasOption("bdgtitution-id") )
     {
       if ( mode != Helper.Mode.ID )
       {
-        System.err.println("<institution-id> must only be set with <mode> = '" + Helper.Mode.ID.toString() + "'");
+        System.err.println("<bdgtitution-id> must only be set with <mode> = '" + Helper.Mode.ID.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
       
       try
       {
-        instID = new KMMInstID( cmdLine.getOptionValue("institution-id") );
+        bdgtID = new KMMBdgtID( cmdLine.getOptionValue("bdgtitution-id") );
       }
       catch (Exception exc)
       {
-        System.err.println("Could not parse <institution-id>");
+        System.err.println("Could not parse <bdgtitution-id>");
         throw new InvalidCommandLineArgsException();
       }
     }
@@ -303,13 +283,13 @@ public class GetInstInfo extends CommandLineTool
     {
       if ( mode == Helper.Mode.ID )
       {
-        System.err.println("<institution-id> must be set with <mode> = '" + Helper.Mode.ID.toString() + "'");
+        System.err.println("<bdgtitution-id> must be set with <mode> = '" + Helper.Mode.ID.toString() + "'");
         throw new InvalidCommandLineArgsException();
       }
     }
 
     if (!scriptMode)
-      System.err.println("Institution ID: '" + instID + "'");
+      System.err.println("Budget ID: '" + bdgtID + "'");
 
     // <name>
     if ( cmdLine.hasOption("name") )
@@ -354,6 +334,19 @@ public class GetInstInfo extends CommandLineTool
     
     if ( ! scriptMode )
       System.err.println("Show accounts: " + showAcct);
+    
+    // <show-periods>
+    if ( cmdLine.hasOption("show-periods"))
+    {
+      showPrd = true;
+    }
+    else
+    {
+    	showPrd = false;
+    }
+    
+    if ( ! scriptMode )
+      System.err.println("Show periods:  " + showPrd);
   }
 
   @Override
@@ -362,7 +355,7 @@ public class GetInstInfo extends CommandLineTool
 	HelpFormatter formatter = HelpFormatter.builder().get();
 	try
 	{
-		formatter.printHelp( "GetInstInfo", "", options, "", true );
+		formatter.printHelp( "GetBdgtInfo", "", options, "", true );
 	}
 	catch ( IOException e )
 	{

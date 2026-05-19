@@ -12,7 +12,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.kmymoney.api.read.KMyMoneyInstitution;
+import org.kmymoney.api.read.KMyMoneyBudget;
 import org.kmymoney.api.read.impl.KMyMoneyFileImpl;
 import org.kmymoney.tools.CommandLineTool;
 import org.slf4j.Logger;
@@ -22,17 +22,17 @@ import xyz.schnorxoborx.base.beanbase.NoEntryFoundException;
 import xyz.schnorxoborx.base.cmdlinetools.CouldNotExecuteException;
 import xyz.schnorxoborx.base.cmdlinetools.InvalidCommandLineArgsException;
 
-public class GetInstList extends CommandLineTool
+public class GetBdgtList extends CommandLineTool
 {
   // Logger
   @SuppressWarnings("unused")
-  private static final Logger LOGGER = LoggerFactory.getLogger(GetInstList.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(GetBdgtList.class);
   
   // private static PropertiesConfiguration cfg = null;
   private static Options options;
   
   private static String               kmmFileName = null;
-  private static Helper.InstListMode  mode        = null; 
+  private static Helper.BdgtListMode  mode        = null; 
   private static String               name        = null;
   
   private static boolean scriptMode = false; // ::TODO
@@ -41,7 +41,7 @@ public class GetInstList extends CommandLineTool
   {
     try
     {
-      GetInstList tool = new GetInstList ();
+      GetBdgtList tool = new GetBdgtList ();
       tool.execute(args);
     }
     catch (CouldNotExecuteException exc) 
@@ -81,7 +81,7 @@ public class GetInstList extends CommandLineTool
     Option optName = Option.builder("n")
       .hasArg()
       .argName("name")
-      .desc("Institution name (part of)")
+      .desc("Budget name (part of)")
       .longOpt("name")
       .get();
     	      
@@ -105,20 +105,20 @@ public class GetInstList extends CommandLineTool
   {
     KMyMoneyFileImpl kmmFile = new KMyMoneyFileImpl(new File(kmmFileName), true);
     
-    Collection<KMyMoneyInstitution> cmdtyList = null; 
-    if ( mode == Helper.InstListMode.ALL )
-        cmdtyList = kmmFile.getInstitutions();
-    else if ( mode == Helper.InstListMode.NAME )
-    	cmdtyList = kmmFile.getInstitutionsByName(name, true);
+    Collection<KMyMoneyBudget> cmdtyList = null; 
+    if ( mode == Helper.BdgtListMode.ALL )
+        cmdtyList = kmmFile.getBudgets();
+    else if ( mode == Helper.BdgtListMode.NAME )
+    	cmdtyList = kmmFile.getBudgetsByName(name, true);
 
     if ( cmdtyList.size() == 0 ) 
     {
-    	System.err.println("Found no institution with that type.");
+    	System.err.println("Found no budget with that type.");
     	throw new NoEntryFoundException();
     }
 
-    System.err.println("Found " + cmdtyList.size() + " institutions.");
-    for ( KMyMoneyInstitution cmdty : cmdtyList )
+    System.err.println("Found " + cmdtyList.size() + " budgets.");
+    for ( KMyMoneyBudget cmdty : cmdtyList )
     {
     	System.out.println(cmdty.toString());	
     }
@@ -160,7 +160,7 @@ public class GetInstList extends CommandLineTool
     // <mode>
     try
     {
-      mode = Helper.InstListMode.valueOf(cmdLine.getOptionValue("mode"));
+      mode = Helper.BdgtListMode.valueOf(cmdLine.getOptionValue("mode"));
     }
     catch ( Exception exc )
     {
@@ -171,9 +171,9 @@ public class GetInstList extends CommandLineTool
     // <name>
     if ( cmdLine.hasOption( "name" ) )
     {
-    	if ( mode != Helper.InstListMode.NAME )
+    	if ( mode != Helper.BdgtListMode.NAME )
     	{
-            System.err.println("Error: <name> must only be set with <mode> = '" + Helper.InstListMode.NAME + "'");
+            System.err.println("Error: <name> must only be set with <mode> = '" + Helper.BdgtListMode.NAME + "'");
             throw new InvalidCommandLineArgsException();
     	}
     	
@@ -189,9 +189,9 @@ public class GetInstList extends CommandLineTool
     }
     else
     {
-    	if ( mode == Helper.InstListMode.NAME )
+    	if ( mode == Helper.BdgtListMode.NAME )
     	{
-            System.err.println("Error: <name> must be set with <mode> = '" + Helper.InstListMode.NAME + "'");
+            System.err.println("Error: <name> must be set with <mode> = '" + Helper.BdgtListMode.NAME + "'");
             throw new InvalidCommandLineArgsException();
     	}
     	
@@ -208,7 +208,7 @@ public class GetInstList extends CommandLineTool
 	HelpFormatter formatter = HelpFormatter.builder().get();
 	try
 	{
-		formatter.printHelp( "GetInstList", "", options, "", true );
+		formatter.printHelp( "GetBdgtList", "", options, "", true );
 	}
 	catch ( IOException e )
 	{
@@ -218,7 +218,7 @@ public class GetInstList extends CommandLineTool
     
     System.out.println("");
     System.out.println("Valid values for <mode>:");
-    for ( Helper.InstListMode elt : Helper.InstListMode.values() )
+    for ( Helper.BdgtListMode elt : Helper.BdgtListMode.values() )
       System.out.println(" - " + elt);
   }
 }

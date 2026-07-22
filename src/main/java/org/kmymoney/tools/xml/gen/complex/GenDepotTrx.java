@@ -521,14 +521,16 @@ public class GenDepotTrx extends CommandLineTool
     if ( ! silent )
     	System.out.println("Transaction to write: " + trx.toString());
 
-    KMMTrxID newID = trx.getID();
-    LOGGER.info( "Generated new Transaction: " + newID);
+    KMMTrxID newTrxID = trx.getID();
+    LOGGER.info( "Generated new Transaction: " + newTrxID);
 
     if ( batch )
     {
     	try 
     	{
-    		outFile.write("" + newID + "\n");
+    		outFile.write(newTrxID.toString() + ";");
+    		outFile.write(offsetAcctID.toString() + ";");
+    		outFile.write(datPst.toString() + "\n");
     	} 
     	catch ( Exception exc )
     	{
@@ -539,7 +541,7 @@ public class GenDepotTrx extends CommandLineTool
 	  
 	// ---
 	
-    return newID;
+    return newTrxID;
   }
   
   private void readListFile(ArrayList<ParamTuple> paramTuples) throws IOException

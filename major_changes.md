@@ -38,8 +38,9 @@
     "API Extended", V. 0.10:
     Changed various implementations so that it is (almost) not used any more.
 
-  * `GenDepotTrx`: Added newly-introduced stock-sell variant
-     (cf. "API Extended", V. 0.10).
+  * `GenDepotTrx`: 
+    * Added newly-introduced stock-sell variant (cf. "API Extended", V. 0.10).
+    * Out-file (batch) now contains more information (needed for transaction merger, variant 3; cf. module "API Extensions").
   
   * `GetTrxSpltList`: Fixed bug.
 
